@@ -1,1 +1,0 @@
-"0","barplot(negatives,add=TRUE,ylim=rev(myrange),col=NANI_colors, width = 1, space = 0.5)"
