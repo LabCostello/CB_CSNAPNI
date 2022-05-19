@@ -8,3 +8,4 @@ CreateInputsSubs/NASSpull/RawNASSData/*
 OutputFileKeys/*.txt
 OutputFiles/*.txt
 .Rproj.user
+.Rproj.user/

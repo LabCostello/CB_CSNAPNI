@@ -8,7 +8,7 @@ if(print_tags == 1){
 }
 
 #Regenerate input files? 0=no, 1=yes
-get_new_data=0
+get_new_data=1
 print(paste("Input files regenerated (0=no, 1=yes): ", get_new_data),quote=FALSE)
 
 ##input file creation settings
@@ -42,3 +42,6 @@ ws = c(22,25) ##Missippi River and Atchafalaya Watersheds
 #York,James,Chester,Choptank,Tangier/Pokomoke,Chesapeake Bay Mainstream)
 
                       
+# Filtering region
+filter_region = 1
+print(paste("Chesapeake Bay Filter (0=no, 1=yes): ", filter_region),quote=FALSE)

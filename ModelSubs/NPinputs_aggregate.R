@@ -51,6 +51,12 @@ N4humanppWW = array(0,c(nyrs,1))
 P4humanppWW = array(0,c(nyrs,1))
 
 
+NEEA = 144
+
+if(filter_region==1){
+  NEEA = 1902
+}
+
 for(n in 1:nyrs){
   NANIanimreq[,n] = rowSums(kganimNreqs[,,n]) / areaws
   NAPIanimPintakefromC[,n] = rowSums(kganimPintakefromC[,,n]) / areaws #this is not the same as
@@ -63,7 +69,7 @@ for(n in 1:nyrs){
   NANIcropN[,n] = (rowSums(C4humanN[,,n],2) + rowSums(C4animNadj[,,n])) / areaws
   NAPIcropP[,n] = (rowSums(C4humanP[,,n],2) + rowSums(C4animPadj[,,n])) / areaws
   
-  Psuppws[,n] = rowSums(t(array(Psupp_peranim[,n], c(19,144))) * noanimwsdyn[,,n])
+  Psuppws[,n] = rowSums(t(array(Psupp_peranim[,n], c(19,NEEA))) * noanimwsdyn[,,n])
   NAPIsuppP[,n] = Psuppws[,n] / areaws 
   
   FF_N[,n] = (NANIanimreq[,n] + hmnNreqs[,n]) - ((NANIanimN[,n] + NANIcropN[,n]) + NANIcropNexp[,n])
