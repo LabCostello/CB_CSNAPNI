@@ -1,7 +1,8 @@
 #CSNAPNIv1.R
 
 #specify the working directory as the location of this file
-this.dir <- dirname(parent.frame(2)$ofile)
+
+this.dir <- getwd()
 setwd(this.dir)
 
 #settings
