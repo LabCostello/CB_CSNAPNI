@@ -419,7 +419,7 @@ list_fips_cbw <- list_fips_cbw[,2]
 NASS_County_withheld <- NASS_County_withheld[list_row_cbw,,]
 
 # Multiplying by area ratio, to consider only clipped counties
-NASS_County3 <- NASS_County*array(CB_counties[,7])
+NASS_County <- NASS_County*array(CB_counties[,7])
 
 #Considering only 
 
