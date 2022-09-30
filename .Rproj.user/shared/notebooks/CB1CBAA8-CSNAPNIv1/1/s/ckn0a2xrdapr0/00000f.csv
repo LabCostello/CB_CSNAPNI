@@ -1,0 +1,4 @@
+"0","library(knitr)"
+"0","unitfertNetoh_df = data.frame(unitfertNetoh*10^3)"
+"0","rownames(unitfertNetoh_df) = year_labels"
+"0","kable(unitfertNetoh_df, caption = ""Figure 1.4: Fertilizer N inputs per liter of ethanol fuel from 1987-2012. This estimate excludes N inputs allocated to ethanol coproducts. Decreasing N inputs per liter from 1997-2007 are driven by improved corn to ethanol conversion efficiency and reduced N inputs per mass of corn. The increase in 2012 resulted from drought conditions and reduced corn yield."")"

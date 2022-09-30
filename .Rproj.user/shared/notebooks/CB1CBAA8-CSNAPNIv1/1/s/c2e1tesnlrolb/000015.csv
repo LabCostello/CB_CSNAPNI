@@ -1,0 +1,1 @@
+"0","legend(cex=2.1,""topright"", inset=c(1.18,0), legend=c(crop_labels[major_feeds_for_beef], ""other grains"",""diet supplements""),  fill=c(crop_colors[major_feeds_for_beef],""white"",P_supp_color))"
