@@ -172,7 +172,7 @@ for(n in 1:nyrs){
     }
   }
   for(i in 1:n_anims){
-    kgmanureNrec450[,i,n] = t(cnty_ws) %*% kgmanureNrec[,i,n]
-    kgmanurePrec450[,i,n] = t(cnty_ws) %*% kgmanurePrec[,i,n]
+    kgmanureNrec450[,i,n] = t(cnty_ws) %*% kgmanureNrec[,i,n] # kg manure N rec for 1902 DA
+    kgmanurePrec450[,i,n] = t(cnty_ws) %*% kgmanurePrec[,i,n] # kg manure P rec for 1902 DA
   }
 }

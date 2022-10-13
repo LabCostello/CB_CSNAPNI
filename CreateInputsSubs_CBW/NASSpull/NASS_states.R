@@ -228,7 +228,7 @@ for(j in 1:n_years){
 #print("Type 'View(NASS_State)' to see compiled compiled state commodity data.")
 
 #Filtering to consider only Chesapeake Bay states
-NASS_states <- NASS_states[c(7,18,30,37,44,46),]
+NASS_states <- data.frame(state_name= NASS_states[c(7,18,30,37,44,46),])
 NASS_State <- NASS_State[c(7,18,30,37,44,46),]
 NASS_State_withheld <- NASS_State_withheld[c(7,18,30,37,44,46),,]
 

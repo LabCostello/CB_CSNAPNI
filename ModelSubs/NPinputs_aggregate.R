@@ -72,10 +72,10 @@ for(n in 1:nyrs){
   Psuppws[,n] = rowSums(t(array(Psupp_peranim[,n], c(19,NEEA))) * noanimwsdyn[,,n])
   NAPIsuppP[,n] = Psuppws[,n] / areaws 
   
-  FF_N[,n] = (NANIanimreq[,n] + hmnNreqs[,n]) - ((NANIanimN[,n] + NANIcropN[,n]) + NANIcropNexp[,n])
+  FF_N[,n] = (NANIanimreq[,n] + hmnNreqs[,n]) - (NANIanimN[,n] + NANIcropN[,n])
   #NANIcropN values have exported quantities removed
   
-  FF_P[,n] = (NAPIanimPintakefromC[,n] + NAPIsuppP[,n] + hmnfoodPreqs[,n]) - ((NAPIanimP[,n] + NAPIcropP[,n]) + NAPIcropPexp[,n] + NAPIsuppP[,n]) # + NAPIanimreq[,n]*0.041) # is a proxy for animal protein feed recycling into animal diets, 
+  FF_P[,n] = (NAPIanimPintakefromC[,n] + NAPIsuppP[,n] + hmnfoodPreqs[,n]) - ((NAPIanimP[,n] + NAPIcropP[,n]) + NAPIsuppP[,n]) # + NAPIanimreq[,n]*0.041) # is a proxy for animal protein feed recycling into animal diets, 
                                                                                                                                                 # which reduces the need for new P imports 
   #NAPIcropP values have exported quantities removed
   

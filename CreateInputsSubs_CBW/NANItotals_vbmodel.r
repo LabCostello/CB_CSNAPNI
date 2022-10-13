@@ -44,7 +44,7 @@ data_range2_ = data_range2_[list_row_cbw,]
 data_range3_ = data_range3_[list_row_cbw,]
 data_range4_ = data_range4_[list_row_cbw,]
 data_range5_ = data_range5_[list_row_cbw,]
-
+# Adding the the years over the columns
 data_range1 = rbind(data_range1[3,],data_range1_) #updated considering only cbw counties
 data_range2 = rbind(data_range2[3,],data_range2_) #updated considering only cbw counties
 data_range3 = rbind(data_range3[3,],data_range3_) #updated considering only cbw counties

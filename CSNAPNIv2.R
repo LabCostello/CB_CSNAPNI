@@ -20,7 +20,7 @@ if(filter_region == 1){
   ##Calculate recoverable manure for NANI/NAPI Toolbox Watersheds
   source("ModelSubs/manure_CBW.R")
 
-# CSNAPNI for whole US    
+# CSNAPNI for whole US
 } else if(filter_region == 0){
   #pull data from raw data files
   print("CSNAPNI for whole US is running")

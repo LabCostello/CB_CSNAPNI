@@ -211,9 +211,13 @@ cropname[13] = 'cropland pasture'
 cropname[14] = 'noncropland pasture'
 cropname[15] = 'rice'
 cropname[16] = 'peanuts'
-cropname[17] = 'CGF'
-cropname[18] = 'CGM'
-cropname[19] = 'DGS'
+cropname[17] = 'grass'
+cropname[18] = 'CGF'
+cropname[19] = 'CGM'
+cropname[20] = 'DGS'
+
+
+exports=array(0,c(n_export_crops,length(import_yrs1)))
 
 #write exports to text file
 write_name = "InputFiles_CBW/exports.txt"

@@ -24,9 +24,11 @@ cropname[13] = 'cropland pasture'
 cropname[14] = 'noncropland pasture'
 cropname[15] = 'rice'
 cropname[16] = 'peanuts'
-cropname[17] = 'CGF'
-cropname[18] = 'CGM'
-cropname[19] = 'DGS'
+cropname[17] = 'grass'
+cropname[18] = 'CGF'
+cropname[19] = 'CGM'
+cropname[20] = 'DGS'
+
 
 # allocate space to matrices
 cropprodcnty = array(0,c(n_cnty,length(cropname),length(import_yrs)))

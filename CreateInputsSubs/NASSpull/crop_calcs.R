@@ -221,9 +221,9 @@ for(i in 1:length(peanuts_prod_list)){
 
 
 area_sums=c(colSums(corn_grain_areas),colSums(corn_silage_areas),colSums(wheat_areas),colSums(oats_areas),colSums(barley_areas),
-       colSums(sorghum_grain_areas),colSums(sorghum_silage_areas),colSums(potatoes_areas),colSums(rye_areas),
-       colSums(alfalfa_hay_areas),colSums(other_hay_areas),colSums(soybeans_areas),colSums(cropland_pasture_areas),
-       colSums(noncropland_pasture_areas),colSums(rice_areas),colSums(peanuts_areas))
+            colSums(sorghum_grain_areas),colSums(sorghum_silage_areas),colSums(potatoes_areas),colSums(rye_areas),
+            colSums(alfalfa_hay_areas),colSums(other_hay_areas),colSums(soybeans_areas),colSums(cropland_pasture_areas),
+            colSums(noncropland_pasture_areas),colSums(rice_areas),colSums(peanuts_areas))
 area_sums_array=t(array(area_sums,c(length(year),16)))
 
 prod_sums=c(colSums(corn_grain_prod),colSums(corn_silage_prod),colSums(wheat_prod),colSums(oats_prod),colSums(barley_prod),
@@ -240,14 +240,14 @@ areas_array = array(0,c(length(NASS_County[,1]),16,length(year))) #crop harveste
 prod_array = array(0,c(length(NASS_County[,1]),16,length(year))) #crop production, in kg
 for(n in 1:(length(year))){
   areas = c(corn_grain_areas[,n],corn_silage_areas[,n],wheat_areas[,n],oats_areas[,n],barley_areas[,n],
-           sorghum_grain_areas[,n],sorghum_silage_areas[,n],potatoes_areas[,n],rye_areas[,n],
-           alfalfa_hay_areas[,n],other_hay_areas[,n],soybeans_areas[,n],cropland_pasture_areas[,n],
-           noncropland_pasture_areas[,n],rice_areas[,n],peanuts_areas[,n])
+            sorghum_grain_areas[,n],sorghum_silage_areas[,n],potatoes_areas[,n],rye_areas[,n],
+            alfalfa_hay_areas[,n],other_hay_areas[,n],soybeans_areas[,n],cropland_pasture_areas[,n],
+            noncropland_pasture_areas[,n],rice_areas[,n],peanuts_areas[,n])
   areas_array[,,n]=array(areas,c(length(NASS_County[,1]),16))
   prod = c(corn_grain_prod[,n],corn_silage_prod[,n],wheat_prod[,n],oats_prod[,n],barley_prod[,n],
-            sorghum_grain_prod[,n],sorghum_silage_prod[,n],potatoes_prod[,n],rye_prod[,n],
-            alfalfa_hay_prod[,n],other_hay_prod[,n],soybeans_prod[,n],cropland_pasture_prod[,n],
-            noncropland_pasture_prod[,n],rice_prod[,n],peanuts_prod[,n])
+           sorghum_grain_prod[,n],sorghum_silage_prod[,n],potatoes_prod[,n],rye_prod[,n],
+           alfalfa_hay_prod[,n],other_hay_prod[,n],soybeans_prod[,n],cropland_pasture_prod[,n],
+           noncropland_pasture_prod[,n],rice_prod[,n],peanuts_prod[,n])
   prod_array[,,n]=array(prod,c(length(NASS_County[,1]),16))
   
   #write data files

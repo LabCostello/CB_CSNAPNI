@@ -9,7 +9,7 @@ if(print_tags == 1){
 n_cnty = 203 #number of counties (in continental US)
 n_ws_NEEA = 1902 #number of NEEA watersheds
 n_ws_tbx = 1902 #number of watersheds in NANI Toolbox watershed set
-n_crops = 19 #number of crops tracked (includes etoh coproducts)
+n_crops = 20 #number of crops tracked (includes etoh coproducts)
 n_anims = 19 #number of animal types tracked
 n_meats = 9 #number of meat products tracked
 

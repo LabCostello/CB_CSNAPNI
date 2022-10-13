@@ -10,7 +10,7 @@ countydatalevel <- read_xlsx("InputFiles_CBW/CommonDataLabels.xlsx") # This file
 CB_counties <- read_xlsx("InputFiles_CBW/CB_Counties.xlsx") # this file contains CB data such as FIPS and atmospheric deposition data for all counties 
 
 #converting the FIPS column to vector as a requirement for filtering from dataframe
-CB_counties_FIPS <- as.vector(unlist(CB_counties[,1]))
+CB_counties_FIPS <- as.vector(unlist(CB_counties[,1])) # Before it was 203 but included Fairfax city, Richmond
 # #Adding the FIPS as the first col of each NAPI component
 # n_ws_tbx_cbw <- cbind(countydatalevel[,1],cnty_ws[,1:450])
 # 
@@ -22,8 +22,8 @@ CB_counties_FIPS <- as.vector(unlist(CB_counties[,1]))
 # write.table(n_ws_tbx_cbw, 'InputFiles/cnty_ws_cbw.txt', append = FALSE, sep = " ", dec = ".", row.names = FALSE, col.names = FALSE)
 
 n_cnty = 203 #number of counties (in CBW)
-n_ws_tbx = 1902 #number of watersheds in NANI Toolbox watershed set
-n_crops = 19 #number of crops tracked (includes etoh coproducts)
+n_ws_tbx = 1902 #number of Discharge Areas of CBW
+n_crops = 20 #number of crops tracked (includes etoh coproducts)
 n_anims = 19 #number of animal types tracked
 n_meats = 9 #number of meat products tracked
 data_yrs = 5 #number of years of data

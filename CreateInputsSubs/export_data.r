@@ -215,6 +215,9 @@ cropname[17] = 'CGF'
 cropname[18] = 'CGM'
 cropname[19] = 'DGS'
 
+# Changing the exports to zero for preliminary results (since we don't know how much is for CBW yet)
+exports=array(0,c(n_export_crops,length(import_yrs1)))
+
 #write exports to text file
 write_name = "InputFiles/exports.txt"
 write.table(exports, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)

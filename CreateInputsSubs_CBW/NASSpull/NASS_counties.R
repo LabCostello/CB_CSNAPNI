@@ -211,7 +211,7 @@ for(j in 1:n_years){
         #sum production in counties in state s
         sum_of_counties[s,i,j] = sum(as.numeric(NASS_County_raw[temp_indices_of_s,correction]))
         #define the position of state s in the NASS list
-        NASS_index_of_s = which(toupper(NANI_NAPI_states[s])==NASS_states)
+        NASS_index_of_s = which(toupper(NANI_NAPI_states[s])==NASS_states$state_name)
         #if s is in the NASS list (in other words, if s is not DC)
         if(length(NASS_index_of_s)>0){
           #get the difference between the sum of state production values and the national prod value
@@ -298,7 +298,7 @@ for(j in 1:n_years){
       #sum the values for all counties in each state included in the NANI_NAPI model and in the NASS data
       #NOTE: DC is not in the NASS data, Hawaii and Alaska are not included in the NANI_NAPI model
       #define the position of state s in the NASS list
-      NASS_index_of_s = which(toupper(NANI_NAPI_states[s])==NASS_states)
+      NASS_index_of_s = which(toupper(NANI_NAPI_states[s])==NASS_states$state_name)
       #so, only do the calculation if this state is in the list of NASS states
       if(length(NASS_index_of_s)>0){
         sum_of_counties_check[s,i,j] = sum(as.numeric(NASS_County[NANI_NAPI_indices_of_s,correction]))
@@ -356,7 +356,7 @@ for(j in 1:n_years){
       #sum the values for all counties in each state included in the NANI_NAPI model and in the NASS data
       #NOTE: DC is not in the NASS data, Hawaii and Alaska are not included in the NANI_NAPI model
       #define the position of state s in the NASS list
-      NASS_index_of_s = which(toupper(NANI_NAPI_states[s])==NASS_states)
+      NASS_index_of_s = which(toupper(NANI_NAPI_states[s])==NASS_states$state_name)
       #so, only do the calculation if this state is in the list of NASS states
       if(length(NASS_index_of_s)>0){
         sum_of_counties_check2[s,i,j] = sum(as.numeric(NASS_County[NANI_NAPI_indices_of_s,correction]))
@@ -419,7 +419,7 @@ list_fips_cbw <- list_fips_cbw[,2]
 NASS_County_withheld <- NASS_County_withheld[list_row_cbw,,]
 
 # Multiplying by area ratio, to consider only clipped counties
-NASS_County <- NASS_County*array(CB_counties[,7])
+#NASS_County <- NASS_County*array(CB_counties[,7])
 
 #Considering only 
 

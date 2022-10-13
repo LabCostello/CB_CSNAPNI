@@ -23,7 +23,7 @@ for(n in 1:length(import_yrs)){
   cornareanoetoh[,n] = drop(cropareacty[,1,n])
   cropareacty[,1,n] = cornareanoetoh[,n]*(1-(cornuse[5,n]+cornuse[6,n])) #proportion of corn not allocated to fuel ethanol production
   #solve NaN issue
-  for(m in 1:16){
+  for(m in 1:(n_crops-3)){
    ind=which(is.na(cropareacty[,m,n]) %in% 1)
    if(length(ind)>0){
      for(i in 1:length(ind)){
