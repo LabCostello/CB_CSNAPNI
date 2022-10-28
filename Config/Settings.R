@@ -45,3 +45,9 @@ ws = c(22,25) ##Missippi River and Atchafalaya Watersheds
 # Filtering region
 filter_region = 1
 print(paste("Chesapeake Bay Filter (0=no, 1=yes): ", filter_region),quote=FALSE)
+
+# Grass scenario
+# Conditions for this scenario 
+grass_scenario <-  0 # (Y = 1, N = 0)
+grass_fert_scenario <- 0 # (Y = 1, N = 0)
+

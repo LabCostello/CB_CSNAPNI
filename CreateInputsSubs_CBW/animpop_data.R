@@ -10,7 +10,7 @@ if(print_tags == 1){
 
 # Specify number and names of crop categories
 n_animtyp = 19 #number of crops to import
-animtyp=array("",c(n_crops))
+animtyp=array("",c(n_animtyp))
 animtyp[1] = 'fattened cattle'
 animtyp[2] = 'milk cows'
 animtyp[3] = 'hogs for breeding'

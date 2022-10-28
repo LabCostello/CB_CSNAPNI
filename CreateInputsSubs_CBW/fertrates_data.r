@@ -13,13 +13,25 @@ read_sheet2 = 'Pfert'
 data1 = as.matrix(read_excel(read_file, sheet = read_sheet1)) #nfert
 data2 = as.matrix(read_excel(read_file, sheet = read_sheet2)) #pfert
 
-data_range1 = data1[2:17,2:(length(import_yrs6)+1)] #exclude some cells
-data_range2 = data2[2:17,2:(length(import_yrs6)+1)] #exclude some cells
+data_range1 = data1[2:17,4:8] #exclude some cells
+data_range2 = data2[2:17,4:8] #exclude some cells
 
 Nfert_lbsperacre=data_range1[1:length(data_range1[,1]),]
 Nfert=as.numeric(Nfert_lbsperacre) / array(lbsperkg,c(16,length(import_yrs6))) / array(km2peracre,c(16,length(import_yrs6))) #kg/km2
 Pfert_lbsperacre=data_range2[1:length(data_range2[,1]),]
 Pfert=as.numeric(Pfert_lbsperacre)/array(lbsperkg,c(16,length(import_yrs6)))/array(km2peracre,c(16,length(import_yrs6))) #kg/km2
+
+# Grass scenario
+Nfert_lbsperacre <- rbind(Nfert_lbsperacre, c(0,0,0,0,0))
+Nfert <- rbind(Nfert, c(0,0,0,0,0))
+Pfert_lbsperacre <- rbind(Pfert_lbsperacre, c(0,0,0,0,0))
+Pfert <- rbind(Pfert,  c(0,0,0,0,0))
+if(grass_fert_scenario==1){
+  Nfert_lbsperacre[17] <- rbind(Nfert_lbsperacre, c(0,0,0,0,0))
+  Nfert <- rbind(Nfert, c(11200,11200,11200,11200,11200))
+  Pfert_lbsperacre[17] <- rbind(Pfert_lbsperacre, c(0,0,0,0,0))
+  Pfert <- rbind(Pfert, c(5860,5860,5860,5860,5860))
+}
 
 #write files
 write_name1 = paste('InputFiles_CBW/Nfert.txt')

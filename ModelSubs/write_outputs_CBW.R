@@ -74,7 +74,7 @@ commoddisag_key = array(" ", c(1+n_crops+1,1+nyrs))
 commoddisag_key[1,] = c(" ", run_yrs) #column headings
 commoddisag_key[,1]=c("10^9 kg N or P","corn (etoh use removed)","corn silage","wheat","oats",
                       "barley","sorghum grain","sorghum silage","rice","rye","soybeans","potatoes",
-                      "alfalfa hay","other hay","cropland pasture","noncropland pasture","peanuts",
+                      "alfalfa hay","other hay","cropland pasture","noncropland pasture","peanuts","grass",
                       "CGF","CGM","DGS","etoh") #row headings
 write.table(commoddisag_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 

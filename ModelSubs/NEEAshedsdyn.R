@@ -24,7 +24,7 @@ kgmanureNrecws = array(0,c(n_ws_NEEA,n_anims,nyrs)) #***no 2007 data for this ye
 kgmanurePrecws = array(0,c(n_ws_NEEA,n_anims,nyrs)) #***no 2007 data for this yet****  
   
 for(i in 1:nyrs){
-  CkgwE[,,i] = array(area,c(n_ws_tbx,19))*cropprod[,,i] # calculates kg of crop in each watershed
+  CkgwE[,,i] = array(area,c(n_ws_tbx,n_crops))*cropprod[,,i] # calculates kg of crop in each watershed
   etohL[,i] = array(area,c(n_ws_tbx))*etohproddensws[,i] # calculates effective L of ethanol in each watershed
   for(w in 1:n_ws_tbx){
     n=wsNum[w,1]

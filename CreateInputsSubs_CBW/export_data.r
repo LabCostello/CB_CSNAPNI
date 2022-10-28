@@ -15,7 +15,7 @@ n_sheets = 18
 range=array("",c(n_sheets,1))
 yearindex=array(0,c(n_sheets,1))
 exportindex=array(0,c(n_sheets,1))
-n_export_crops=19
+n_export_crops=20
   
 #define sheet names
 read_sheet=array("",c(n_sheets,1))
@@ -211,10 +211,9 @@ cropname[13] = 'cropland pasture'
 cropname[14] = 'noncropland pasture'
 cropname[15] = 'rice'
 cropname[16] = 'peanuts'
-cropname[17] = 'grass'
-cropname[18] = 'CGF'
-cropname[19] = 'CGM'
-cropname[20] = 'DGS'
+cropname[17] = 'CGF'
+cropname[18] = 'CGM'
+cropname[19] = 'DGS'
 
 
 exports=array(0,c(n_export_crops,length(import_yrs1)))

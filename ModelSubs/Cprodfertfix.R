@@ -16,7 +16,7 @@ for(n in 1:nyrs){ #(NANIdata columns 5, 6, 7, 8, 9, 10, 11)
   #     unitfixNC(11,n] = 0.003375667 # non-alfalfa hay
   #     unitfixNC(12,n] = 0.065701746 # soy
   unitfixNC[13,n] = sum(totNANIws[,9,n]) / sum(CkgwswE_orig[,13,n]) #cropland pasture
-  unitfixNC[16,n] = sum(totNANIws[,11,n]) / sum(CkgwswE_orig[,16,n]) #peanuts
+  unitfixNC[(n_crops-4),n] = sum(totNANIws[,11,n]) / sum(CkgwswE_orig[,(n_crops-4),n]) #peanuts
 }
 
 #allocate space to matrices
@@ -63,17 +63,17 @@ grainPperPinput = array(0,c(n_crops,nyrs))
 
 #fertilizer per crop
 for(n in 1:nyrs){
-  CfertNtot[1:16,n] = Nfert[,n] * croparea[1:16,n] # total fertilizer applied per crop based on an average fert app rate
+  CfertNtot[1:(n_crops-3),n] = Nfert[,n] * croparea[1:(n_crops-3),n] # total fertilizer applied per crop based on an average fert app rate
   # Food in NANI
   # model_CURRENT.xlsx
   # harvested or planted acreage based on setting, this value is for NANI crops only
-  CfertPtot[1:16,n] = Pfert[,n] * croparea[1:16,n] # total fertilizer applied per crop based on an average fert app rate
+  CfertPtot[1:(n_crops-3),n] = Pfert[,n] * croparea[1:(n_crops-3),n] # total fertilizer applied per crop based on an average fert app rate
   # Food in NAPI
   # harvested or planted acreage based on setting, this value is for NAPI crops only
   #for etoh coproducts, use corn fert
   #the areas for these are the proportion of corn production area for
   #corn etoh
-  for(i in 17:19){
+  for(i in (n_crops-2):n_crops){
     CfertNtot[i,n]=Nfert[1,n] * croparea[i,n]
     CfertPtot[i,n]=Pfert[1,n] * croparea[i,n]
   }

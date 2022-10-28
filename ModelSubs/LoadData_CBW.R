@@ -131,7 +131,7 @@ etoh_landuse = t(array(scan("InputFiles_CBW/etoh_landuse_harvestedarea.txt")))
 #CROP DATA
 #citations in cropdata_master.xlsx
 #key in cropdata_key.txt
-cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,19)))
+cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,20)))
 
 #ANIMAL DATA
 # key is in animdatadyn_master.txt (in RawData)

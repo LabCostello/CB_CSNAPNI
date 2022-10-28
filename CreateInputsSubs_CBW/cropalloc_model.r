@@ -19,7 +19,7 @@ cropusedom = cropprodtotal-exports
 #crop forage/grain classifications ([10] grain?)
 #citations in cropdata_master.xlsx
 #key in cropdata_key.txt
-cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,19)))
+cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,20)))
 
 #Load anim data (calculated for silage as grain) for
 #animal forage/grain ratios ([3] prop N from grain,	[4] prop N from forage,	[5] prop P from grain,	[6] prop P from forage)
@@ -67,7 +67,7 @@ for(n in 1:data_yrs){
   totalforageP[n]=0
   #calculate total N and P in grains and forages
   for(i in 1:n_crops){
-    if(crop_type[i]==1 && i<17){  #if it's a grain and not an etoh coproduct
+    if(crop_type[i]==1 && i<(n_crops-2)){  #if it's a grain and not an etoh coproduct
       totalgrainN[n]=totalgrainN[n]+totalNincrop[i,n]
       totalgrainP[n]=totalgrainP[n]+totalPincrop[i,n]
     }
@@ -77,7 +77,7 @@ for(n in 1:data_yrs){
     }
   }
   for(i in 1:n_crops){
-    if(crop_type[i]==1 && i<17){  #if it's a grain and not an etoh coproduct
+    if(crop_type[i]==1 && i<(n_crops-2)){  #if it's a grain and not an etoh coproduct
       cropgrainNprop[i,n] = totalNincrop[i,n]/totalgrainN[n]
       cropforageNprop[i,n] = 0
       cropgrainPprop[i,n] = totalPincrop[i,n]/totalgrainP[n]
@@ -98,6 +98,8 @@ for(n in 1:data_yrs){
   }
 }
 
+cropsforfeed[17,] <- c(0,0,0,0,0) # That informs that grass won't be used for feed
+
 #ANIMALS
 #get livestock N and P requirements and diet propgrain and propforage
 animNreq = animdatadyn[,8]
@@ -107,6 +109,10 @@ propNfromforage = animdata_alloc[,4] #proportion of each animal's required N tha
 propPfromgrain = animdata_alloc[,5] #same for P
 propPfromforage = animdata_alloc[,6] #same for P
 coprod_prop = DGSalloc/100
+
+#updating Proportion of Nfromgrain to better represent the region (based on Thoma)
+#propNfromgrain[1] <- 0.47
+#propNfromforage[2] <- 0.53
 
 #ALLOCATION
 #allocate space to arrays
@@ -124,7 +130,7 @@ cropkgtoanim = array(0, c(n_anims,n_crops,data_yrs)) #modeled allocation of each
 
 for(n in 1:data_yrs){
   #allocate DGS and other etoh coproducts first
-  for(c in 17:19){
+  for(c in (n_crops-2):n_crops){
     cropNtoanimtotal[,c,n]=coprod_prop[,n]*totalNincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%, based on total animal N requirements and total N in grains produced)
     cropPtoanimtotal[,c,n]=coprod_prop[,n]*totalPincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%)
     cropNtoanim[,c,n]=cropNtoanimtotal[,c,n]/animpoptotal[,n]
@@ -140,8 +146,8 @@ for(n in 1:data_yrs){
   }
   #subtract N and P in allocated coproducts from the total grain N
   #and P requirements for each livestock category
-  animgrainN[,n]=animNreq*animpoptotal[,n]*propNfromgrain-rowSums(cropNtoanimtotal[,17:19,n])
-  animgrainP[,n]=animPreq*animpoptotal[,n]*propPfromgrain-rowSums(cropPtoanimtotal[,17:19,n])
+  animgrainN[,n]=animNreq*animpoptotal[,n]*propNfromgrain-rowSums(cropNtoanimtotal[,(n_crops-2):n_crops,n])
+  animgrainP[,n]=animPreq*animpoptotal[,n]*propPfromgrain-rowSums(cropPtoanimtotal[,(n_crops-2):n_crops,n])
   negativesN = which(animgrainN[,n]<0)
   negativesP = which(animgrainP[,n]<0)
   for(i in negativesN){
@@ -152,7 +158,7 @@ for(n in 1:data_yrs){
   }
   animforageN[,n]=animNreq*animpoptotal[,n]*propNfromforage
   animforageP[,n]=animPreq*animpoptotal[,n]*propPfromforage
-  for(c in 1:16){ #each crop except for etoh coproducts
+  for(c in 1:(n_crops-3)){ #each crop except for etoh coproducts
     cropNtoanimtotal[,c,n]=animgrainN[,n]*cropgrainNprop[c,n]+animforageN[,n]*cropforageNprop[c,n]
     cropPtoanimtotal[,c,n]=animgrainP[,n]*cropgrainPprop[c,n]+animforageP[,n]*cropforagePprop[c,n]
     cropNtoanim[,c,n]=cropNtoanimtotal[,c,n]/animpoptotal[,n]

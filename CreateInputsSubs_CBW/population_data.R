@@ -65,6 +65,27 @@ for(i in 1:length(import_yrs)){
   populationdensws[,i]=populationws[,i]/area
 }
 
+# PLUGGED for fast results
+
+## population_data.r
+populationws=array(1,c(n_ws_tbx,length(import_yrs)))
+population_years <- colSums(population_cnty)
+pop_coefficient <- unlist(read.csv(file = 'InputFiles_CBW/population_coefficient.csv',header = FALSE))
+
+# Putting the number of population for each column of the matrix
+for (n in 1:5){
+  populationws[,n] <- populationws[,n]* population_years[n]
+}
+
+# Multiplying by the percentage for each discharge area
+for(n in 1:5){
+  populationws[,n] <- populationws[,n]* pop_coefficient
+}
+
+for(i in 1:length(import_yrs)){
+  populationdensws[,i]=populationws[,i]/area
+}
+
 # write text files
 write_name = "InputFiles_CBW/population.txt"
 write.table(populationdensws, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)

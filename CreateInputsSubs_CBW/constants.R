@@ -30,8 +30,8 @@ data_yrs = 5 #number of years of data
 year_labels = c(1997,2002,2007,2012,2017)
 
 cnty_ws = t(array(scan('InputFiles_CBW/concordance_matrix_cbw.txt'), c(n_ws_tbx,n_cnty)))
-area = t(array(scan('InputFiles_CBW/area_cbw_delivery_factors.txt'), c(1,n_ws_tbx))) #watershed areas for the NANI Toolbox watershed set
-
+area = t(array(scan('InputFiles_CBW/area_cbw_delivery_factors.txt'), c(1,n_ws_tbx))) #It is a multiplication of the (ratio of each DA area by the total 
+                                                                                     #sum of DA area) and then multiplied by the total area of CBW
 #conversion factors
 bushelperton_corn = 39.368 #bushels / (metric)ton
 bushelperton_sorghum = 39.368 #bushels / (metric)ton
