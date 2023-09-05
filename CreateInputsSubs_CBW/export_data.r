@@ -194,26 +194,26 @@ for(y in 1:length(import_yrs1)){
   }
 }
 
-cropname=array("",c(n_crops))
-cropname[1] = 'corn for grain'
-cropname[2] = 'corn for silage'
-cropname[3] = 'wheat'
-cropname[4] = 'oats'
-cropname[5] = 'barley'
-cropname[6] = 'sorghum for grain'
-cropname[7] = 'sorghum for silage'
-cropname[8] = 'potatoes'
-cropname[9] = 'rye'
-cropname[10] = 'alfalfa hay'
-cropname[11] = 'other hay'
-cropname[12] = 'soybeans'
-cropname[13] = 'cropland pasture'
-cropname[14] = 'noncropland pasture'
-cropname[15] = 'rice'
-cropname[16] = 'peanuts'
-cropname[17] = 'CGF'
-cropname[18] = 'CGM'
-cropname[19] = 'DGS'
+# cropname=array("",c(n_crops))
+# cropname[1] = 'corn for grain'
+# cropname[2] = 'corn for silage'
+# cropname[3] = 'wheat'
+# cropname[4] = 'oats'
+# cropname[5] = 'barley'
+# cropname[6] = 'sorghum for grain'
+# cropname[7] = 'sorghum for silage'
+# cropname[8] = 'potatoes'
+# cropname[9] = 'rye'
+# cropname[10] = 'alfalfa hay'
+# cropname[11] = 'other hay'
+# cropname[12] = 'soybeans'
+# cropname[13] = 'cropland pasture'
+# cropname[14] = 'noncropland pasture'
+# cropname[15] = 'rice'
+# cropname[16] = 'peanuts'
+# cropname[17] = 'CGF'
+# cropname[18] = 'CGM'
+# cropname[19] = 'DGS'
 
 
 exports=array(0,c(n_export_crops,length(import_yrs1)))

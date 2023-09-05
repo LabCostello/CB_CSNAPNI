@@ -56,3 +56,4 @@ for(n in 1:nyrs){
   newNAPIws[,,n] = NEEAws_NAPI[,,n]/array(areaws,c(length(areaws),length(NEEAws_NAPI[1,,n]))) 
   totNAPIws[,,n] = newNAPIws[,,n]*array(areaws,c(length(areaws),length(NEEAws_NAPI[1,,n]))) #total kg P values for NANI values
 }
+

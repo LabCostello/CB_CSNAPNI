@@ -27,7 +27,7 @@ for(i in 1:nyrs){
   }
   sumCkgwE[,i] = colSums(CkgwswE[,,i]) #total crop production with exports
   sumcornprodnoetoh = colSums(cornprodnoetoh) #corn production totals without the removal of corn for etoh and coproducts
-  cornexp[i] = sumcornprodnoetoh[i] * cornuse[10,i] #calculate "better" estimate of corn exports
+  if (filter_region == 0){cornexp[i] = sumcornprodnoetoh[i] * cornuse[10,i]} #calculate "better" estimate of corn exports
   exports[1,i] = cornexp[i]  #updates the corn export values with "better" data
   for(n in 1:n_crops){
       sumCkgwsnoE[n,i] = sumCkgwE[n,i] - exports[n,i] #kg crop minus exported quantities

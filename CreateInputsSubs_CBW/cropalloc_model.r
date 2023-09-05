@@ -26,7 +26,8 @@ cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,20)))
 #animal diet N and P requirements ([1] N requirement (kg/year/animal),	[2] P requirement (kg/year/animal))
 #citations in animdata_master.xlsx
 #key in animdata_alloc_key.txt (Report_correction: No such file exists) refers to animfeedallocdata_key.txt
-animdata_alloc = t(array(scan("InputFiles_CBW/animfeedallocdataSG.txt"), c(6,19)))
+#animdata_alloc = t(array(scan("InputFiles_CBW/animfeedallocdataSG.txt"), c(6,19)))
+animdata_alloc = t(array(scan("InputFiles_CBW/animfeedallocdataSF_CBW.txt"), c(6,19)))
 
 #Read DGS consumption estimations
 #data comes from RFA sources (cited in DGSalloc_master.xlsx)
@@ -39,6 +40,8 @@ Nperdm=cropdata[,2]
 Pperdm=cropdata[,3]
 prop_to_humans=cropdata[,4]
 crop_type=cropdata[,10] #0=forage, 1=grain, 2=other
+
+crop_type[2] = 0
 
 Nincrop=dmprop*Nperdm #N/mass crop
 Pincrop=dmprop*Pperdm #P/mass crop
@@ -172,6 +175,12 @@ for(n in 1:data_yrs){
     cropkgtoanimtotal_N[,c,n]=cropNtoanimtotal[,c,n]/Nincrop[c] #kg crop/animal type/year
     cropkgtoanimtotal_P[,c,n]=cropPtoanimtotal[,c,n]/Pincrop[c] #kg crop/animal type/year
   }
+  
+  # Plugged
+  cropNtoanim[2,,n] <- c(21.82,14.82,0,0,0,0,0,0,0,69.81,59.2,30.76,0,0,0,0,0,1.87,1.04,16.23)
+  cropNtoanimtotal[2,,n] <- cropNtoanim[2,,n]*animpoptotal[2,n]
+  for (i in 1:19){cropNtoanim[i,20,n] <- animNreq[i] - sum(cropNtoanim[i,1:19,n])}
+  cropkgtoanimtotal_N[2,,n] <- c(21.82,14.82,0,0,0,0,0,0,0,69.81,59.2,30.76,0,0,0,0,0,1.87,1.04,16.23)*animpoptotal[2,n]/Nincrop
   
   #since the N-based allocation model is to be used, need to use cropkgtoanimtotal_N to re-calculate cropPtoanimtotal
   #crop P to anim = total kg of crop allocated * P content of the crop

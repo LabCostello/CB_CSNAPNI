@@ -222,28 +222,28 @@ grass_areas <- array(0,c(length(NASS_County[,1]),5))
 
 # Constants
 land_use_grass <- 0.10 # Reference: Zhou et al.(2014)
-grass_yield_no_fert <- 14.7 # Reference: Kering et al.(2012) 
-grass_yield_fert <- 19.7 # Reference: Kering et al.(2012)
+grass_yield_no_fert <- 14.7 # Reference: Kering et al.(2012) Unit: Mg/ha
+grass_yield_fert <- 19.7 # Reference: Kering et al.(2012) Unit: Mg/ha
 
 # Assumptions
 # Reduction of 10% of area harvested of corn implies on a reduction of 10% of corn production
 
-# Reduction in the corn area and production (grain & silage)
-if(grass_scenario == 1){
-  # Build an if depending if it is grass fertilized or not
-  grass_areas <- (corn_grain_areas+corn_silage_areas)*land_use_grass
-  if(grass_fert_scenario == 1){grass_prod <- (grass_areas*grass_yield_fert)}else{
-  grass_prod <- (grass_areas*grass_yield_no_fert)} # In the future change 
-  
-  # Reduction of 90% of area harvested for corn
-  corn_grain_areas <- corn_grain_areas*0.9
-  corn_silage_areas <- corn_silage_areas*0.9
-  
-  # Reduction of 90% of production for corn
-  corn_grain_prod <- corn_grain_prod*0.9
-  corn_silage_prod <- corn_silage_prod*0.9
-  
-}
+# # Reduction in the corn area and production (grain & silage)
+# if(grass_scenario == 1){
+#   # Build an if depending if it is grass fertilized or not
+#   grass_areas <- (corn_grain_areas+corn_silage_areas)*land_use_grass
+#   if(grass_fert_scenario == 1){grass_prod <- (grass_areas*grass_yield_fert)}else{
+#   grass_prod <- (grass_areas*grass_yield_no_fert)} # In the future change 
+#   
+#   # Reduction of 90% of area harvested for corn
+#   corn_grain_areas <- corn_grain_areas*0.9
+#   corn_silage_areas <- corn_silage_areas*0.9
+#   
+#   # Reduction of 90% of production for corn
+#   corn_grain_prod <- corn_grain_prod*0.9
+#   corn_silage_prod <- corn_silage_prod*0.9
+#   
+# }
 
 #
 

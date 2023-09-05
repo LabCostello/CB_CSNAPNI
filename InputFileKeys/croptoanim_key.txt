@@ -1,4 +1,4 @@
-  corn for grain corn for silage wheat oats barley sorghum for grain sorghum for silage potatoes rye alfalfa hay other hay soybeans cropland pasture noncropland pasture rice peanuts CGF CGM DGS 
+  corn for grain corn for silage wheat oats barley sorghum for grain sorghum for silage potatoes rye alfalfa hay other hay soybeans cropland pasture noncropland pasture rice peanuts grass CGF CGM DGS
 fattened cattle                                        
 milk cows                                        
 hogs for breeding                                        

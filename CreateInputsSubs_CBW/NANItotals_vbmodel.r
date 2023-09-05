@@ -67,16 +67,16 @@ index08=1
 for(n in 1:length(import_yrs3)){
   for(i in 1:ndepcols){
     if(as.double(import_yrs3[n])<2004){ #use the 2002 CMAQ
-      NANIdatactydens[,ndepcols,n]=data_range1[2:204,index02]
+      NANIdatactydens[,ndepcols,n]=data_range1[2:203,index02]
     }
     if(as.double(import_yrs3[n])>2004 && as.double(import_yrs3[n])<2007){ #use the 2006 CMAQ
-      NANIdatactydens[,ndepcols,n]=data_range1[2:204,index06]
+      NANIdatactydens[,ndepcols,n]=data_range1[2:203,index06]
     }
     if(as.double(import_yrs3[n])==2007){ #use the 2007 CMAQ
-      NANIdatactydens[,ndepcols,n]=data_range1[2:204,index07]
+      NANIdatactydens[,ndepcols,n]=data_range1[2:203,index07]
     }
     if(as.double(import_yrs3[n])>2007){ #use the 2008 CMAQ
-      NANIdatactydens[,ndepcols,n]=data_range1[2:204,index08]
+      NANIdatactydens[,ndepcols,n]=data_range1[2:203,index08]
     }
     NANIdatacty[,ndepcols,n]=as.numeric(NANIdatactydens[,ndepcols,n])*areakm2_cnty
   }

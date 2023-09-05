@@ -171,8 +171,37 @@ for(n in 1:nyrs){
       kgmanurePrec[i,,n] = (noanimdyncty[i,,n] * t(animdatadyn[,11])) * manurefactor[50,]
     }
   }
-  for(i in 1:n_anims){
-    kgmanureNrec450[,i,n] = t(cnty_ws) %*% kgmanureNrec[,i,n] # kg manure N rec for 1902 DA
-    kgmanurePrec450[,i,n] = t(cnty_ws) %*% kgmanurePrec[,i,n] # kg manure P rec for 1902 DA
+#  for(i in 1:n_anims){
+#    kgmanureNrec450[,i,n] = t(cnty_ws) %*% kgmanureNrec[,i,n] # kg manure N rec for 1902 DA
+#    kgmanurePrec450[,i,n] = t(cnty_ws) %*% kgmanurePrec[,i,n] # kg manure P rec for 1902 DA
+#  }
+}
+# Calculating recoverable N&P in manure per land river segment
+for(n in 1:nyrs){
+  for(i in 1:n_ws_tbx){
+    if(as.numeric(substr(as.character(da_cdl[i,2]), 1, 2)) == 10){ # Delaware
+      kgmanureNrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,10])*manurefactor[8,] # kg manure N rec for 1902 DA
+      kgmanurePrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,11])*manurefactor[8,] # kg manure P rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(da_cdl[i,2]), 1, 2)) == 24){ # Maryland
+      kgmanureNrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,10])*manurefactor[20,] # kg manure N rec for 1902 DA
+      kgmanurePrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,11])*manurefactor[20,] # kg manure P rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(da_cdl[i,2]), 1, 2)) == 36){ # New York
+      kgmanureNrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,10])*manurefactor[32,] # kg manure N rec for 1902 DA
+      kgmanurePrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,11])*manurefactor[32,] # kg manure P rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(da_cdl[i,2]), 1, 2)) == 42){ # Pennsylvania
+      kgmanureNrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,10])*manurefactor[38,] # kg manure N rec for 1902 DA
+      kgmanurePrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,11])*manurefactor[38,] # kg manure P rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(da_cdl[i,2]), 1, 2)) == 51){ # Virginia
+      kgmanureNrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,10])*manurefactor[46,] # kg manure N rec for 1902 DA
+      kgmanurePrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,11])*manurefactor[46,] # kg manure P rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(da_cdl[i,2]), 1, 2)) == 54){ # West Virginia
+      kgmanureNrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,10])*manurefactor[48,] # kg manure N rec for 1902 DA
+      kgmanurePrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,11])*manurefactor[48,] # kg manure P rec for 1902 DA
+    }
   }
 }

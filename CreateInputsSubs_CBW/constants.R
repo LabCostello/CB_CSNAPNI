@@ -4,13 +4,14 @@ if(print_tags == 1){
 }
 
 library(readxl)
-
+library(tidyverse)
 
 countydatalevel <- read_xlsx("InputFiles_CBW/CommonDataLabels.xlsx") # This file contains county FIPS, and all CSNAPNI OUTPUT keys 
-CB_counties <- read_xlsx("InputFiles_CBW/CB_Counties.xlsx") # this file contains CB data such as FIPS and atmospheric deposition data for all counties 
+CB_counties <- read_xlsx("InputFiles_CBW/cnty_da_cdl.xlsx", sheet = "CB_Counties") # this file contains CB data such as FIPS and atmospheric deposition data for all counties 
+da_cdl <- as.matrix(read_excel("InputFiles_CBW/cnty_da_cdl.xlsx", sheet = "da_cdl"))
 
 #converting the FIPS column to vector as a requirement for filtering from dataframe
-CB_counties_FIPS <- as.vector(unlist(CB_counties[,1])) # Before it was 203 but included Fairfax city, Richmond
+FIPS <- as.vector(unlist(CB_counties[,1]))
 # #Adding the FIPS as the first col of each NAPI component
 # n_ws_tbx_cbw <- cbind(countydatalevel[,1],cnty_ws[,1:450])
 # 
@@ -21,7 +22,7 @@ CB_counties_FIPS <- as.vector(unlist(CB_counties[,1])) # Before it was 203 but i
 # n_ws_tbx_cbw <- n_ws_tbx_cbw_fips[-c(1)]
 # write.table(n_ws_tbx_cbw, 'InputFiles/cnty_ws_cbw.txt', append = FALSE, sep = " ", dec = ".", row.names = FALSE, col.names = FALSE)
 
-n_cnty = 203 #number of counties (in CBW)
+n_cnty = 202 #number of counties (in CBW)
 n_ws_tbx = 1902 #number of Discharge Areas of CBW
 n_crops = 20 #number of crops tracked (includes etoh coproducts)
 n_anims = 19 #number of animal types tracked
@@ -30,8 +31,11 @@ data_yrs = 5 #number of years of data
 year_labels = c(1997,2002,2007,2012,2017)
 
 cnty_ws = t(array(scan('InputFiles_CBW/concordance_matrix_cbw.txt'), c(n_ws_tbx,n_cnty)))
-area = t(array(scan('InputFiles_CBW/area_cbw_delivery_factors.txt'), c(1,n_ws_tbx))) #It is a multiplication of the (ratio of each DA area by the total 
+#area = t(array(scan('InputFiles_CBW/area_cbw_delivery_factors.txt'), c(1,n_ws_tbx))) #It is a multiplication of the (ratio of each DA area by the total 
                                                                                      #sum of DA area) and then multiplied by the total area of CBW
+CBW_da_shp <- read_xlsx("InputFiles_CBW/cnty_da_cdl.xlsx", sheet = "area")
+area <- as.matrix(unlist(CBW_da_shp[,38],use.names = FALSE)) # Used area from the shapefile of the landriver segments from CB program
+
 #conversion factors
 bushelperton_corn = 39.368 #bushels / (metric)ton
 bushelperton_sorghum = 39.368 #bushels / (metric)ton

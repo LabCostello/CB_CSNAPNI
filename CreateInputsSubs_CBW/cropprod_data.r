@@ -54,6 +54,7 @@ for(n in 1:(length(import_yrs))){
     #pastures: "take half, leave half"
     cropprodcnty[j,13:14,n] = cropprodcnty[j,13:14,n]/2
   }
+
   # watershed crop production
   cropprodws[,,n] = t(cnty_ws)%*%cropprodcnty[,,n]
   etohprodws[,n] = t(cnty_ws)%*%etohprodcnty[,n]

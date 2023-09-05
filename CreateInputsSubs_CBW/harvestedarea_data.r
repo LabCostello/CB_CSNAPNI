@@ -10,7 +10,7 @@ if(print_tags == 1){
 }
 
 cropareacty = array(0,c(n_cnty,n_crops,length(import_yrs)))
-cropareacty[,1:(n_crops-3),] = areas_array
+cropareacty[,1:(n_crops-3),] = areas_array #crop harvested areas, in km2
 cropareaws=array(0,c(n_ws_tbx,n_crops,length(import_yrs)))
 cornareanoetoh=array(0,c(n_cnty,length(import_yrs)))
 yr_col=array(0,c(length(import_yrs),1))
@@ -31,10 +31,11 @@ for(n in 1:length(import_yrs)){
      }
     }
   }
-cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
 
-write_name = paste("InputFiles_CBW/cropareaharvestedcnty",run_yrs[n],".txt",sep = "")
-write.table(cropareacty[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
+  cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
+  
+  write_name = paste("InputFiles_CBW/cropareaharvestedcnty",run_yrs[n],".txt",sep = "")
+  write.table(cropareacty[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 
 }
 croparea=colSums(cropareaws)

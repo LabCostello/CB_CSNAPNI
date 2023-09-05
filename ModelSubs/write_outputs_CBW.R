@@ -23,31 +23,31 @@ kganimNintakecnty = array(0,c(n_cnty,n_anims,nyrs)) #animal N intake by county
 kganimPintakecnty = array(0,c(n_cnty,n_anims,nyrs)) #animal P intake by county
 
 for(n in 1:nyrs){
-  NANIBtot_US[,n] = colSums(NANIBtot[,,n])/(10^9)
-  NANIorigtot_US[,n] = colSums(NANIorigtot[,,n])/(10^9)
-  NAPIBtot_US[,n] = colSums(NAPIBtot[,,n])/(10^9)
-  NAPIorigtot_US[,n] = colSums(NAPIorigtot[,,n])/(10^9)
+  NANIBtot_US[,n] = colSums(NANIBtot[,,n])/(10^6)
+  NANIorigtot_US[,n] = colSums(NANIorigtot[,,n])/(10^6)
+  NAPIBtot_US[,n] = colSums(NAPIBtot[,,n])/(10^6)
+  NAPIorigtot_US[,n] = colSums(NAPIorigtot[,,n])/(10^6)
   if (length(ws)>1){
-    NANI_wsspec[,n] = colSums(NANIBtot[ws,,n])/(10^9)
-    NAPI_wsspec[,n] = colSums(NAPIBtot[ws,,n])/(10^9)
+    NANI_wsspec[,n] = colSums(NANIBtot[ws,,n])/(10^6)
+    NAPI_wsspec[,n] = colSums(NAPIBtot[ws,,n])/(10^6)
   } else {
-    NANI_wsspec[,n] = NANIBtot[ws,,n]/(10^9)
-    NAPI_wsspec[,n] = NAPIBtot[ws,,n]/(10^9)
+    NANI_wsspec[,n] = NANIBtot[ws,,n]/(10^6)
+    NAPI_wsspec[,n] = NAPIBtot[ws,,n]/(10^6)
   }
 }
 
-total_commoddisag_fertN = array(c(t(colSums(CfertNwswE)), t(colSums(etohfertNws))),c(nyrs,(n_crops+1)))/(10^9) #total disaggregated fert N inputs (10^9 kg N)
-total_commoddisag_fertP = array(c(t(colSums(CfertPwswE)), t(colSums(etohfertPws))),c(nyrs,20))/(10^9) #total disaggregated fert P inputs (10^9 kg P)
-total_commoddisag_fixN = colSums(CfixNwswE[ws,,])/10^9 #total commodity disaggregated fixation N inputs in billion kg N
+total_commoddisag_fertN = array(c(t(colSums(CfertNwswE)), t(colSums(etohfertNws))),c(nyrs,(n_crops+1)))/(10^6) #total disaggregated fert N inputs (10^6 kg N)
+total_commoddisag_fertP = array(c(t(colSums(CfertPwswE)), t(colSums(etohfertPws))),c(nyrs,20))/(10^3) #total disaggregated fert P inputs (10^3 kg P)
+total_commoddisag_fixN = colSums(CfixNwswE[,,])/10^6 #total commodity disaggregated fixation N inputs in millions kg N (10^6 kg N)
 
 if (length(ws)>1){
-  total_commoddisag_fertN_ws = array(c(t(colSums(CfertNwswE[ws,,])), t(colSums(etohfertNws[ws,]))),c(nyrs,(n_crops+1)))/(10^9) #total disaggregated fert N inputs (10^9 kg N)
-  total_commoddisag_fertP_ws = array(c(t(colSums(CfertPwswE[ws,,])), t(colSums(etohfertPws[ws,]))),c(nyrs,(n_crops+1)))/(10^9) #total disaggregated fert P inputs (10^9 kg P)
-  total_commoddisag_fixN_ws = colSums(CfixNwswE[ws,,])/10^9 #total commodity disaggregated fixation N inputs in billion kg N
+  total_commoddisag_fertN_ws = array(c(t(colSums(CfertNwswE[ws,,])), t(colSums(etohfertNws[ws,]))),c(nyrs,(n_crops+1)))/(10^3) #total disaggregated fert N inputs (10^3 kg N)
+  total_commoddisag_fertP_ws = array(c(t(colSums(CfertPwswE[ws,,])), t(colSums(etohfertPws[ws,]))),c(nyrs,(n_crops+1)))/(10^3) #total disaggregated fert P inputs (10^3 kg P)
+  total_commoddisag_fixN_ws = colSums(CfixNwswE[ws,,])/10^3 #total commodity disaggregated fixation N inputs in thousand kg N
 } else {
-  total_commoddisag_fertN_ws = array(c(t(CfertNwswE[ws,,]), t(etohfertNws[ws,])),c(nyrs,(n_crops+1)))/(10^9) #total disaggregated fert N inputs (10^9 kg N)
-  total_commoddisag_fertP_ws = array(c(t(CfertPwswE[ws,,]), t(etohfertPws[ws,])),c(nyrs,(n_crops+1)))/(10^9) #total disaggregated fert P inputs (10^9 kg P)
-  total_commoddisag_fixN_ws = CfixNwswE[ws,,]/10^9 #total commodity disaggregated fixation N inputs in billion kg N
+  total_commoddisag_fertN_ws = array(c(t(CfertNwswE[ws,,]), t(etohfertNws[ws,])),c(nyrs,(n_crops+1)))/(10^6) #total disaggregated fert N inputs (10^3 kg N)
+  total_commoddisag_fertP_ws = array(c(t(CfertPwswE[ws,,]), t(etohfertPws[ws,])),c(nyrs,(n_crops+1)))/(10^6) #total disaggregated fert P inputs (10^3 kg P)
+  total_commoddisag_fixN_ws = CfixNwswE[ws,,]/10^3 #total commodity disaggregated fixation N inputs in thousand kg N
 }
 
 write_name = paste("OutputFiles_CBW/total_commoddisag_fertN.txt",sep = "")
@@ -72,7 +72,7 @@ write.table(t(total_commoddisag_fixN_ws), file = write_name, sep = " ", row.name
 write_name = paste("OutputFileKeys/commoddisag_key.txt")
 commoddisag_key = array(" ", c(1+n_crops+1,1+nyrs))
 commoddisag_key[1,] = c(" ", run_yrs) #column headings
-commoddisag_key[,1]=c("10^9 kg N or P","corn (etoh use removed)","corn silage","wheat","oats",
+commoddisag_key[,1]=c("10^3 kg N or P","corn (etoh use removed)","corn silage","wheat","oats",
                       "barley","sorghum grain","sorghum silage","rice","rye","soybeans","potatoes",
                       "alfalfa hay","other hay","cropland pasture","noncropland pasture","peanuts","grass",
                       "CGF","CGM","DGS","etoh") #row headings
@@ -86,13 +86,13 @@ total_meat_manureN = array(0,c(n_meats,nyrs))
 total_meat_manureP = array(0,c(n_meats,nyrs))
 
 for(n in 1:nyrs){
-  total_meat_fertN[,n] = rowSums(fertNmeattot[,,n])/(10^9) #fertilizer inputs to meat products in each year
-  total_meat_fertP[,n] = rowSums(fertPmeattot[,,n])/(10^9) #fertilizer inputs to meat products in each year
-  total_meat_fixN[,n] = rowSums(fixNmeattot[,,n])/(10^9) #fertilizer inputs to meat products in each year
+  total_meat_fertN[,n] = rowSums(fertNmeattot[,,n])/(10^3) #fertilizer inputs to meat products in each year
+  total_meat_fertP[,n] = rowSums(fertPmeattot[,,n])/(10^3) #fertilizer inputs to meat products in each year
+  total_meat_fixN[,n] = rowSums(fixNmeattot[,,n])/(10^3) #fertilizer inputs to meat products in each year
 }
-total_meat_suppP = Psupp4meat/10^9 #billion kg P
-total_meat_manureN = colSums(manureNmeat)/(10^9) #billion kg N
-total_meat_manureP = colSums(manurePmeat)/(10^9) #billion kg P
+total_meat_suppP = Psupp4meat/10^3 #ton P
+total_meat_manureN = colSums(manureNmeat)/(10^3) #thousand kg N
+total_meat_manureP = colSums(manurePmeat)/(10^3) #thousand kg P
 
 ## Field loss proportions
 Nincrop=cropdata[,1]*cropdata[,2]

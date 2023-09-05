@@ -27,8 +27,9 @@ if(protassump==1){
 
 #animal P intake
 #animdatadyn = t(array(scan("InputFiles/animdatadyn_min.txt"), c(23,19))) #minimum P intakes
-animdatadyn = t(array(scan("InputFiles/animdatadyn_max.txt"), c(23,19))) #maximum P intakes
+#animdatadyn = t(array(scan("InputFiles/animdatadyn_max.txt"), c(23,19))) #maximum P intakes (Used in the past)
 #animdatadyn = t(array(scan("InputFiles/animdatadyn_Pdigest.txt"), c(23,19))) #digestibility-reduced P intakes and P excreted for swine and poultry
+animdatadyn = t(array(scan("InputFiles_CBW/animdatadyn_max_updated.txt"), c(23,19))) #maximum P intakes (new version updated)
 
 #data years to load
 run_yrs = c("97","02","07","12","17") #last two digits of data years to import
@@ -48,6 +49,5 @@ print(paste("Chesapeake Bay Filter (0=no, 1=yes): ", filter_region),quote=FALSE)
 
 # Grass scenario
 # Conditions for this scenario 
-grass_scenario <-  0 # (Y = 1, N = 0)
+grass_scenario <-  1 # (Y = 1, N = 0)
 grass_fert_scenario <- 0 # (Y = 1, N = 0)
-

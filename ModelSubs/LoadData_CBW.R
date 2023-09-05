@@ -5,8 +5,8 @@
 if(print_tags == 1){
   print("ModelSubs/LoadData_CBW.R")
 }
-
-n_cnty = 203 #number of counties (in continental US)
+library(readxl)
+n_cnty = 202 #number of counties (in continental US)
 n_ws_NEEA = 1902 #number of NEEA watersheds
 n_ws_tbx = 1902 #number of watersheds in NANI Toolbox watershed set
 n_crops = 20 #number of crops tracked (includes etoh coproducts)
@@ -14,8 +14,12 @@ n_anims = 19 #number of animal types tracked
 n_meats = 9 #number of meat products tracked
 
 #COUNTY-WATERSHED INTERSECTION
-cnty_ws = t(array(scan('InputFiles_CBW/concordance_matrix_cbw.txt'), c(n_ws_tbx,n_cnty)))
-area = t(array(scan('InputFiles_CBW/area_cbw_delivery_factors.txt'), c(1,n_ws_tbx))) #watershed areas for the NANI Toolbox watershed set
+#cnty_ws = t(array(scan('InputFiles_CBW/concordance_matrix_cbw.txt'), c(n_ws_tbx,n_cnty)))
+#area = t(array(scan('InputFiles_CBW/area_cbw_delivery_factors.txt'), c(1,n_ws_tbx))) #watershed areas for the NANI Toolbox watershed set
+#area = t(cnty_ws)%*%as.matrix(CB_counties[,9])
+CBW_da_shp <- read_xlsx("InputFiles_CBW/cnty_da_cdl.xlsx", sheet = "area")
+area <- as.matrix(unlist(CBW_da_shp[,38],use.names = FALSE))
+
 #wsNum = t(array(scan('InputFiles_CBW/wsNum.txt'), c(2,n_ws_tbx))) #key for 450 watersheds-->NEEA watersheds, region codes also included
 wsNum = t(array(1:1902, c(1,n_ws_tbx)))
 
@@ -117,7 +121,7 @@ for(n in 1:nyrs){
 }
 
 #HARVESTED AREA
-#crop-specific harvested area data from the US agricultural census
+#crop-specific harvested area data from the US agricultural census in km2
 #key is in cropareaharvested_key.txt
 croparea = t(array(scan("InputFiles_CBW/cropareaharvested.txt"), c(nyrs,n_crops)))
 cropareacnty=array(0,c(n_cnty,n_crops,nyrs))
@@ -194,6 +198,4 @@ foodwaste[,4:5]=foodwaste[,1:2]
 foodwaste[,1:3]=0
 foodwaste[,6:9]=0
 foodwaste[,12]=0
-
-
 

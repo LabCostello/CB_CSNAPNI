@@ -409,7 +409,7 @@ for(j in 1:n_years){
 
 #Filtering Counties to consider only CB
 NASS_County2 <- cbind(countydatalevel[,1],NASS_County)
-NASS_County_cbw <- NASS_County2[NASS_County2[,1]%in%CB_counties_FIPS,]
+NASS_County_cbw <- NASS_County2[NASS_County2[,1]%in%CB_counties_FIPS,] 
 NASS_County <- NASS_County_cbw[,2:256]
 
 list_fips_cbw <- cbind(1:nrow(countydatalevel),countydatalevel)
@@ -429,3 +429,4 @@ write.table(NASS_County, file_name, append = FALSE, quote = TRUE, sep = " ",
         eol = "\r", na = "0", dec = ".", row.names = FALSE,
         col.names = TRUE, qmethod = c("escape", "double"),
         fileEncoding = "")
+

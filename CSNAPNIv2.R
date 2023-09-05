@@ -1,4 +1,4 @@
-#CSNAPNIv1.R
+#CSNAPNIv2.R
 
 #specify the working directory as the location of this file
 
@@ -68,4 +68,3 @@ if(filter_region == 1){
   source("ModelSubs/write_outputs_CBW.R")
   }else if(filter_region == 0){
   source("ModelSubs/write_outputs.R")}
-
