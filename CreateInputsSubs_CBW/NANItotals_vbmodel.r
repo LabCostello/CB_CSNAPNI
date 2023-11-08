@@ -50,7 +50,14 @@ data_range2 = rbind(data_range2[3,],data_range2_) #updated considering only cbw 
 data_range3 = rbind(data_range3[3,],data_range3_) #updated considering only cbw counties
 data_range4 = rbind(data_range4[3,],data_range4_) #updated considering only cbw counties
 data_range5 = rbind(data_range5[3,],data_range5_) #updated considering only cbw counties
+# Preparing dataframe to convert county data to ws data
 
+dummy1 <- data.frame(FIPS=CBW_lrs_shp$FIPS, Area = area)
+dummy2 <- aggregate(dummy1$Area, by=list(dummy1$FIPS),FUN = sum)
+colnames(dummy2) <- c("FIPS","Areacty")
+
+dummy <- merge(dummy1,dummy2,by="FIPS")
+dummy <- data.frame("FIPS" = dummy$FIPS, "Area_ratio" = dummy$Area/dummy$Areacty)
 
 ncolumns=15
 NANIdatactydens=array(0,c(n_cnty,ncolumns,length(import_yrs3)))
@@ -67,16 +74,16 @@ index08=1
 for(n in 1:length(import_yrs3)){
   for(i in 1:ndepcols){
     if(as.double(import_yrs3[n])<2004){ #use the 2002 CMAQ
-      NANIdatactydens[,ndepcols,n]=data_range1[2:203,index02]
+      NANIdatactydens[,ndepcols,n]=data_range1[2:198,index02]
     }
     if(as.double(import_yrs3[n])>2004 && as.double(import_yrs3[n])<2007){ #use the 2006 CMAQ
-      NANIdatactydens[,ndepcols,n]=data_range1[2:203,index06]
+      NANIdatactydens[,ndepcols,n]=data_range1[2:198,index06]
     }
     if(as.double(import_yrs3[n])==2007){ #use the 2007 CMAQ
-      NANIdatactydens[,ndepcols,n]=data_range1[2:203,index07]
+      NANIdatactydens[,ndepcols,n]=data_range1[2:198,index07]
     }
     if(as.double(import_yrs3[n])>2007){ #use the 2008 CMAQ
-      NANIdatactydens[,ndepcols,n]=data_range1[2:203,index08]
+      NANIdatactydens[,ndepcols,n]=data_range1[2:198,index08]
     }
     NANIdatacty[,ndepcols,n]=as.numeric(NANIdatactydens[,ndepcols,n])*areakm2_cnty
   }
@@ -141,7 +148,28 @@ for(n in 1:length(import_yrs3)){
     NANIdatacty[,ndepcols+nfertcols+nfixcols+nffcols+i,n]=as.numeric(NANIdatactydens[,ndepcols+nfertcols+nfixcols+nffcols+i,n])*areakm2_cnty
   }
   #watershed crop production
-  NANIdataws[,,n] = t(cnty_ws)%*%NANIdatacty[,,n]
+  dummy_lrs <- 0
+  dummy_cty <- cbind("FIPS"=FIPS, NANIdatacty[,,n])
+  dummy_lrs <- merge(dummy,dummy_cty,by="FIPS")
+  
+  dataws <-data.frame("Atm_N_Dep"=dummy_lrs$Area_ratio*dummy_lrs$V2,
+                      "Fert1"=dummy_lrs$Area_ratio*dummy_lrs$V3,
+                      "Fert2"=dummy_lrs$Area_ratio*dummy_lrs$V4,
+                      "Fert3"=dummy_lrs$Area_ratio*dummy_lrs$V5,
+                      "Agfix1"=dummy_lrs$Area_ratio*dummy_lrs$V6,
+                      "Agfix2"=dummy_lrs$Area_ratio*dummy_lrs$V7,
+                      "Agfix3"=dummy_lrs$Area_ratio*dummy_lrs$V8,
+                      "Agfix4"=dummy_lrs$Area_ratio*dummy_lrs$V9,
+                      "Agfix5"=dummy_lrs$Area_ratio*dummy_lrs$V10,
+                      "Agfix6"=dummy_lrs$Area_ratio*dummy_lrs$V11,
+                      "Agfix7"=dummy_lrs$Area_ratio*dummy_lrs$V12,
+                      "FF1"=dummy_lrs$Area_ratio*dummy_lrs$V13,
+                      "NFC1"=dummy_lrs$Area_ratio*dummy_lrs$V14,
+                      "NFC2"=dummy_lrs$Area_ratio*dummy_lrs$V15,
+                      "NFC3"=dummy_lrs$Area_ratio*dummy_lrs$V16)
+    
+  NANIdataws[,,n] <- as.matrix(dataws)
+  #NANIdataws[,,n] = t(cnty_ws)%*%NANIdatacty[,,n]
   for(c in 1:length(NANIdataws[1,,n])){ #for each column, divide by watershed area to get density
     NANIdatadensws[,c,n] = NANIdataws[,c,n]/area
   }

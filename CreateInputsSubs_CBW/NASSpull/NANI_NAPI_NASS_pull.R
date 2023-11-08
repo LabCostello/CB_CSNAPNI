@@ -40,8 +40,6 @@ source("CreateInputsSubs_CBW/NASSpull/NASS_national.R") #pulls the national leve
 source("CreateInputsSubs_CBW/NASSpull/NASS_states.R") #pulls the state level data and uses national level data and state ag land areas to fill anonymity gaps
 source("CreateInputsSubs_CBW/NASSpull/NASS_counties.R") #pulls the county level data and uses state level data and county ag land areas to fill anonymity gaps
 
-#change NASS data to be representative only to counties inside Chesapeake Bay Watershed
-source('CreateInputsSubs_CBW/area_cropping_nass_cdl.R')
 
 #use NASS data to calculate NANI/NAPI commodity categories
 source('CreateInputsSubs_CBW/NASSpull/crop_calcs.r')

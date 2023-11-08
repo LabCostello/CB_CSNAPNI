@@ -3,7 +3,7 @@ land_use_grass <- 0.10 # Reference: Zhou et al.(2014)
 grass_yield_no_fert <- 9.9 # Reference: Woodbury et al.(2018) Unit: M*100**g/ha (DM)
 # grass_yield_fert <- 19.7 # Reference: Kering et al.(2012) Unit: Mg/ha
 
-grass_dry_matter <- (1-0.0816)
+grass_dry_matter <- (1-0.0816) # Not in use, because the yield provided above is in dry matter already
 biogascnty <- array(0,c(n_cnty,length(import_yrs))) 
 biogasws <- array(0,c(n_ws_NEEA,length(import_yrs))) 
 
@@ -18,10 +18,9 @@ for(n in 1:length(import_yrs)){
   # calc amounts of etoh coproducts
   cropareacty[,(n_crops-2),n]=cornuse[5,n]*cropareacty[,1,n]*to_FC_wetmill[alloc_method]*wetmill_CGF
   cropareacty[,(n_crops-1),n]=cornuse[5,n]*cropareacty[,1,n]*to_FC_wetmill[alloc_method]*wetmill_CGM
-  cropareacty[,(n_crops),n]=cornuse[6,n]*cropareacty[,1,n]*to_FC_drymill[alloc_method]
   # calc new corn area
   cornareanoetoh[,n] = drop(cropareacty[,1,n])
-  cropareacty[,1,n] = cornareanoetoh[,n]*(1-(cornuse[5,n]+cornuse[6,n])) #proportion of corn not allocated to fuel ethanol production
+  cropareacty[,1,n] = cornareanoetoh[,n]*(1-(cornuse[5,n])) #proportion of corn not allocated to fuel ethanol production
   #solve NaN issue
   for(m in 1:(n_crops-3)){
     ind=which(is.na(cropareacty[,m,n]) %in% 1)
@@ -34,13 +33,14 @@ for(n in 1:length(import_yrs)){
   # Reduction in the corn area and production (grain & silage)
   if(grass_scenario == 1){
     # Build an if depending if it is grass fertilized or not
-    cropareacty[,17,n] <- (cropareacty[,1,n]+cropareacty[,2,n])*land_use_grass
+    cropareacty[,17,n] <- (cropareacty[,1,n]+cropareacty[,2,n]+cropareacty[,12,n])*land_use_grass
     if(grass_fert_scenario == 1){grass_prod <- (cropareacty[,17,n]*grass_yield_fert)}else{
       grass_prod <- (cropareacty[,17,n]*grass_yield_no_fert)} # In the future change 
     
     # Reduction of 90% of area harvested for corn
-    cropareacty[,1,n] <- cropareacty[,1,n]*0.9
-    cropareacty[,2,n] <- cropareacty[,2,n]*0.9
+    cropareacty[,1,n] <- cropareacty[,1,n]*(1-land_use_grass) # Corn Grain
+    cropareacty[,2,n] <- cropareacty[,2,n]*(1-land_use_grass) # Corn Silage
+    cropareacty[,12,n] <- cropareacty[,12,n]*(1-land_use_grass) # Soybeans
     
   }
   cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
@@ -85,11 +85,9 @@ for(n in 1:(length(import_yrs))){
     # calc amounts of etoh coproducts
     cropprodcnty[j,(n_crops-2),n] = cornuse[5,n]*cropprodcnty[j,1,n]*CGF_from_corn #CGF (the CGF produced by corn reported by the USDA in "alcohol for fuel" that is not DDGS)
     cropprodcnty[j,(n_crops-1),n] = cornuse[5,n]*cropprodcnty[j,1,n]*CGM_from_corn #CGM (the CGM produced by corn reported by the USDA in "alcohol for fuel" that is not DDGS)
-    cropprodcnty[j,n_crops,n] = cornuse[6,n]*cropprodcnty[j,1,n]*DGS_from_corn #DGS (the DDGS produced by corn from ethanol plants, as reported by the USDA)
-    etohprodcnty[j,n] = (cornuse[5,n]+cornuse[6,n])*cropprodcnty[j,1,n]*etoh_from_corn[n] #liters of etoh from corn for etoh, assumption that everry county contributes equally to corn for ethanol
     # calc new corn total
     cornprodnoetoh[j,n] = drop(cropprodcnty[j,1,n])
-    cropprodcnty[j,1,n] = cornprodnoetoh[j,n]*(1-(cornuse[5,n]+cornuse[6,n])) #proportion of corn not allocated to fuel ethanol production
+    cropprodcnty[j,1,n] = cornprodnoetoh[j,n]*(1-(cornuse[5,n])) #proportion of corn not allocated to fuel ethanol production
     #pastures: "take half, leave half"
     cropprodcnty[j,13:14,n] = cropprodcnty[j,13:14,n]/2
   }

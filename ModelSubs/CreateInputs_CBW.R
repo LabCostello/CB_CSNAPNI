@@ -7,11 +7,16 @@ if(print_tags == 1){
 }
 
 # Start the clock!
-ptm <- proc.time()
+ptm2 <- proc.time()
 
 # * = still needs to be updated for 2017
 
-source("CreateInputsSubs_CBW/constants.r") # Add new counties (>203), add cropscape weighted variables
+source("CreateInputsSubs_CBW/constants.r") # Add new counties (206), add cropscape weighted variables
+
+#####################################################################################
+#change NASS data to be representative only to counties inside Chesapeake Bay Watershed
+#source('CreateInputsSubs_CBW/area_cropping_nass_cdl.R')
+source('CreateInputsSubs_CBW/cropscape_cty_lrs.R')
 
 #####################################################################################
 ##County area data (from NANI Accounting Tool V3.1.0)
@@ -29,11 +34,11 @@ source("CreateInputsSubs_CBW/population_data.r") # *using 2012 for 2017 currentl
 ##Census of agriculture data (crop harvested areas and production, animal average populations) 
 #(from NASS QuickStats database, original source: USDA Ag Census)
 source("CreateInputsSubs_CBW/NASSpull/NANI_NAPI_NASS_pull.r")
-source("CreateInputsSubs_CBW/cropprod_data.r") #Check adding clipped area considering ratios for counties in CBW (done)
-source("CreateInputsSubs_CBW/animpop_data.r") #Check adding clipped area considering ratios for counties in CBW (done)
-source("CreateInputsSubs_CBW/harvestedarea_data.r") #Check adding clipped area considering ratios for counties in CBW (done)
+source("CreateInputsSubs_CBW/cropprod_data.r") 
+source("CreateInputsSubs_CBW/animpop_data.r") 
+source("CreateInputsSubs_CBW/harvestedarea_data.r")
 if (grass_scenario ==1){source("CreateInputsSubs_CBW/grass_scenario.r")}
-source("CreateInputsSubs_CBW/cropscape_cnty_da.r") # Check why there is a tiny difference between cropareacty[,17,5] and cropareaws[,17,5]
+#source("CreateInputsSubs_CBW/cropscape_cnty_da.r") # Check why there is a tiny difference between cropareacty[,17,5] and cropareaws[,17,5]
 
 #####################################################################################
 ##Crop export data (from USDA NASS and GATS databases)
@@ -75,6 +80,6 @@ source("CreateInputsSubs_CBW/fertrates_data.r") #Check adding clipped area consi
 #still needs to be scripted for years other than 02 and 07
 
 # Stop the clock
-runtime = proc.time() - ptm
+runtime = proc.time() - ptm2
 runtime_msg = paste("input files created in", runtime, "seconds", sep = " ")
 print(runtime_msg[3])

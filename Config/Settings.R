@@ -41,6 +41,7 @@ ws_name = "Miss_Atch"
 ws = c(22,25) ##Missippi River and Atchafalaya Watersheds
 #ws = c(52:60) ##Chesapeake Bay Watersheds (Patuxent,Potomac,Rappahannock,
 #York,James,Chester,Choptank,Tangier/Pokomoke,Chesapeake Bay Mainstream)
+ws <- 919:933 ## Lancaster LRS
 
                       
 # Filtering region
@@ -49,5 +50,5 @@ print(paste("Chesapeake Bay Filter (0=no, 1=yes): ", filter_region),quote=FALSE)
 
 # Grass scenario
 # Conditions for this scenario 
-grass_scenario <-  1 # (Y = 1, N = 0)
+grass_scenario <-  0 # (Y = 1, N = 0)
 grass_fert_scenario <- 0 # (Y = 1, N = 0)

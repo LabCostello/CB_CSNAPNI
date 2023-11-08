@@ -54,7 +54,7 @@ P4humanppWW = array(0,c(nyrs,1))
 NEEA = 144
 
 if(filter_region==1){
-  NEEA = 1902
+  NEEA = n_ws_tbx
 }
 
 for(n in 1:nyrs){

@@ -3,8 +3,8 @@ if(print_tags == 1){
   print("CreateInputsSubs_CBW/cntyarea_data.R")
 }
 
-read_file = "InputFiles_CBW/cnty_da_cdl.xlsx"
-read_sheet = "CB_Counties"  #several sheets contain the area (km2) data, so I just picked one
-data = as.matrix(read_excel(read_file, sheet = read_sheet))
+data <- data.frame(FIPS=CBW_lrs_shp$FIPS, Area = area)
+data <- aggregate(data$Area, by=list(data$FIPS),FUN = sum)
+
 #Get count
-areakm2_cnty = as.numeric(data[1:n_cnty,9]) #clipped area 202 counties for CBW
+areakm2_cnty = as.numeric(data[1:n_cnty,2]) # 197 counties within CBW

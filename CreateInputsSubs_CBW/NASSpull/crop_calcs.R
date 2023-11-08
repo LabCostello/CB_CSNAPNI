@@ -162,6 +162,9 @@ for(i in 1:length(hay_prod_list)){
   other_hay_prod[,i] = (as.numeric(NASS_County[, hay_prod_list[i]])-as.numeric(NASS_County[, alfalfa_hay_prod_list[i]]))*1000
 }
 
+other_hay_areas[other_hay_areas<0] <- 0
+other_hay_prod[other_hay_prod<0] <- 0
+
 # (12) soybeans, ('SOYBEANS - ACRES HARVESTED', 'SOYBEANS - PRODUCTION, MEASURED IN BU')
 soybeans_area_list = grep("SOYBEANS_ACRES", county_commodities_list, value = TRUE)
 soybeans_areas = array(0,c(length(NASS_County[,1]),length(soybeans_area_list)))
@@ -220,10 +223,6 @@ for(i in 1:length(peanuts_prod_list)){
 grass_prod <- array(0,c(length(NASS_County[,1]),5))
 grass_areas <- array(0,c(length(NASS_County[,1]),5))
 
-# Constants
-land_use_grass <- 0.10 # Reference: Zhou et al.(2014)
-grass_yield_no_fert <- 14.7 # Reference: Kering et al.(2012) Unit: Mg/ha
-grass_yield_fert <- 19.7 # Reference: Kering et al.(2012) Unit: Mg/ha
 
 # Assumptions
 # Reduction of 10% of area harvested of corn implies on a reduction of 10% of corn production
@@ -245,7 +244,6 @@ grass_yield_fert <- 19.7 # Reference: Kering et al.(2012) Unit: Mg/ha
 #   
 # }
 
-#
 
 area_sums=c(colSums(corn_grain_areas),colSums(corn_silage_areas),colSums(wheat_areas),colSums(oats_areas),colSums(barley_areas),
             colSums(sorghum_grain_areas),colSums(sorghum_silage_areas),colSums(potatoes_areas),colSums(rye_areas),

@@ -164,6 +164,9 @@ for(i in 1:dim[1]){
   }
 }
 
+beef_stockers_avg[beef_stockers_avg<0] <- 0
+dairy_stockers_avg[dairy_stockers_avg<0] <- 0
+
 #pigs
 #(3) hogs for breeding, (4) hogs for slaughter
 hogs_and_pigs_list = grep("HOGS_INV", county_commodities_list, value = TRUE)

@@ -408,18 +408,15 @@ for(j in 1:n_years){
 #print("Type 'View(NASS_County)' to see compiled query data joined to the NANI_NAPI counties.")
 
 #Filtering Counties to consider only CB
-NASS_County2 <- cbind(countydatalevel[,1],NASS_County)
-NASS_County_cbw <- NASS_County2[NASS_County2[,1]%in%CB_counties_FIPS,] 
+NASS_County2 <- cbind(countydatalevel[,1],NASS_County) # Column Binding FIPS to NASS_County to filter in the next line
+NASS_County_cbw <- NASS_County2[NASS_County2[,1]%in%FIPS,] 
 NASS_County <- NASS_County_cbw[,2:256]
 
 list_fips_cbw <- cbind(1:nrow(countydatalevel),countydatalevel)
-list_fips_cbw <- list_fips_cbw[list_fips_cbw[,2]%in%CB_counties_FIPS,]
+list_fips_cbw <- list_fips_cbw[list_fips_cbw[,2]%in%FIPS,]
 list_row_cbw <- list_fips_cbw[,1]
 list_fips_cbw <- list_fips_cbw[,2]
 NASS_County_withheld <- NASS_County_withheld[list_row_cbw,,]
-
-# Multiplying by area ratio, to consider only clipped counties
-#NASS_County <- NASS_County*array(CB_counties[,7])
 
 #Considering only 
 

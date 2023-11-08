@@ -12,7 +12,7 @@ if(print_tags == 1){
 
 #meat production
 import_yrs = c("97","02","07","12","17")  #last two digits of data years to import, only needed for length in this file
-meatprod_old=t(array(scan("RawData/meatprod_old.txt"), c(10,n_meats)))
+meatprod_old=t(array(scan("RawData/meatprod_old.txt"), c(10,n_meats))) # OLD AND NOT REPRESENT THE REALITY FOR CBW, BUT FOR THE COUNTRY (DON'T USE THIS VALUE)
 old = 2 #two columns to use from the old file
 meatprodnew = array(0,c(n_meats,length(import_yrs)))
 kgmeatperanim = array(0,c(n_meats,old))
@@ -38,11 +38,15 @@ for(a in 1:9){
 
 #PLUGGED
 #kgmeatperanim_avg = matrix(data=c(animdatadyn[1,14],animdatadyn[2,14],animdatadyn[4,14],animdatadyn[17,14],animdatadyn[18,14],animdatadyn[5,14],animdatadyn[8,14],animdatadyn[9,14],animdatadyn[19,14]), ncol = 1) # The meatprod_old is old txt file with numbers that are too big for the size of the region, and unbalancing the model
-kgmeatperanim_avg = matrix(data=c(144.2,10068.67,124.55,15.6,0,12.9,10.2,21.1,23.9),ncol = 1) # Temporary - copied from the CSNAPNI
+#kgmeatperanim_avg = matrix(data=c(144.2,10068.67,124.55,15.6,0,12.9,10.2,21.1,23.9),ncol = 1) # Temporary - copied from the CSNAPNI
 
 for(n in 1:length(import_yrs)){
   meatprodnew[,n] = animpoptotal_sort[,n]*kgmeatperanim_avg
 }
+
+#### PLUGGED #####
+meatprodnew[2,] <- 10068.67*animpoptotal[2,]
+##################
 
 #meat emissions
 meatemissions = meatprod_old[,3:length(meatprod_old[1,])]

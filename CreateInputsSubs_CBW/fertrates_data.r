@@ -16,9 +16,107 @@ data2 = as.matrix(read_excel(read_file, sheet = read_sheet2)) #pfert
 data_range1 = data1[2:17,4:8] #exclude some cells
 data_range2 = data2[2:17,4:8] #exclude some cells
 
+#Plugged - Calculating yield
+# for (i in seq(205,226,2)) {
+#   a <- NASS_County[,i+1]/NASS_County[,i]
+#   print(colnames(NASS_County)[i])
+#   a[is.nan(a)] <- 0
+#   a[is.infinite(a)] <- 0
+#   a[is.na(a)] <- 0
+#   b <- a[a>0]
+#   print(mean(b))
+# }
+# Yield for the following crops: corn grain, silage, wheat, oats, barley, sorghum grain and silage, rye, alfalfa, other hay
+corng_y <- c(mean(NASS_County[,2]/NASS_County[,1],na.rm=TRUE),
+             mean(NASS_County[,53]/NASS_County[,52],na.rm=TRUE),
+             mean(((NASS_County[,104]/NASS_County[,103])[!is.infinite(NASS_County[,104]/NASS_County[,103])]),na.rm=TRUE),
+             mean(NASS_County[,155]/NASS_County[,154],na.rm=TRUE),
+             mean(NASS_County[,206]/NASS_County[,205],na.rm=TRUE))
+
+corns_y <- c(mean(NASS_County[,4]/NASS_County[,3],na.rm=TRUE),
+             mean(NASS_County[,55]/NASS_County[,54],na.rm=TRUE),
+             mean(((NASS_County[,106]/NASS_County[,105])[!is.infinite(NASS_County[,106]/NASS_County[,105])]),na.rm=TRUE),
+             mean(NASS_County[,157]/NASS_County[,156],na.rm=TRUE),
+             mean((NASS_County[,208]/NASS_County[,207])[!is.infinite(NASS_County[,208]/NASS_County[,207])],na.rm=TRUE))
+
+wheat_y <- c(mean(NASS_County[,6]/NASS_County[,5],na.rm=TRUE),
+             mean(((NASS_County[,57]/NASS_County[,56])[!is.infinite(NASS_County[,57]/NASS_County[,56])]),na.rm=TRUE),
+             mean(((NASS_County[,108]/NASS_County[,107])[!is.infinite(NASS_County[,108]/NASS_County[,107])]),na.rm=TRUE),
+             mean(NASS_County[,159]/NASS_County[,158],na.rm=TRUE),
+             mean(((NASS_County[,210]/NASS_County[,209])[!is.infinite(NASS_County[,210]/NASS_County[,209])]),na.rm=TRUE))
+
+oats_y <- c(mean(NASS_County[,8]/NASS_County[,7],na.rm=TRUE),
+             mean(((NASS_County[,59]/NASS_County[,58])[!is.infinite(NASS_County[,59]/NASS_County[,58])]),na.rm=TRUE),
+             mean(((NASS_County[,110]/NASS_County[,109])[!is.infinite(NASS_County[,110]/NASS_County[,109])]),na.rm=TRUE),
+             mean(((NASS_County[,161]/NASS_County[,160])[!is.infinite(NASS_County[,161]/NASS_County[,160])]),na.rm=TRUE),
+             mean(((NASS_County[,212]/NASS_County[,211])[!is.infinite(NASS_County[,212]/NASS_County[,211])]),na.rm=TRUE))
+
+barley_y <- c(mean(NASS_County[,10]/NASS_County[,9],na.rm=TRUE),
+              mean(((NASS_County[,61]/NASS_County[,60])[!is.infinite(NASS_County[,61]/NASS_County[,60])]),na.rm=TRUE),
+              mean(((NASS_County[,112]/NASS_County[,111])[!is.infinite(NASS_County[,112]/NASS_County[,111])]),na.rm=TRUE),
+              mean(((NASS_County[,163]/NASS_County[,162])[!is.infinite(NASS_County[,163]/NASS_County[,162])]),na.rm=TRUE),
+              mean(((NASS_County[,214]/NASS_County[,213])[!is.infinite(NASS_County[,214]/NASS_County[,213])]),na.rm=TRUE))
+
+sorghumg_y <- c(mean(NASS_County[,12]/NASS_County[,11],na.rm=TRUE),
+                mean(((NASS_County[,63]/NASS_County[,62])[!is.infinite(NASS_County[,63]/NASS_County[,62])]),na.rm=TRUE),
+                mean(((NASS_County[,114]/NASS_County[,113])[!is.infinite(NASS_County[,114]/NASS_County[,113])]),na.rm=TRUE),
+                mean(((NASS_County[,165]/NASS_County[,164])[!is.infinite(NASS_County[,165]/NASS_County[,164])]),na.rm=TRUE),
+                mean(((NASS_County[,216]/NASS_County[,215])[!is.infinite(NASS_County[,216]/NASS_County[,215])]),na.rm=TRUE))
+
+sorghums_y <- c(mean(NASS_County[,14]/NASS_County[,13],na.rm=TRUE),
+                mean(((NASS_County[,65]/NASS_County[,64])[!is.infinite(NASS_County[,65]/NASS_County[,64])]),na.rm=TRUE),
+                mean(((NASS_County[,116]/NASS_County[,115])[!is.infinite(NASS_County[,116]/NASS_County[,115])]),na.rm=TRUE),
+                mean(((NASS_County[,167]/NASS_County[,166])[!is.infinite(NASS_County[,167]/NASS_County[,166])]),na.rm=TRUE),
+                mean(((NASS_County[,218]/NASS_County[,217])[!is.infinite(NASS_County[,218]/NASS_County[,217])]),na.rm=TRUE))
+
+rye_y <- c(mean(((NASS_County[,18]/NASS_County[,17])[!is.infinite(NASS_County[,18]/NASS_County[,17])]),na.rm=TRUE),
+           mean(((NASS_County[,69]/NASS_County[,68])[!is.infinite(NASS_County[,69]/NASS_County[,68])]),na.rm=TRUE),
+           mean(((NASS_County[,120]/NASS_County[,119])[!is.infinite(NASS_County[,120]/NASS_County[,119])]),na.rm=TRUE),
+           mean(((NASS_County[,171]/NASS_County[,170])[!is.infinite(NASS_County[,171]/NASS_County[,170])]),na.rm=TRUE),
+           mean(((NASS_County[,222]/NASS_County[,221])[!is.infinite(NASS_County[,222]/NASS_County[,221])]),na.rm=TRUE))
+
+
+
+
+# List of Pound of Nitrogen/Phosphorus recommended per crop (PSU Ag. Guide) - corn grain, silage, wheat, oats, barley, sorghum grain and silage, rye
+psu_ag_guide_pN <- c(1, 7, 1, 0.8, 0.8, 0.75, 7, 1)
+
+psu_ag_guide_pP <- c(1, 7, 1, 0.8, 0.8, 0.75, 7, 1)
+
+N_recommendation_PSU <- data.frame(Corng = corng_y*psu_ag_guide_pN[1],
+                                   Corns = corns_y*psu_ag_guide_pN[2],
+                                   Wheat = wheat_y*psu_ag_guide_pN[3],
+                                   Oats = oats_y*psu_ag_guide_pN[4],
+                                   Barley = barley_y*psu_ag_guide_pN[5],
+                                   Sorghumg = sorghumg_y*psu_ag_guide_pN[6],
+                                   Sorghums = sorghums_y*psu_ag_guide_pN[7],
+                                   Rye = rye_y*psu_ag_guide_pN[8],
+                                   row.names = c(1997,2002,2007,2012,2017))
+
+N_recommendation_PSU <- as.matrix(t(N_recommendation_PSU))
+
+P_recommendation_PSU <- data.frame(Corng = corng_y*psu_ag_guide_pP[1],
+                                   Corns = corns_y*psu_ag_guide_pP[2],
+                                   Wheat = wheat_y*psu_ag_guide_pP[3],
+                                   Oats = oats_y*psu_ag_guide_pP[4],
+                                   Barley = barley_y*psu_ag_guide_pP[5],
+                                   Sorghumg = sorghumg_y*psu_ag_guide_pP[6],
+                                   Sorghums = sorghums_y*psu_ag_guide_pP[7],
+                                   Rye = rye_y*psu_ag_guide_pP[8],
+                                   row.names = c(1997,2002,2007,2012,2017))
+
+P_recommendation_PSU <- as.matrix(t(P_recommendation_PSU))
+
+# It was changed the amount of fertilizer per crop for some of the crops
 Nfert_lbsperacre=data_range1[1:length(data_range1[,1]),]
+Nfert_lbsperacre[c(1:7,9),] <- N_recommendation_PSU[1:8,]
+
 Nfert=as.numeric(Nfert_lbsperacre) / array(lbsperkg,c(16,length(import_yrs6))) / array(km2peracre,c(16,length(import_yrs6))) #kg/km2
+
+
 Pfert_lbsperacre=data_range2[1:length(data_range2[,1]),]
+Pfert_lbsperacre[c(1:7,9),] <- P_recommendation_PSU[1:8,]
+
 Pfert=as.numeric(Pfert_lbsperacre)/array(lbsperkg,c(16,length(import_yrs6)))/array(km2peracre,c(16,length(import_yrs6))) #kg/km2
 
 # Grass scenario

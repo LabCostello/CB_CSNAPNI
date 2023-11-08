@@ -37,7 +37,12 @@ data_range1 = rbind(data_range1[1,],data_range1_) #updated considering only cbw 
 data_range2 = rbind(data_range2[1,],data_range2_) #updated considering only cbw counties
 data_range3 = rbind(data_range3[1,],data_range3_) #updated considering only cbw counties
 
+dummy1 <- data.frame(FIPS=CBW_lrs_shp$FIPS, Area = area)
+dummy2 <- aggregate(dummy1$Area, by=list(dummy1$FIPS),FUN = sum)
+colnames(dummy2) <- c("FIPS","Areacty")
 
+dummy <- merge(dummy1,dummy2,by="FIPS")
+dummy <- data.frame("FIPS" = dummy$FIPS, "Area_ratio" = dummy$Area/dummy$Areacty)
 
 ncolumns=7
 NAPIdatactydens=array(0,c(n_cnty,ncolumns,length(import_yrs3)))
@@ -89,7 +94,20 @@ for(n in 1:length(import_yrs3)){
     NAPIdatacty[,nfertcols+nffcols+i,n]=as.numeric(NAPIdatactydens[,nfertcols+nffcols+i,n])*areakm2_cnty
   }
   #watershed crop production
-  NAPIdataws[,,n] = t(cnty_ws)%*%NAPIdatacty[,,n]
+  dummy_lrs <- 0
+  dummy_cty <- cbind("FIPS"=FIPS, NAPIdatacty[,,n])
+  dummy_lrs <- merge(dummy,dummy_cty,by="FIPS")
+  
+  dataws <-data.frame("Fert1"=dummy_lrs$Area_ratio*dummy_lrs$V2,
+                      "Fert2"=dummy_lrs$Area_ratio*dummy_lrs$V3,
+                      "Fert3"=dummy_lrs$Area_ratio*dummy_lrs$V4,
+                      "FF"=dummy_lrs$Area_ratio*dummy_lrs$V5,
+                      "Nonag1"=dummy_lrs$Area_ratio*dummy_lrs$V6,
+                      "Nonag2"=dummy_lrs$Area_ratio*dummy_lrs$V7,
+                      "Nonag3"=dummy_lrs$Area_ratio*dummy_lrs$V8)
+  
+  NAPIdataws[,,n] <- as.matrix(dataws)
+  #NAPIdataws[,,n] = t(cnty_ws)%*%NAPIdatacty[,,n]
   for(c in 1:length(NAPIdataws[1,,n])){ #for each column, divide by watershed area to get density
     NAPIdatadensws[,c,n] = NAPIdataws[,c,n]/area
   }

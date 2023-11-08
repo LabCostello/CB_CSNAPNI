@@ -166,6 +166,9 @@ other_hay_prod = array(0,c(length(NASS_County[,1]),length(hay_prod_list)))
 for(i in 1:length(hay_prod_list)){
   other_hay_prod[,i] = (as.numeric(NASS_County[, hay_prod_list[i]])-as.numeric(NASS_County[, alfalfa_hay_prod_list[i]]))*1000
 }
+# Cases where other hay are negative
+other_hay_prod[other_hay_prod<0] <- 0 
+other_hay_areas[other_hay_areas<0] <- 0
 
 # (12) soybeans, ('SOYBEANS - ACRES HARVESTED', 'SOYBEANS - PRODUCTION, MEASURED IN BU')
 soybeans_area_list = grep("SOYBEANS_ACRES", county_commodities_list, value = TRUE)
@@ -244,6 +247,7 @@ for(n in 1:(length(year))){
             alfalfa_hay_areas[,n],other_hay_areas[,n],soybeans_areas[,n],cropland_pasture_areas[,n],
             noncropland_pasture_areas[,n],rice_areas[,n],peanuts_areas[,n])
   areas_array[,,n]=array(areas,c(length(NASS_County[,1]),16))
+  
   prod = c(corn_grain_prod[,n],corn_silage_prod[,n],wheat_prod[,n],oats_prod[,n],barley_prod[,n],
            sorghum_grain_prod[,n],sorghum_silage_prod[,n],potatoes_prod[,n],rye_prod[,n],
            alfalfa_hay_prod[,n],other_hay_prod[,n],soybeans_prod[,n],cropland_pasture_prod[,n],

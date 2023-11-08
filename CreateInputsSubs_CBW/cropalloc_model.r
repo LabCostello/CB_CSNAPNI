@@ -134,8 +134,8 @@ cropkgtoanim = array(0, c(n_anims,n_crops,data_yrs)) #modeled allocation of each
 for(n in 1:data_yrs){
   #allocate DGS and other etoh coproducts first
   for(c in (n_crops-2):n_crops){
-    cropNtoanimtotal[,c,n]=coprod_prop[,n]*totalNincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%, based on total animal N requirements and total N in grains produced)
-    cropPtoanimtotal[,c,n]=coprod_prop[,n]*totalPincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%)
+    cropNtoanimtotal[,c,n]=coprod_prop[,n+1]*totalNincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%, based on total animal N requirements and total N in grains produced)
+    cropPtoanimtotal[,c,n]=coprod_prop[,n+1]*totalPincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%)
     cropNtoanim[,c,n]=cropNtoanimtotal[,c,n]/animpoptotal[,n]
     cropPtoanim[,c,n]=cropPtoanimtotal[,c,n]/animpoptotal[,n]
     #fix NaN problem with animal populations of zero
@@ -177,10 +177,11 @@ for(n in 1:data_yrs){
   }
   
   # Plugged
-  cropNtoanim[2,,n] <- c(21.82,14.82,0,0,0,0,0,0,0,69.81,59.2,30.76,0,0,0,0,0,1.87,1.04,16.23)
+  #cropNtoanim[2,,n] <- c(diet[3,1],diet[3,20],0,0,0,0,0,0,0,diet[3,21],diet[3,22],(diet[3,7]+diet[3,12]+diet[3,14]),0,0,0,0,0,diet[3,24],diet[3,23],diet[3,2])
+  cropNtoanim[2,,n] <- unlist(as.matrix(diet_crops_model)[3,])
   cropNtoanimtotal[2,,n] <- cropNtoanim[2,,n]*animpoptotal[2,n]
   for (i in 1:19){cropNtoanim[i,20,n] <- animNreq[i] - sum(cropNtoanim[i,1:19,n])}
-  cropkgtoanimtotal_N[2,,n] <- c(21.82,14.82,0,0,0,0,0,0,0,69.81,59.2,30.76,0,0,0,0,0,1.87,1.04,16.23)*animpoptotal[2,n]/Nincrop
+  cropkgtoanimtotal_N[2,,n] <- unlist(as.matrix(diet_crops_model)[3,])*animpoptotal[2,n]/Nincrop
   
   #since the N-based allocation model is to be used, need to use cropkgtoanimtotal_N to re-calculate cropPtoanimtotal
   #crop P to anim = total kg of crop allocated * P content of the crop

@@ -40,24 +40,72 @@ cropproddensws = array(0,c(n_ws_tbx,length(cropname),length(import_yrs)))
 etohproddensws = array(0,c(n_ws_tbx,length(import_yrs)))
 cornprodnoetoh=array(0,c(n_cnty,length(import_yrs)))
 
+# Ethanol information 2012 (https://neo.ne.gov/programs/stats/122/2012/122_201201.htm) and 2017 (https://neo.ne.gov/programs/stats/122/2017/122_201702.htm)
+etohprodcnty[58,] <- c(0, 0, 0, 416395296.24,416395296.24) # Clearfield plant produces 110 Mgal in 2012 and 2017
+etohprodcnty[170,] <- c(0, 0, 0, 246051765.96,227124707.04)# Hopewell plant produces 65 Mgal in 2012 and 60Mgal in 2017 it is barley ethanol
+
+# DGS information for 2012 and 2017
+cropprodcnty[58,n_crops,] <- c(0, 0, 0, 258168.1*1000,258168.1*1000) # in kg (data comes from Supplementary Info Table 7 from Ruffatto et al. 2023)
+
+
 for(n in 1:(length(import_yrs))){ 
   # build a matrix of extracted data
   for(j in 1:n_cnty){ #rows (counties)
     # calc amounts of etoh coproducts
     cropprodcnty[j,(n_crops-2),n] = cornuse[5,n]*cropprodcnty[j,1,n]*CGF_from_corn #CGF (the CGF produced by corn reported by the USDA in "alcohol for fuel" that is not DDGS)
     cropprodcnty[j,(n_crops-1),n] = cornuse[5,n]*cropprodcnty[j,1,n]*CGM_from_corn #CGM (the CGM produced by corn reported by the USDA in "alcohol for fuel" that is not DDGS)
-    cropprodcnty[j,n_crops,n] = cornuse[6,n]*cropprodcnty[j,1,n]*DGS_from_corn #DGS (the DDGS produced by corn from ethanol plants, as reported by the USDA)
-    etohprodcnty[j,n] = (cornuse[5,n]+cornuse[6,n])*cropprodcnty[j,1,n]*etoh_from_corn[n] #liters of etoh from corn for etoh, assumption that everry county contributes equally to corn for ethanol
+    #cropprodcnty[j,n_crops,n] = cornuse[6,n]*cropprodcnty[j,1,n]*DGS_from_corn #DGS (the DDGS produced by corn from ethanol plants, as reported by the USDA)
+    #etohprodcnty[j,n] = (cornuse[5,n]+cornuse[6,n])*cropprodcnty[j,1,n]*etoh_from_corn[n] #liters of etoh from corn for etoh, assumption that every county contributes equally to corn for ethanol
+    
     # calc new corn total
     cornprodnoetoh[j,n] = drop(cropprodcnty[j,1,n])
-    cropprodcnty[j,1,n] = cornprodnoetoh[j,n]*(1-(cornuse[5,n]+cornuse[6,n])) #proportion of corn not allocated to fuel ethanol production
+    cropprodcnty[j,1,n] = cornprodnoetoh[j,n]*(1-(cornuse[5,n])) #proportion of corn not allocated to fuel ethanol production
     #pastures: "take half, leave half"
     cropprodcnty[j,13:14,n] = cropprodcnty[j,13:14,n]/2
   }
-
+  
   # watershed crop production
   cropprodws[,,n] = t(cnty_ws)%*%cropprodcnty[,,n]
   etohprodws[,n] = t(cnty_ws)%*%etohprodcnty[,n]
+  
+  dummy <- merge(lrs_cdl_percent,cbind(FIPS,cropprodcnty[,,n]))
+  cropws <- data.frame("FIPS"=dummy$FIPS,
+                       "LNDRVRSEG"=dummy$LNDRVRSEG,
+                       "OBJECTID"=dummy$OBJECTID,
+                       "REGION"=dummy$REGION,
+                       "Corn.grain" = dummy$Corn*dummy$V2,
+                       "Corn.silage" = dummy$Corn*dummy$V3,
+                       "Wheat" = dummy$Wheat*dummy$V4,
+                       "Oats" = dummy$Oats*dummy$V5,
+                       "Barley" = dummy$Barley*dummy$V6,
+                       "Sorghum.grain" = dummy$Sorghum*dummy$V7,
+                       "Sorghum.grain" = dummy$Sorghum*dummy$V8,
+                       "Potatoes" = dummy$Potatoes*dummy$V9,
+                       "Rye" = dummy$Rye*dummy$V10,
+                       "Alfalfa" = dummy$Alfalfa*dummy$V11,
+                       "Other Hay/Non Alfalfa" = dummy$Other.Hay.Non.Alfalfa*dummy$V12,
+                       "Soybeans" = dummy$Soybeans*dummy$V13,
+                       "Cropland pasture" = dummy$Grass.Pasture*dummy$V14,
+                       "Noncropland pasture" = dummy$Grass.Pasture*dummy$V15,
+                       "Rice" = 0,
+                       "Peanuts" = dummy$Peanuts*dummy$V17,
+                       if (grass_scenario == 1){"Grass" = dummy$Corn*0.1*dummy$V2} else {"Grass" = 0},
+                       "CGM" = dummy$Corn*dummy$V19,
+                       "CGF" = dummy$Corn*dummy$V20,
+                       "DGS" = dummy$Corn*dummy$V21)
+  cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
+  cropprodws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
+  
+  dummy <- merge(lrs_cdl_percent[,1:5],cbind(FIPS,etohprodcnty[,n]))
+  cropwse <- data.frame("FIPS"=dummy$FIPS,
+                       "LNDRVRSEG"=dummy$LNDRVRSEG,
+                       "OBJECTID"=dummy$OBJECTID,
+                       "REGION"=dummy$REGION,
+                       "Ethanol" = dummy$Corn*dummy$V2)
+  
+  cropwse <- cropwse[cropwse$REGION=="Chesapeake Bay Watershed",]
+  etohprodws[,n] <- as.matrix(subset(cropwse,select=-c(1:4)))  
+  
   for(i in 1:(length(cropname))){ #columns (crops)
     cropproddensws[,i,n] = cropprodws[,i,n]/area
   }

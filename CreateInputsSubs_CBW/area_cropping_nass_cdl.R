@@ -5,8 +5,8 @@
 # Then it is calculated a proportion, based on a division of the former by the second.
 # That proportion is multiplied by the area_harvested and production
 
-cnty_cdl <- read_excel(path = "C:/Users/lds5498/OneDrive - The Pennsylvania State University/Desktop/Code/cnty_da_cdl.xlsx", sheet = "cnty_cdl")
-cbw_cnty_cdl <- read_excel(path = "C:/Users/lds5498/OneDrive - The Pennsylvania State University/Desktop/Code/cnty_da_cdl.xlsx", sheet = "cbw_cnty_cdl")
+cnty_cdl <- read_excel(path = "RawData/cnty_da_cdl.xlsx", sheet = "cnty_cdl")
+cbw_cnty_cdl <- read_excel(path = "RawData/cnty_da_cdl.xlsx", sheet = "cbw_cnty_cdl")
 crops_cnty_cdl <- colnames(cnty_cdl)
 crops_cbw_cnty_cdl <- colnames(cbw_cnty_cdl)
 

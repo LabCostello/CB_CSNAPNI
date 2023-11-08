@@ -1,5 +1,5 @@
 #CSNAPNIv2.R
-
+ptm <- proc.time()
 #specify the working directory as the location of this file
 
 this.dir <- getwd()
@@ -64,7 +64,12 @@ source("ModelSubs/pernutrition.R")
 source("ModelSubs/NPinputs_aggregate.R")
 
 ## WRITE OUTPUT DATA TO TEXT FILES
-if(filter_region == 1){
-  source("ModelSubs/write_outputs_CBW.R")
-  }else if(filter_region == 0){
-  source("ModelSubs/write_outputs.R")}
+ if(filter_region == 1){
+   source("ModelSubs/write_outputs_CBW.R")
+   }else if(filter_region == 0){
+   source("ModelSubs/write_outputs.R")}
+
+# Stop the clock
+runtime = proc.time() - ptm
+runtime_msg = paste("input files created in", runtime, "seconds", sep = " ")
+print(runtime_msg[3])

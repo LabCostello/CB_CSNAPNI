@@ -6,22 +6,21 @@ if(print_tags == 1){
   print("ModelSubs/LoadData_CBW.R")
 }
 library(readxl)
-n_cnty = 202 #number of counties (in continental US)
-n_ws_NEEA = 1902 #number of NEEA watersheds
-n_ws_tbx = 1902 #number of watersheds in NANI Toolbox watershed set
+n_cnty = 197 #number of counties (in continental US)
+n_ws_NEEA = 1925 #number of NEEA watersheds
+n_ws_tbx = 1925 #number of watersheds in NANI Toolbox watershed set
 n_crops = 20 #number of crops tracked (includes etoh coproducts)
 n_anims = 19 #number of animal types tracked
 n_meats = 9 #number of meat products tracked
 
 #COUNTY-WATERSHED INTERSECTION
-#cnty_ws = t(array(scan('InputFiles_CBW/concordance_matrix_cbw.txt'), c(n_ws_tbx,n_cnty)))
-#area = t(array(scan('InputFiles_CBW/area_cbw_delivery_factors.txt'), c(1,n_ws_tbx))) #watershed areas for the NANI Toolbox watershed set
-#area = t(cnty_ws)%*%as.matrix(CB_counties[,9])
-CBW_da_shp <- read_xlsx("InputFiles_CBW/cnty_da_cdl.xlsx", sheet = "area")
-area <- as.matrix(unlist(CBW_da_shp[,38],use.names = FALSE))
+lrs_shp <- read_excel("RawData/table_lrs_information.xls") # This file contains info from land river segments, their FIPS, names, acreage, basins. It comes from CAST Source Data.
+CBW_lrs_shp <- lrs_shp[lrs_shp$Region=="Chesapeake Bay Watershed",] # Filtering the file to have only CBW counties
+CBW_lrs_shp <- CBW_lrs_shp[order(CBW_lrs_shp$FIPS),] # Ascending order for FIPS
+area <- as.matrix(unlist(CBW_lrs_shp$Acres*0.0040468564224, use.names = FALSE)) # Convert from acres to km2
 
 #wsNum = t(array(scan('InputFiles_CBW/wsNum.txt'), c(2,n_ws_tbx))) #key for 450 watersheds-->NEEA watersheds, region codes also included
-wsNum = t(array(1:1902, c(1,n_ws_tbx)))
+wsNum = t(array(1:n_ws_tbx, c(1,n_ws_tbx)))
 
 #CORN USE
 #percentage values for allocating corn production to various uses in load years
@@ -149,7 +148,11 @@ Pfert = t(array(scan('InputFiles_CBW/Pfert.txt'),c(nyrs,n_crops-3)))
 
 #STATE DATA
 #state FIPS code for each county in animal data
-FIPS = t(array(scan("InputFiles_CBW/FIPS_CBW.txt"),c(1,n_cnty)))
+FIPS <-  unique(CBW_lrs_shp$FIPS)
+FIPSws <- CBW_lrs_shp$FIPS
+FPs <-  array(0,c(n_cnty))
+for (i in 1:197) {FPs[i] <- (as.numeric(substr(as.character(unique(FIPS)[i]), 1, 2)))}
+
 #percent of manure from confinement and recovery by state
 manurefactor = t(array(scan("InputFiles_CBW/manurefactor.txt"),c(n_anims,50))) #data from 2002 only
 

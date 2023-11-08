@@ -96,6 +96,8 @@ for(n in 1:nyrs){
   
   unitfertNetoh[n] = etohfertNtot[n] / (sum(etohL[,n])) # kg fert / L etoh
   unitfertPetoh[n] = etohfertPtot[n] / (sum(etohL[,n])) # kg fert / L etoh
+  unitfertNetoh[1:3] <- c(0,0,0)
+  unitfertPetoh[1:3] <- c(0,0,0)
   
   # check # N in:N in crop
   # total fertilizer per crop per watershed

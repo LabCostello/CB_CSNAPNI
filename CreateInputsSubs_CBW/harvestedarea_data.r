@@ -18,25 +18,50 @@ for(n in 1:length(import_yrs)){
   # calc amounts of etoh coproducts
   cropareacty[,(n_crops-2),n]=cornuse[5,n]*cropareacty[,1,n]*to_FC_wetmill[alloc_method]*wetmill_CGF
   cropareacty[,(n_crops-1),n]=cornuse[5,n]*cropareacty[,1,n]*to_FC_wetmill[alloc_method]*wetmill_CGM
-  cropareacty[,(n_crops),n]=cornuse[6,n]*cropareacty[,1,n]*to_FC_drymill[alloc_method]
   # calc new corn area
   cornareanoetoh[,n] = drop(cropareacty[,1,n])
-  cropareacty[,1,n] = cornareanoetoh[,n]*(1-(cornuse[5,n]+cornuse[6,n])) #proportion of corn not allocated to fuel ethanol production
+  cropareacty[,1,n] = cornareanoetoh[,n]*(1-(cornuse[5,n])) #proportion of corn not allocated to fuel ethanol production
   #solve NaN issue
   for(m in 1:(n_crops-3)){
-   ind=which(is.na(cropareacty[,m,n]) %in% 1)
-   if(length(ind)>0){
-     for(i in 1:length(ind)){
-       cropareacty[ind[i],m,n]=0
-     }
+    ind=which(is.na(cropareacty[,m,n]) %in% 1)
+    if(length(ind)>0){
+      for(i in 1:length(ind)){
+        cropareacty[ind[i],m,n]=0
+      }
     }
   }
-
-  cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
+  
+  #cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
+  dummy <- merge(lrs_cdl_percent,cbind(FIPS,cropareacty[,,n]))
+  cropws <- data.frame("FIPS"=dummy$FIPS,
+                       "LNDRVRSEG"=dummy$LNDRVRSEG,
+                       "OBJECTID"=dummy$OBJECTID,
+                       "REGION"=dummy$REGION,
+                       "Corn.grain" = dummy$Corn*dummy$V2,
+                       "Corn.silage" = dummy$Corn*dummy$V3,
+                       "Wheat" = dummy$Wheat*dummy$V4,
+                       "Oats" = dummy$Oats*dummy$V5,
+                       "Barley" = dummy$Barley*dummy$V6,
+                       "Sorghum.grain" = dummy$Sorghum*dummy$V7,
+                       "Sorghum.grain" = dummy$Sorghum*dummy$V8,
+                       "Potatoes" = dummy$Potatoes*dummy$V9,
+                       "Rye" = dummy$Rye*dummy$V10,
+                       "Alfalfa" = dummy$Alfalfa*dummy$V11,
+                       "Other Hay/Non Alfalfa" = dummy$Other.Hay.Non.Alfalfa*dummy$V12,
+                       "Soybeans" = dummy$Soybeans*dummy$V13,
+                       "Cropland pasture" = dummy$Grass.Pasture*dummy$V14,
+                       "Noncropland pasture" = dummy$Grass.Pasture*dummy$V15,
+                       "Rice" = 0,
+                       "Peanuts" = dummy$Peanuts*dummy$V17,
+                       if (grass_scenario == 1){"Grass" = dummy$Corn*0.1*dummy$V2} else {"Grass" = 0},
+                       "CGM" = dummy$Corn*dummy$V19,
+                       "CGF" = dummy$Corn*dummy$V20,
+                       "DGS" = dummy$Corn*dummy$V21)
+  cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
+  cropareaws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
   
   write_name = paste("InputFiles_CBW/cropareaharvestedcnty",run_yrs[n],".txt",sep = "")
   write.table(cropareacty[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
-
 }
 croparea=colSums(cropareaws)
 cornareanoetohsum=colSums(cornareanoetoh)

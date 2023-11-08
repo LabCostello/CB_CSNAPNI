@@ -6,15 +6,16 @@ if(print_tags == 1){
   print("CreateInputsSubs_CBW/etoh_data.R")
 }
 
-etohproddata = t(array(scan("RawData/etohproddata.txt"), c(1,37))) #this file contains data from every year, 1999-2017, in 1000s of gallons, see etohproddata.xls
+#etohproddata = t(array(scan("RawData/etohproddata.txt"), c(1,37))) #this file contains data from every year, 1999-2017, in 1000s of gallons, see etohproddata.xls
 import_yrs5=c(1997,2002,2007,2012,2017)
 
-etohprodselectyrs = array(0,length(import_yrs5))
-for(n in 1:length(import_yrs5)){
-  etohprodselectyrs[n]=etohproddata[import_yrs5[n]-1980]
-}
-etohprodallyears=etohproddata*literspergal*10^3
-etohprod=etohprodselectyrs*literspergal*10^3
+#etohprodselectyrs = array(0,length(import_yrs5))
+#for(n in 1:length(import_yrs5)){
+#  etohprodselectyrs[n]=etohproddata[import_yrs5[n]-1980]
+#}
+#etohprodallyears=etohproddata*literspergal*10^3
+#etohprod=etohprodselectyrs*literspergal*10^3
+etohprod <-colSums(etohprodcnty)
 
 #write etohprod file
 write_name = paste('InputFiles_CBW/etohprod.txt')

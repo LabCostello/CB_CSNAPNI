@@ -6,35 +6,35 @@ if(print_tags == 1){
 library(readxl)
 library(tidyverse)
 
-countydatalevel <- read_xlsx("InputFiles_CBW/CommonDataLabels.xlsx") # This file contains county FIPS, and all CSNAPNI OUTPUT keys 
-CB_counties <- read_xlsx("InputFiles_CBW/cnty_da_cdl.xlsx", sheet = "CB_Counties") # this file contains CB data such as FIPS and atmospheric deposition data for all counties 
-da_cdl <- as.matrix(read_excel("InputFiles_CBW/cnty_da_cdl.xlsx", sheet = "da_cdl"))
+countydatalevel <- read_xlsx("RawData/CommonDataLabels.xlsx") # This file contains county FIPS for the whole US. Important for filtering only CBW_Counties from NASS_County 
 
-#converting the FIPS column to vector as a requirement for filtering from dataframe
-FIPS <- as.vector(unlist(CB_counties[,1]))
-# #Adding the FIPS as the first col of each NAPI component
-# n_ws_tbx_cbw <- cbind(countydatalevel[,1],cnty_ws[,1:450])
-# 
-# #Filtering out CB NAPI components from all counties
-# #output as dataframe
-# n_ws_tbx_cbw_fips <- n_ws_tbx_cbw[n_ws_tbx_cbw[,1]%in%CB_counties_FIPS,]
-# 
-# n_ws_tbx_cbw <- n_ws_tbx_cbw_fips[-c(1)]
-# write.table(n_ws_tbx_cbw, 'InputFiles/cnty_ws_cbw.txt', append = FALSE, sep = " ", dec = ".", row.names = FALSE, col.names = FALSE)
-
-n_cnty = 202 #number of counties (in CBW)
-n_ws_tbx = 1902 #number of Discharge Areas of CBW
+n_cnty = 197 #number of counties (in CBW)
+n_ws_tbx = 1925 #number of Discharge Areas of CBW
 n_crops = 20 #number of crops tracked (includes etoh coproducts)
 n_anims = 19 #number of animal types tracked
 n_meats = 9 #number of meat products tracked
 data_yrs = 5 #number of years of data
 year_labels = c(1997,2002,2007,2012,2017)
 
-cnty_ws = t(array(scan('InputFiles_CBW/concordance_matrix_cbw.txt'), c(n_ws_tbx,n_cnty)))
-#area = t(array(scan('InputFiles_CBW/area_cbw_delivery_factors.txt'), c(1,n_ws_tbx))) #It is a multiplication of the (ratio of each DA area by the total 
-                                                                                     #sum of DA area) and then multiplied by the total area of CBW
-CBW_da_shp <- read_xlsx("InputFiles_CBW/cnty_da_cdl.xlsx", sheet = "area")
-area <- as.matrix(unlist(CBW_da_shp[,38],use.names = FALSE)) # Used area from the shapefile of the landriver segments from CB program
+cnty_ws = t(array(0, c(n_ws_tbx,n_cnty)))
+
+# Fresh information
+lrs_shp <- read_excel("RawData/table_lrs_information.xls") # This file contains info from land river segments, their FIPS, names, acreage, basins. It comes from CAST Source Data.
+CBW_lrs_shp <- lrs_shp[lrs_shp$Region=="Chesapeake Bay Watershed",] # Filtering the file to have only CBW counties
+CBW_lrs_shp <- CBW_lrs_shp[order(CBW_lrs_shp$FIPS),] # Ascending order for FIPS
+
+# Area of each Land River Segment based in the Acreage information available in the shapefile table provided from CAST
+area <- as.matrix(unlist(CBW_lrs_shp$Acres*0.0040468564224, use.names = FALSE)) # Convert from acres to km2
+
+# FIPS filtered considering only the LRS that are inside of the CBW
+FIPS <- unique(CBW_lrs_shp$FIPS)
+
+# Dictionary for assisting on identification of counties and LRS
+FIPS_names <- countydatalevel[countydatalevel$FIPS %in% FIPS,][,1:3]
+
+LRS_by_county <- cbind(OBJECTID2 = rownames(CBW_lrs_shp), CBW_lrs_shp) %>%
+  group_by(FIPS) %>%
+  summarize(OBJECTID2 = paste(OBJECTID2, collapse = ", "))
 
 #conversion factors
 bushelperton_corn = 39.368 #bushels / (metric)ton

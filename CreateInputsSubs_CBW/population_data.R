@@ -12,7 +12,7 @@ data = as.matrix(read_excel(read_file, sheet = read_sheet))
 
 # Processing variable data to get only CBW
 data[,32]= gsub("W","",as.character((data[,32]))) #taking out the W from the FIPS
-list = as.vector(unlist(CB_counties[,1])) #list of FIPS
+list = FIPS #list of FIPS
 data = data[data[,32] %in% list,] #filtering
 
 #need columns 33 (2012 & 2017), 34 (2007), 35 (2002), 36 (1997)
@@ -66,24 +66,11 @@ for(i in 1:length(import_yrs)){
 }
 
 # PLUGGED for fast results
-
-# Considering that that populationcty is already considering just the population in the counties inside of CBW
-# We need now to allocate this population inside of each LRS/DA. For that we will use cropscape
-da_developed_area <- da_cdl[,c(1,2,49,50,51)] # Selecting Objectid, FIPS, and 3 types of development lands (low/medium/high) 
-da_prop_developed_area <- cbind(da_developed_area[,c(1,2)],rowSums(da_developed_area[,3:5]))
-da_prop_developed_area[]
-
-# Merging population by county and proportion of developed area per da (The result gives a little bit more population in DA, beacause of rounding numbers)
-dummy <- merge(cbind(FIPS,populationcty),da_prop_developed_area, by="FIPS")
-total_dummy <- dummy %>% group_by(FIPS) %>% summarize(TOTAL_POP = sum(V3.y))
-dummy$proportion <- dummy$V3.y / total_dummy$TOTAL_POP[match(dummy$FIPS, total_dummy$FIPS)]
-dummy[is.na(dummy)] <- 0
-dummy <- dummy[order(dummy[,7]),]
+dummy <- merge(cbind(FIPS,populationcty),percent_developed_in_cbw,by="FIPS")
 dummy <- dummy[,2:6]*dummy[,9]
-rownames(dummy) <- NULL
 colnames(dummy) <- c("V1","V2","V3","V4","V5")
 populationws <- as.matrix(dummy)
-
+for (i in 1:length(import_yrs)) {populationdensws[,i] <- populationws[,i]/area}
 
 # write text files
 write_name = "InputFiles_CBW/population.txt"
