@@ -32,6 +32,7 @@ animtyp[18] = 'horses'
 animtyp[19] = 'goats'
 
 # allocate space to matrices
+animpopcnty_old <- array(0,c(n_cnty,length(animtyp),length(import_yrs)))
 animpopcnty = array(0,c(n_cnty,length(animtyp),length(import_yrs)))
 animpopcnty = anim_avg_inv_array
 animpopws = array(0,c(n_ws_tbx,length(animtyp),length(import_yrs)))
@@ -62,6 +63,11 @@ for(n in 1:length(import_yrs)){
                        "sheep"=dummy$percentage*dummy$V18,
                        "horses"=dummy$percentage*dummy$V19,
                        "goats"=dummy$percentage*dummy$V20)
+  
+  animpopcnty_old[,,n] <- animpopcnty[,,n]
+  
+  animpopcnty[,,n] <- as.matrix(subset(aggregate(animws[,4:22], by=list(animws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  
   animpopws[,,n] <- as.matrix(subset(animws,select=-c(1:3)))
   
   #write data files

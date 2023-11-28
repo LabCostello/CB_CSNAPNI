@@ -31,6 +31,7 @@ cropname[20] = 'DGS'
 
 
 # allocate space to matrices
+cropprodcnty_old <- array(0,c(n_cnty,length(cropname),length(import_yrs)))
 cropprodcnty = array(0,c(n_cnty,length(cropname),length(import_yrs)))
 cropprodcnty[,1:(n_crops-3),] = prod_array
 etohprodcnty = array(0,c(n_cnty,length(import_yrs)))
@@ -94,6 +95,11 @@ for(n in 1:(length(import_yrs))){
                        "CGF" = dummy$Corn*dummy$V20,
                        "DGS" = dummy$Corn*dummy$V21)
   cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
+  
+  cropprodcnty_old[,,n] <- cropprodcnty[,,n]
+  
+  cropprodcnty[,,n] <- as.matrix(subset(aggregate(cropws[,5:24], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  
   cropprodws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
   
   dummy <- merge(lrs_cdl_percent[,1:5],cbind(FIPS,etohprodcnty[,n]))
@@ -104,6 +110,9 @@ for(n in 1:(length(import_yrs))){
                        "Ethanol" = dummy$Corn*dummy$V2)
   
   cropwse <- cropwse[cropwse$REGION=="Chesapeake Bay Watershed",]
+  
+  etohprodcnty[,n] <- as.matrix(subset(aggregate(cropwse[,5], by=list(cropwse$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  
   etohprodws[,n] <- as.matrix(subset(cropwse,select=-c(1:4)))  
   
   for(i in 1:(length(cropname))){ #columns (crops)

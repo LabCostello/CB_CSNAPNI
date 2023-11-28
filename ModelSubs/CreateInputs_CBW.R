@@ -79,6 +79,12 @@ source("CreateInputsSubs_CBW/fertrates_data.r") #Check adding clipped area consi
 #source("foodwaste_data.r") # *
 #still needs to be scripted for years other than 02 and 07
 
+#####################################################################################
+##Crop fertilization rate data (from USDA ERS and NASS, and MN extension recommendations)
+source("CreateInputsSubs_CBW/mcs_uncertainty.r") #Check adding clipped area considering ratios for counties in CBW considering ratios for counties in CBW
+
+#####################################################################################
+
 # Stop the clock
 runtime = proc.time() - ptm2
 runtime_msg = paste("input files created in", runtime, "seconds", sep = " ")

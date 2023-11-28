@@ -90,9 +90,7 @@ lrs_cdl_crop_pxl <- data.frame("OBJECTID"=lrs_cdl_2017$OBJECTID,
                             "Potatoes" = lrs_cdl_2017[,26],
                             "Grass/Pasture" = lrs_cdl_2017[,58]) 
 
-CROPS <- colnames(lrs_cdl_crop_pxl[,5:16])
-
-lrs_cdl_crop_pxl_groupby_cty <- lrs_cdl_crop_pxl %>% group_by(lrs_cdl_crop_pxl$FIPS) %>% summarize(across(CROPS,sum))
+lrs_cdl_crop_pxl_groupby_cty <- lrs_cdl_crop_pxl %>% group_by(lrs_cdl_crop_pxl$FIPS) %>% summarize(across(colnames(lrs_cdl_crop_pxl[,5:16]),sum))
 colnames(lrs_cdl_crop_pxl_groupby_cty)[1] <- "FIPS"
 
 lrs_cdl_crop_pxl_merged <- merge(lrs_cdl_crop_pxl, lrs_cdl_crop_pxl_groupby_cty, by="FIPS")

@@ -38,7 +38,7 @@ for(a in 1:9){
 
 #PLUGGED
 #kgmeatperanim_avg = matrix(data=c(animdatadyn[1,14],animdatadyn[2,14],animdatadyn[4,14],animdatadyn[17,14],animdatadyn[18,14],animdatadyn[5,14],animdatadyn[8,14],animdatadyn[9,14],animdatadyn[19,14]), ncol = 1) # The meatprod_old is old txt file with numbers that are too big for the size of the region, and unbalancing the model
-#kgmeatperanim_avg = matrix(data=c(144.2,10068.67,124.55,15.6,0,12.9,10.2,21.1,23.9),ncol = 1) # Temporary - copied from the CSNAPNI
+kgmeatperanim_avg = matrix(data=c(144.2,10068.67,124.55,15.6,0,12.9,10.2,21.1,23.9),ncol = 1) # Temporary - copied from the CSNAPNI, because the original is based on a country number
 
 for(n in 1:length(import_yrs)){
   meatprodnew[,n] = animpoptotal_sort[,n]*kgmeatperanim_avg
@@ -50,6 +50,7 @@ meatprodnew[2,] <- 10068.67*animpoptotal[2,]
 
 #meat emissions
 meatemissions = meatprod_old[,3:length(meatprod_old[1,])]
+meatemissions <- array(0,c(9,8)) # just to not keep wrong values, change it later
 
 #write meatprod file
 write_name = paste('InputFiles_CBW/meatprod.txt')

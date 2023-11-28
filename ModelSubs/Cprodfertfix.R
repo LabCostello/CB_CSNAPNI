@@ -9,14 +9,16 @@ if(print_tags == 1){
 unitfixNC = array(0,c(n_crops,nyrs))  # kg N from fixation per kg crop
 
 for(n in 1:nyrs){ #(NANIdata columns 5, 6, 7, 8, 9, 10, 11)
-  unitfixNC[10,n] = sum(totNANIws[,7,n]) / sum(CkgwswE_orig[,10,n])
-  unitfixNC[11,n] = sum(totNANIws[,8,n]) / sum(CkgwswE_orig[,11,n])
-  unitfixNC[12,n] = sum(totNANIws[,6,n]) / sum(CkgwswE_orig[,12,n])
-  #     unitfixNC(10,n] = 0.030994296 # alfalfa
-  #     unitfixNC(11,n] = 0.003375667 # non-alfalfa hay
-  #     unitfixNC(12,n] = 0.065701746 # soy
-  unitfixNC[13,n] = sum(totNANIws[,9,n]) / sum(CkgwswE_orig[,13,n]) #cropland pasture
-  unitfixNC[(n_crops-4),n] = sum(totNANIws[,11,n]) / sum(CkgwswE_orig[,(n_crops-4),n]) #peanuts
+  #unitfixNC[10,n] = sum(totNANIws[,7,n]) / sum(CkgwswE_orig[,10,n])
+  #unitfixNC[11,n] = sum(totNANIws[,8,n]) / sum(CkgwswE_orig[,11,n])
+  #unitfixNC[12,n] = sum(totNANIws[,6,n]) / sum(CkgwswE_orig[,12,n])
+  unitfixNC[10,n] = array(0.030994296,c(1,nyrs)) # alfalfa
+  unitfixNC[11,n] = array(0.003375667,c(1,nyrs)) # non-alfalfa hay
+  unitfixNC[12,n] = array(0.065701746,c(1,nyrs)) # soy
+  #unitfixNC[13,n] = sum(totNANIws[,9,n]) / sum(CkgwswE_orig[,13,n]) #cropland pasture
+  unitfixNC[13,n] <- array(0.02670564,c(1,nyrs))#cropland pasture
+  #unitfixNC[(n_crops-4),n] = sum(totNANIws[,11,n]) / sum(CkgwswE_orig[,(n_crops-4),n]) #peanuts
+  unitfixNC[(n_crops-4),n] <- array(0.05667428,c(1,nyrs)) #peanuts
 }
 
 #allocate space to matrices

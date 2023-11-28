@@ -8,7 +8,7 @@
 if(print_tags == 1){
   print("CreateInputsSubs_CBW/harvestedarea_data.R")
 }
-
+cropareacty_old = array(0,c(n_cnty,n_crops,length(import_yrs)))
 cropareacty = array(0,c(n_cnty,n_crops,length(import_yrs)))
 cropareacty[,1:(n_crops-3),] = areas_array #crop harvested areas, in km2
 cropareaws=array(0,c(n_ws_tbx,n_crops,length(import_yrs)))
@@ -58,6 +58,11 @@ for(n in 1:length(import_yrs)){
                        "CGF" = dummy$Corn*dummy$V20,
                        "DGS" = dummy$Corn*dummy$V21)
   cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
+  
+  cropareacty_old[,,n] <- cropareacty[,,n]
+  
+  cropareacty[,,n] <- as.matrix(subset(aggregate(cropws[,5:24], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  
   cropareaws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
   
   write_name = paste("InputFiles_CBW/cropareaharvestedcnty",run_yrs[n],".txt",sep = "")
@@ -65,7 +70,8 @@ for(n in 1:length(import_yrs)){
 }
 croparea=colSums(cropareaws)
 cornareanoetohsum=colSums(cornareanoetoh)
-etoh_landuse = cornuse[5,]*cornareanoetohsum*(1-to_FC_wetmill[alloc_method])+cornuse[6,]*cornareanoetohsum*(1-to_FC_drymill[alloc_method]) #ag land use for etoh
+#etoh_landuse = cornuse[5,]*cornareanoetohsum*(1-to_FC_wetmill[alloc_method])+cornuse[6,]*cornareanoetohsum*(1-to_FC_drymill[alloc_method]) #ag land use for etoh
+etoh_landuse <- c(0,0,0,0,0) # There is no land use to produce ethanol in the region. The corn that is produced for etoh is from outside of the CBW (assumption)
 
 #write files
 write_name = paste("InputFiles_CBW/corntotareaharvested.txt")
