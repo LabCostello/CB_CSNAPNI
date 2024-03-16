@@ -212,7 +212,8 @@ for(n in 1:nyrs){
     if(is.nan(chngC4animN[i,n])||is.infinite(chngC4animN[i,n])){ #if it's NaN, the numerator is zero. if it's infinity, the denominator is zero.
       chngC4animN[i,n]=0 #in both of these cases, the adjustment factor should be zero (CHECK w/ Chris)
     }
-    C4animNadj[,i,n] = C4animN[,i,n]*chngC4animN[i,n]
+#    C4animNadj[,i,n] = C4animN[,i,n]*chngC4animN[i,n] Plugged: I do not agree with that for CBW model
+    C4animNadj[,i,n] = C4animN[,i,n]
   }
   
   for(i in 1:length(chngC4animP[,1])){

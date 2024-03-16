@@ -32,7 +32,7 @@ for(n in 1:length(import_yrs)){
   }
   
   #cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
-  dummy <- merge(lrs_cdl_percent,cbind(FIPS,cropareacty[,,n]))
+  dummy <- merge(as.data.frame(lrs_cdl_percents[n],check.names=FALSE),cbind(FIPS,cropareacty[,,n]))
   cropws <- data.frame("FIPS"=dummy$FIPS,
                        "LNDRVRSEG"=dummy$LNDRVRSEG,
                        "OBJECTID"=dummy$OBJECTID,
@@ -53,11 +53,13 @@ for(n in 1:length(import_yrs)){
                        "Noncropland pasture" = dummy$Grass.Pasture*dummy$V15,
                        "Rice" = 0,
                        "Peanuts" = dummy$Peanuts*dummy$V17,
-                       if (grass_scenario == 1){"Grass" = dummy$Corn*0.1*dummy$V2} else {"Grass" = 0},
+                       "Grass" = 0,
                        "CGM" = dummy$Corn*dummy$V19,
                        "CGF" = dummy$Corn*dummy$V20,
                        "DGS" = dummy$Corn*dummy$V21)
   cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
+  
+  cropws <- cropws %>% arrange(FIPS,LNDRVRSEG)
   
   cropareacty_old[,,n] <- cropareacty[,,n]
   

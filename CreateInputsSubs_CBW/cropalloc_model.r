@@ -178,10 +178,31 @@ for(n in 1:data_yrs){
   
   # Plugged
   #cropNtoanim[2,,n] <- c(diet[3,1],diet[3,20],0,0,0,0,0,0,0,diet[3,21],diet[3,22],(diet[3,7]+diet[3,12]+diet[3,14]),0,0,0,0,0,diet[3,24],diet[3,23],diet[3,2])
+  
+  #dairy
   cropNtoanim[2,,n] <- unlist(as.matrix(diet_crops_model)[3,])
   cropNtoanimtotal[2,,n] <- cropNtoanim[2,,n]*animpoptotal[2,n]
-  for (i in 1:19){cropNtoanim[i,20,n] <- animNreq[i] - sum(cropNtoanim[i,1:19,n])}
   cropkgtoanimtotal_N[2,,n] <- unlist(as.matrix(diet_crops_model)[3,])*animpoptotal[2,n]/Nincrop
+  
+  #beef
+  cropNtoanim[1,,n] <- unlist(as.matrix(diet_crops_model)[1,])
+  cropNtoanimtotal[1,,n] <- cropNtoanim[1,,n]*animpoptotal[1,n]
+  cropkgtoanimtotal_N[1,,n] <- unlist(as.matrix(diet_crops_model)[1,])*animpoptotal[1,n]/Nincrop
+  
+  #broilers
+  if (n>3) {
+    cropNtoanim[8,,n] <- unlist(as.matrix(diet_crops_model)[2,])
+    cropNtoanimtotal[8,,n] <- cropNtoanim[8,,n]*animpoptotal[8,n]
+    cropkgtoanimtotal_N[8,,n] <- unlist(as.matrix(diet_crops_model)[2,])*animpoptotal[8,n]/Nincrop
+  }
+  
+  #broilers
+  if (n>3) {
+    cropNtoanim[4,,n] <- unlist(as.matrix(diet_crops_model)[4,])
+    cropNtoanimtotal[4,,n] <- cropNtoanim[4,,n]*animpoptotal[4,n]
+    cropkgtoanimtotal_N[4,,n] <- unlist(as.matrix(diet_crops_model)[4,])*animpoptotal[4,n]/Nincrop
+  }
+  
   
   #since the N-based allocation model is to be used, need to use cropkgtoanimtotal_N to re-calculate cropPtoanimtotal
   #crop P to anim = total kg of crop allocated * P content of the crop

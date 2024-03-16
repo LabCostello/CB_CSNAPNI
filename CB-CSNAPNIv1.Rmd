@@ -113,13 +113,15 @@ legend("topright", inset=c(1.3,0), legend=c("atmospheric deposition","biological
 <br>
 <br>
 ```{r NANI_wsspec_plot,echo=FALSE,fig.width=11,fig.height=8,fig.cap="\\label{fig:Rn`}***Figure 1.2: Watershed specific NANI totals** Using new NANI.*"}
+ws <- 919:933 ## Lancaster LRS
+
 for(n in 1:nyrs){
   NANI_wsspec[,n] = colSums(NANIBtot[ws,,n])/(10^3)
 }
 positives <- negatives <- NANI_wsspec
 positives[positives<0] <- 0
 negatives[negatives>0] <- 0
-myrange <- c(min(colSums(negatives))-1,max(colSums(positives))+1)
+myrange <- c(min(colSums(negatives))-1,50000)#max(colSums(positives))+1)
 par(mai=c(1, 1, 1, 4), xpd=TRUE)
 barplot(positives,
       main="NANI for selected watersheds",
@@ -149,7 +151,7 @@ barplot(t(total_commoddisag_fertN),
         ylim=c(0,180), bty='L', width = 1, space = 0.5)
 axis(2,cex.axis=1.5)
 box()
-legend("topright", inset=c(1.4,0), legend=c(crop_labels,"ethanol"),  fill=crop_colors)
+legend("topright", inset=c(1.4,0), legend=c(crop_labels),  fill=crop_colors)
 
 par(mai=c(1, 1, 1, 3), xpd=TRUE)
 barplot(total_commoddisag_fixN,
@@ -162,8 +164,38 @@ barplot(total_commoddisag_fixN,
         ylim=c(0,180), bty='L', width = 1, space = 0.5)
 axis(2,cex.axis=1.5)
 box()
+
+# The reason why 2002 has little amount of fertilizer is because the way that fertilizer is calculated in the model right now is multiplying the productivity, and since the yield was lower than average it got lower fertilizer.
 ```
 <br>
+```{r fertandfixN_plot,echo=FALSE,fig.width=15,fig.height=8,fig.cap="\\label{fig:Rn`}***Figure 1.3: Total commodity-disaggregated fertilizer (a) and fixation (b) inputs for selected watersheds.***"}
+par(mai=c(1, 3.6, 1, 0.4), xpd=TRUE,mfrow=c(1,2))
+barplot(t(total_commoddisag_fertN),
+        main="a) fertilizer N",
+        ylab="N (10^6 kg)",
+        col=crop_colors,
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=1.5, cex.axis=2, cex.main=2, cex.names = 1,
+        ylim=c(0,180), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+legend("topright", inset=c(1.4,0), legend=c(crop_labels),  fill=crop_colors)
+
+par(mai=c(1, 1, 1, 3), xpd=TRUE)
+barplot(total_commoddisag_fixN,
+        main="b) fixation N",
+        ylab="N (10^6 kg)",
+        col=crop_colors,
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=1.5, cex.axis=2, cex.main=2, cex.names = 1,
+        ylim=c(0,180), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+# The reason why 2002 has little amount of fertilizer is because the way that fertilizer is calculated in the model right now is multiplying the productivity, and since the yield was lower than average it got lower fertilizer.
+```
 <br>
 <br>
 ```{r etohNperL_plot,echo=FALSE,fig.width=11,fig.height=8,fig.cap="\\label{fig:Rn`}***Figure 1.4: Fertilizer N inputs per liter of ethanol fuel from 1987-2012.** This estimate excludes N inputs allocated to ethanol coproducts. Decreasing N inputs per liter from 1997-2007 are driven by improved corn to ethanol conversion efficiency and reduced N inputs per mass of corn. The increase in 2012 resulted from drought conditions and reduced corn yield.*"}
@@ -298,6 +330,628 @@ box()
 <br>
 <br>
 <br>
+```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
+year_range = 1:5
+par(mai=c(0.5, 4, 0.5, 0.25), xpd=TRUE, mfrow=c(3,2))
+meat_type=1 #beef
+
+Fertilizer=colSums(fertNperMprot[meat_type,,year_range])
+Fixation=colSums(fixNperMprot[meat_type,,year_range])
+ManureN=manureNperprot[meat_type,year_range]
+AmmoniaN=NH3perMprot[meat_type,year_range]
+
+barplot(rbind(Fertilizer,Fixation,ManureN,AmmoniaN), #N requirements of meat products over time
+        main="a) beef",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,3.5), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+legend(cex=2.1,"topright", inset=c(1.18,0), legend=c("Fertilizer", "N Fixation", "Manure-N", "NH3-N"),  fill=c(crop_colors[major_feeds_for_beef],"white"))
+#Other grains = CGF, CGM, Wheat, Barley, Sorghum, Rye
+
+par(mai=c(0.5, 0.75, 0.5, 3.6))
+meat_type=3 #pork
+
+Fertilizer=colSums(fertNperMprot[meat_type,,year_range])
+Fixation=colSums(fixNperMprot[meat_type,,year_range])
+ManureN=manureNperprot[meat_type,year_range]
+AmmoniaN=NH3perMprot[meat_type,year_range]
+
+barplot(rbind(Fertilizer,Fixation,ManureN,AmmoniaN), #N requirements of meat products over time
+        main="b) pork",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,2.5), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+par(mai=c(0.5, 4, 0.5, 0.25))
+meat_type=2 #milk
+
+Fertilizer=colSums(fertNperMprot[meat_type,,year_range])
+Fixation=colSums(fixNperMprot[meat_type,,year_range])
+ManureN=manureNperprot[meat_type,year_range]
+AmmoniaN=NH3perMprot[meat_type,year_range]
+
+barplot(rbind(Fertilizer,Fixation,ManureN,AmmoniaN), #N requirements of meat products over time
+        main="c) milk",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,1.8), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+par(mai=c(0.5, 0.75, 0.5, 3.6))
+meat_type=6 #eggs
+
+Fertilizer=colSums(fertNperMprot[meat_type,,year_range])
+Fixation=colSums(fixNperMprot[meat_type,,year_range])
+ManureN=manureNperprot[meat_type,year_range]
+AmmoniaN=NH3perMprot[meat_type,year_range]
+
+barplot(rbind(Fertilizer,Fixation,ManureN,AmmoniaN), #N requirements of meat products over time
+        main="d) eggs",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,1.8), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+par(mai=c(0.5, 4, 0.5, 0.25))
+meat_type=7 #chicken
+
+Fertilizer=colSums(fertNperMprot[meat_type,,year_range])
+Fixation=colSums(fixNperMprot[meat_type,,year_range])
+ManureN=manureNperprot[meat_type,year_range]
+AmmoniaN=NH3perMprot[meat_type,year_range]
+
+barplot(rbind(Fertilizer,Fixation,ManureN,AmmoniaN), #N requirements of meat products over time
+        main="e) chicken",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,1.8), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+par(mai=c(0.5, 0.75, 0.5, 3.6))
+meat_type=8 #turkey
+
+Fertilizer=colSums(fertNperMprot[meat_type,,year_range])
+Fixation=colSums(fixNperMprot[meat_type,,year_range])
+ManureN=manureNperprot[meat_type,year_range]
+AmmoniaN=NH3perMprot[meat_type,year_range]
+
+barplot(rbind(Fertilizer,Fixation,ManureN,AmmoniaN), #N requirements of meat products over time
+        main="f) turkey",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,1.8), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+```
+<br>
+```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
+year_range = 5 # 2017
+
+crop_types=c(1,2,3,4,5,9,10,11,12,18,19)
+
+
+Fertilizer=c((fertNperCprot[crop_types,year_range]))
+Fixation=c((fixNperCprot[crop_types,year_range]))
+
+# Adjust margins
+par(mar = c(5, 7, 4, 2) + 0.1)  # c(bottom, left, top, right)
+
+
+barplot(rbind(Fertilizer,Fixation), #N requirements of meat products over time
+        ylab="kg N / kg protein",
+        axes=FALSE,
+        names.arg = c(crop_labels[crop_types]),col = c("red", "green"),
+        cex.lab=3, cex.axis=3, cex.main=3, cex.names = 2.5,
+        ylim=c(0,.5), bty='L', width = .5, space = 0.5)
+
+axis(2.5,cex.axis=3,at = seq(0, 0.5,0.1))
+
+legend("topright", inset=c(0.1,0.1), legend=c("Fertilizer", "N Fixation"),  fill=c("red", "green"),cex=2.1)
+
+box()
+
+```
+<br>
+```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
+year_range = 5 # 2017
+
+animal_types=c(1,2,3,6,7,8)
+crop_types=c(1,2,3,4,5,9,10,11,12,18,19)
+
+
+Fertilizer=c(rowSums(fertNperMprot[animal_types,,year_range]))
+Fixation=c(rowSums(fixNperMprot[animal_types,,year_range]))
+ManureN=c(manureNperprot[animal_types,year_range])
+AmmoniaN=c(NH3perMprot[animal_types,year_range])
+
+# Adjust margins
+par(mar = c(5, 6, 4, 2) + 0.1)  # c(bottom, left, top, right)
+
+
+barplot(rbind(Fertilizer,Fixation), #N requirements of meat products over time
+        ylab="kg N / kg protein",
+        axes=FALSE,
+        names.arg = c(meat_labels[animal_types]),col = c("red", "green"),
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2.5,
+        ylim=c(0,2.5), bty='L', width = 1, space = 0.5)
+
+axis(2.5,cex.axis=2.5,at = seq(0, 2.5, 0.5))
+
+legend("topright", inset=c(0.1,0.1), legend=c("Fertilizer", "N Fixation"),  fill=c("red", "green","white"),cex=2.1)
+
+box()
+
+```
+<br>
+```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
+year_range = 5 # 2017
+
+animal_types=c(1,2,3,6,7,8)
+crop_types=c(1,2,3,4,5,9,10,11,12,18,19)
+
+
+Fertilizer=c(rowSums(fertNperMprot[animal_types,,year_range]),fertNperCprot[crop_types,year_range])
+Fixation=c(rowSums(fixNperMprot[animal_types,,year_range]),fixNperCprot[crop_types,year_range])
+ManureN=c(manureNperprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0)
+AmmoniaN=c(NH3perMprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0)
+
+# Adjust margins
+par(mar = c(5, 6, 4, 2) + 0.1)  # c(bottom, left, top, right)
+
+
+barplot(rbind(Fertilizer,Fixation,ManureN,AmmoniaN), #N requirements of meat products over time
+        ylab="kg N / kg protein",
+        axes=FALSE,
+        names.arg = c(meat_labels[animal_types],crop_labels[crop_types]),col = c("red", "green", "blue", "purple"),
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 1,
+        ylim=c(0,3.5), bty='L', width = 1, space = 0.5)
+
+axis(2,cex.axis=1.5,at = seq(0, 3.5, 0.5))
+
+legend("topright", inset=c(0.1,0.1), legend=c("Fertilizer", "N Fixation", "Manure-N", "NH3-N"),  fill=c("red", "green", "blue", "purple","white"),cex=2.1)
+
+box()
+
+```
+<br>
+```{r}
+# Sankey Diagram ####
+library(tidyverse)
+library(data.table)
+library(networkD3)
+
+cropsimported <- colSums(feedN4anim[,,5])-(colSums(Ckgws[,,5])*cropdata[,1]*cropdata[,2])
+for (i in 1:20) {
+  if (cropsimported[i]<0) {cropsimported[i] <- 0}
+}
+
+links <- data.table(
+  source = c(rep(0, 20),rep(21, 20),rep(22,20),rep(1:20, each=19),1:20,23:41,23:41,23:41),
+  target = c(1:20,1:20,1:20,rep(23:41,20),rep(42,39),rep(43,19),rep(44,19)),
+  value = c(as.integer(CfertNtot[,5]),colSums(CfixNwswE[,,5]),cropsimported,c(feedN4anim[,,5]),colSums(C4humanN[,,5]),colSums(animN[,,5]),colSums(kgmanureNrec450[,,5]),colSums(kgNH3[,,5])))
+
+links <- links[links$value>0]
+links <- links[links$value>0]
+
+nodes <- data.table(name= c("Nitrogen Fertilizer",cropareaharvested_key[2:21,1],"Nitrogen Fixation","Net Food & Feed",animpopcnty_key[1,-1],"Food","Manure","NH3") )
+
+sankeyNetwork(Links = links, Nodes = nodes, Source = "source",
+              Target = "target", Value = "value", NodeID = "name",
+              colourScale = JS("d3.scaleOrdinal(d3.schemeCategory20);"),
+              fontSize = 15, nodeWidth = 20,
+              nodePadding = 8.5, iterations = 0, height = NULL, width = NULL)
+```
+
+```{r}
+# Sankey Diagram ####
+library(tidyverse)
+library(data.table)
+library(networkD3)
+
+cropsimported <- colSums(feedN4anim[,,5])-(colSums(Ckgws[,,5])*cropdata[,1]*cropdata[,2])
+for (i in 1:20) {
+  if (cropsimported[i]<0) {cropsimported[i] <- 0}
+}
+
+majorgrains <- c(1:2,10:12,20)
+othercrops <-  setdiff(1:20,majorgrains)
+
+meatfeed <- data.frame("beef"= colSums(feedN4anim[c(1,10,11,13,15),,5]),
+                       "dairy"= colSums(feedN4anim[c(2,12,14,16),,5]),
+                       "swine"= colSums(feedN4anim[c(3,4),,5]),
+                       "layers"= (feedN4anim[5,,5]),
+                       "broilers"= colSums(feedN4anim[c(7,8),,5]),
+                       "turkey"= colSums(feedN4anim[c(6,9),,5]),
+                       "otheranim"= colSums(feedN4anim[c(17,18,19),,5]))
+
+meatfeedMG <- meatfeed[majorgrains,]
+meatfeedOC <- colSums(meatfeed[othercrops,])
+
+
+links <- data.table(
+  source = c(rep(0, 7),rep(8, 7),rep(9, 7),rep(1:6,7),rep(7,7),1:7,10:16,18),
+  target = c(1:7,1:7,1:7,rep(10:16,each=6),10:16,rep(17,7),rep(18,7),0),
+  value = c(as.integer(CfertNtot[majorgrains,5]),sum(as.integer(CfertNtot[othercrops,5])), # Fertilizer
+            colSums(CfixNwswE[,,5])[majorgrains],sum(CfixNwswE[,othercrops,5]), # Fixation
+            cropsimported[majorgrains],sum(cropsimported[othercrops]), #NFF
+            unlist(meatfeedMG),unlist(meatfeedOC), #Animals Feed
+            colSums(C4humanN[,,5])[majorgrains],sum(C4humanN[,othercrops,5]), #People
+            sum(kgmanureNrec450[,c(1,10,11,13,15),5]),sum(kgmanureNrec450[,c(2,12,14,16),5]),sum(kgmanureNrec450[,c(3,4),5]),sum(kgmanureNrec450[,5,5]),
+            sum(kgmanureNrec450[,c(7,8),5]),sum(kgmanureNrec450[,c(6,9),5]),sum(kgmanureNrec450[,c(17,18,19),5]),500000)
+)
+
+links <- links[links$value>0]
+links <- links[links$value>0]
+
+nodes <- data.table(name= c("Nitrogen Fertilizer",cropareaharvested_key[majorgrains+1,1], "other crops","Nitrogen Fixation","Imported Feed/Food","Beef","Dairy","Swine","Layers","Broilers","Turkey","Other anim","Food","Manure"))
+
+sankeyNetwork(Links = links, Nodes = nodes, Source = "source",
+              Target = "target", Value = "value", NodeID = "name",
+              colourScale = JS("d3.scaleOrdinal(d3.schemeCategory20);"),
+              fontSize = 15, nodeWidth = 20,
+              nodePadding = 8.5, iterations = 0, height = NULL, width = NULL)
+```
+<br>
+```{r}
+library(plotly)
+
+# Your R data converted to Plotly format
+links <- data.frame(
+  source = c(rep(0, 7), rep(8, 7), rep(9, 7), rep(1:6, 7), rep(7, 7), 1:7, 10:16,10:16,10:16),
+  target = c(1:7, 1:7, 1:7, rep(10:16, each = 6), 10:16, rep(17, 7), rep(18, 7), rep(17,7),rep(19,7)),
+  value = c(
+    as.integer(CfertNtot[majorgrains, 5]), # Fertilizer for major crops
+    sum(as.integer(CfertNtot[othercrops, 5])), # Fertilizer for minor crops
+    colSums(CfixNwswE[, , 5])[majorgrains], # Fixation for major crops
+    sum(CfixNwswE[, othercrops, 5]), # Fixation for other crops
+    cropsimported[majorgrains], # NFF crops
+    sum(cropsimported[othercrops]), # NFF other crops
+    unlist(meatfeedMG),
+    unlist(meatfeedOC),
+    colSums(C4humanN[, , 5])[majorgrains],
+    sum(C4humanN[, othercrops, 5]),
+    sum(kgmanureNrec450[, c(1, 10, 11, 13, 15), 5]),
+    sum(kgmanureNrec450[, c(2, 12, 14, 16), 5]),
+    sum(kgmanureNrec450[, c(3, 4), 5]),
+    sum(kgmanureNrec450[, 5, 5]),
+    sum(kgmanureNrec450[, c(7, 8), 5]),
+    sum(kgmanureNrec450[, c(6, 9), 5]),
+    sum(kgmanureNrec450[, c(17, 18, 19), 5]),
+    #sum(kgmanureNrec450[,,5]),
+    sum(animN[,c(1, 10, 11, 13, 15),5]),
+    sum(animN[,c(2, 12, 14, 16),5]),
+    sum(animN[,c(3,4),5]),
+    sum(animN[,5,5]),
+    sum(animN[,c(7, 8),5]),
+    sum(animN[,c(6, 9),5]),
+    sum(animN[,c(17, 18, 19),5]),
+    sum(kgNH3[,c(1, 10, 11, 13, 15),5]),
+    sum(kgNH3[,c(2, 12, 14, 16),5]),
+    sum(kgNH3[,c(3,4),5]),
+    sum(kgNH3[,5,5]),
+    sum(kgNH3[,c(7,8),5]),
+    sum(kgNH3[,c(6,9),5]),
+    sum(kgNH3[,c(17,18,19),5])
+  )
+)
+
+links <- links[links$value > 0, ]
+
+nodes <- data.frame(name = c(
+  "Nitrogen Fertilizer",
+  cropareaharvested_key[majorgrains + 1, 1],
+  "other crops",
+  "Nitrogen Fixation",
+  "Imported Feed/Food",
+  "Beef",
+  "Dairy",
+  "Swine",
+  "Layers",
+  "Broilers",
+  "Turkey",
+  "Other anim",
+  "Food",
+  "Manure",
+  "NH3"
+))
+
+# Assign colors to links
+link_colors <- c("#1f78b4", "#33a02c", "#e31a1c", "#ff7f00", "#d4d4d1", "#a6cee3", "#b2df8a",
+                 "#fb9a99", "#fdbf6f", "#cab2d6", "#1f78b4", "#33a02c", "#e31a1c", "#ff7f00",
+                 "#6a3d9a", "#a6cee3", "#a67556", "#fb9a99", "#fdbf6f", "#cab2d6")
+
+# Create Sankey diagram using plotly with colored links
+fig <- plot_ly(
+  type = "sankey",
+  orientation = "h",
+  node = list(
+    pad = 15,
+    thickness = 20,
+    line = list(color = "black", width = 0.5),
+    label = nodes$name
+  ),
+  link = list(
+    source = links$source,
+    target = links$target,
+    value = links$value,
+    color = link_colors[c(rep(1,6),rep(7,4),rep(6,7),rep(c(4,2,3,10,17,10),2),4,17,10,4,17,4,17,10,4,17,10,4,2,3,10,17,10,rep(5,7),4,17,5,1,4,2,3,10,17,1,4,2,3,10,17,18,1,4,2,3,10,17,18)]
+  )
+)
+
+fig <- fig %>% layout(
+  title = "Sankey Diagram",
+  font = list(size = 12)
+)
+config(fig,displayModeBar = FALSE)
+
+fig
+
+```
+
+<br>
+```{r}
+library(plotly)
+
+# Your R data converted to Plotly format
+links <- data.frame(
+  source = c(rep(0, 7), rep(8, 7), rep(9, 7), rep(1:6, 7), rep(7, 7), 1:7, 10:16,10:16,10:16),
+  target = c(1:7, 1:7, 1:7, rep(10:16, each = 6), 10:16, rep(17, 7), rep(18, 7), rep(17,7),rep(19,7)),
+  value = c(
+    as.integer(CfertNtot[majorgrains, 5]),
+    sum(as.integer(CfertNtot[othercrops, 5])),
+    colSums(CfixNwswE[, , 5])[majorgrains],
+    sum(CfixNwswE[, othercrops, 5]),
+    cropsimported[majorgrains],
+    sum(cropsimported[othercrops]),
+    unlist(meatfeedMG),
+    unlist(meatfeedOC),
+    colSums(C4humanN[, , 5])[majorgrains],
+    sum(C4humanN[, othercrops, 5]),
+    sum(kgmanureNrec450[, c(1, 10, 11, 13, 15), 5]),
+    sum(kgmanureNrec450[, c(2, 12, 14, 16), 5]),
+    sum(kgmanureNrec450[, c(3, 4), 5]),
+    sum(kgmanureNrec450[, 5, 5]),
+    sum(kgmanureNrec450[, c(7, 8), 5]),
+    sum(kgmanureNrec450[, c(6, 9), 5]),
+    sum(kgmanureNrec450[, c(17, 18, 19), 5]),
+    #sum(kgmanureNrec450[,,5]),
+    sum(animN[,c(1, 10, 11, 13, 15),5]),
+    sum(animN[,c(2, 12, 14, 16),5]),
+    sum(animN[,c(3,4),5]),
+    sum(animN[,5,5]),
+    sum(animN[,c(7, 8),5]),
+    sum(animN[,c(6, 9),5]),
+    sum(animN[,c(17, 18, 19),5]),
+    sum(kgNH3[,c(1, 10, 11, 13, 15),5]),
+    sum(kgNH3[,c(2, 12, 14, 16),5]),
+    sum(kgNH3[,c(3,4),5]),
+    sum(kgNH3[,5,5]),
+    sum(kgNH3[,c(7,8),5]),
+    sum(kgNH3[,c(6,9),5]),
+    sum(kgNH3[,c(17,18,19),5])
+  )
+)
+
+links <- links[links$value > 0, ]
+
+nodes <- data.frame(name = c(
+  "Nitrogen Fertilizer",
+  cropareaharvested_key[majorgrains + 1, 1],
+  "other crops",
+  "Nitrogen Fixation",
+  "Imported Feed/Food",
+  "Beef",
+  "Dairy",
+  "Swine",
+  "Layers",
+  "Broilers",
+  "Turkey",
+  "Other anim",
+  "Food",
+  "Manure",
+  "NH3"
+))
+
+# Assign colors to links
+
+
+# Create Sankey diagram using plotly with colored links
+fig <- plot_ly(
+  type = "sankey",
+  orientation = "h",
+  node = list(
+    pad = 15,
+    thickness = 20,
+    line = list(color = "grey", width = 0.5),
+    label = nodes$name
+  ),
+  link = list(
+    source = links$source,
+    target = links$target,
+    value = links$value
+  )
+)
+
+fig <- fig %>% layout(
+  title = "Sankey Diagram",
+  font = list(size = 12)
+)
+
+config(fig,displayModeBar = FALSE)
+
+```
+
+<br>
+```{r}
+library(plotly)
+
+# Your R data converted to Plotly format
+links <- data.frame(
+  source = c(rep(0, 7), rep(8, 7), rep(9, 7), rep(1:6, 7), rep(7, 7), 1:7, 10:16,10:16,rep(19,5),9),
+  target = c(1:7, 1:7, 1:7, rep(10:16, each = 6), 10:16, rep(17, 7), rep(18, 7), rep(17,7),c(10,14,11,12,15),19),
+  value = c(
+    as.integer(CfertNtot[majorgrains, 5]),
+    sum(as.integer(CfertNtot[othercrops, 5])),
+    colSums(CfixNwswE[, , 5])[majorgrains],
+    sum(CfixNwswE[, othercrops, 5]),
+    cropsimported[majorgrains],
+    sum(cropsimported[othercrops]),
+    unlist(meatfeedMG),
+    unlist(meatfeedOC),
+    colSums(C4humanN[, , 5])[majorgrains],
+    sum(C4humanN[, othercrops, 5]),
+    sum(kgmanureNrec450[, c(1, 10, 11, 13, 15), 5]),
+    sum(kgmanureNrec450[, c(2, 12, 14, 16), 5]),
+    sum(kgmanureNrec450[, c(3, 4), 5]),
+    sum(kgmanureNrec450[, 5, 5]),
+    sum(kgmanureNrec450[, c(7, 8), 5]),
+    sum(kgmanureNrec450[, c(6, 9), 5]),
+    sum(kgmanureNrec450[, c(17, 18, 19), 5]),
+    #sum(kgmanureNrec450[,,5]),
+    sum(animN[,c(1, 10, 11, 13, 15),5]),
+    sum(animN[,c(2, 12, 14, 16),5]),
+    sum(animN[,c(3,4),5]),
+    sum(animN[,5,5]),
+    sum(animN[,c(7, 8),5]),
+    sum(animN[,c(6, 9),5]),
+    sum(animN[,c(17, 18, 19),5]),
+    (rowSums(diet_animal_byproducts)+rowSums(diet_plant_byproducts))[1]*5.080567e+04, #beef
+    (rowSums(diet_animal_byproducts)+rowSums(diet_plant_byproducts))[2]*1.513189e+08, #broilers
+    (rowSums(diet_animal_byproducts)+rowSums(diet_plant_byproducts))[3]*5.789817e+05, #dairy
+    2.500308045*1.626651e+06, #hogs
+    0.481075158*1.121247e+07,
+    28784509
+    )
+)
+
+links <- links[links$value > 0, ]
+
+nodes <- data.frame(name = c(
+  "Nitrogen Fertilizer",
+  cropareaharvested_key[majorgrains + 1, 1],
+  "other crops",
+  "Nitrogen Fixation",
+  "Imported Feed/Food",
+  "Beef",
+  "Dairy",
+  "Swine",
+  "Layers",
+  "Broilers",
+  "Turkey",
+  "Other anim",
+  "Food",
+  "Manure",
+  "Byproducts feed"
+))
+
+# Assign colors to links
+
+
+# Create Sankey diagram using plotly with colored links
+fig <- plot_ly(
+  type = "sankey",
+  orientation = "h",
+  node = list(
+    pad = 15,
+    thickness = 20,
+    line = list(color = "grey", width = 0.5),
+    label = nodes$name
+  ),
+  link = list(
+    source = links$source,
+    target = links$target,
+    value = links$value
+  )
+)
+
+fig <- fig %>% layout(
+  title = "Sankey Diagram",
+  font = list(size = 12)
+)
+
+config(fig,displayModeBar = FALSE)
+
+```
+<br>
+
+```{r}
+library(ggplot2)
+library(sf)
+
+# Read shapefile
+shapefile <- st_read("C:/Users/lds5498/OneDrive - The Pennsylvania State University/Desktop/Code/shp/P6Beta_v3_LRSegs_081516.shp")
+cbw_shp <- shapefile[shapefile$CBW=="Y",]
+cbw_shp <- cbw_shp %>% arrange(FIPS,LndRvrSeg)
+rownames(cbw_shp) <- 1:nrow(cbw_shp)
+
+ctiescbw_shp <- summarise(group_by(cbw_shp,cbw_shp$FIPS))
+
+# Read dataframe
+NANImap <- data.frame("LndRvrSeg" = CBW_lrs_shp$LndRvrSeg,
+                        "NANIAtm" = NANIBtot[,1,5],
+                        "NANIFertilizer"=NANIBtot[,3,5],
+                        "NANIFix"= NANIBtot[,2,5],
+                        "NANIFF" = NANIBtot[,4,5])
+
+merged_data <- merge(cbw_shp, NANImap, by = "LndRvrSeg", all.x = TRUE)
+```
+```{r}
+a <- ggplot() +
+  geom_sf(data = merged_data, aes(fill = NANIAtm)) +
+    geom_sf(data = ctiescbw_shp, color = "black", fill = NA) +  # Adding another shapefile layer
+  scale_fill_gradient(low = "cyan", high = "purple",name="AtmDeposit", 
+                      labels = c("5,000,000", "4,000,000", "3,000,000", "2,000,000", "1,000,000"),
+                      breaks = c(5000000, 4000000, 3000000, 2000000, 1000000)) +theme_minimal()
+b <- ggplot() +
+  geom_sf(data = merged_data, aes(fill = NANIFertilizer)) +
+  geom_sf(data = ctiescbw_shp, color = "black", fill = NA) +  # Adding another shapefile layer
+  scale_fill_gradient(low = "cyan", high = "pink",name="Fertilizer", 
+                      labels = c("0", "10e3", "14e4", "77e4", "2.4 10e5"),
+                      breaks = c(0, 958.6326, 14244.9624 , 77235.1291 , 250000 )) +theme_minimal()
+c <- ggplot() +
+  geom_sf(data = merged_data, aes(fill = NANIFix)) +
+  geom_sf(data = ctiescbw_shp, color = "black", fill = NA) +  # Adding another shapefile layer
+  scale_fill_gradient(low = "blue", high = "red",name="Fixation", 
+                      labels = c("5,000,000", "4,000,000", "3,000,000", "2,000,000", "1,000,000"),
+                      breaks = c(5000000, 4000000, 3000000, 2000000, 1000000)) +theme_minimal()
+d <- ggplot() +
+  geom_sf(data = merged_data, aes(fill = NANIFF)) +
+  geom_sf(data = ctiescbw_shp, color = "black", fill = NA) +  # Adding another shapefile layer
+  scale_fill_gradient(low = "blue", high = "red",name="Imported", 
+                      labels = c("5,000,000", "4,000,000", "3,000,000", "2,000,000", "1,000,000"),
+                      breaks = c(5000000, 4000000, 3000000, 2000000, 1000000)) +theme_minimal()
+
+
+library(patchwork)
+
+(a+b)/(c+d)
+```
+
 
 ### 2. NAPI
 ```{r NAPItotals_plot,echo=FALSE,fig.width=15,fig.height=8,fig.cap="\\label{fig:Rn`}***Figure 2.1: Net Anthropogenic Phosphorus Input (NAPI) totals for the US.** Results shown are from the commodity-specific NAPI (CSNAPI) model.*"}

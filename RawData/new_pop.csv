@@ -1,0 +1,346 @@
+STATE,COUNTY,STNAME,CTYNAME,POPESTIMATE2017,POPESTIMATE2012,FIPS
+10,1,Delaware,Kent,176754,167370,10001
+10,3,Delaware,New Castle,556491,545053,10003
+10,5,Delaware,Sussex,224697,203095,10005
+24,1,Maryland,Allegany,71363,73966,24001
+24,3,Maryland,Anne Arundel,571359,550476,24003
+24,5,Maryland,Baltimore,828956,818218,24005
+24,9,Maryland,Calvert,91492,89746,24009
+24,11,Maryland,Caroline,33122,32636,24011
+24,13,Maryland,Carroll,167687,167085,24013
+24,15,Maryland,Cecil,102509,101780,24015
+24,17,Maryland,Charles,159718,150700,24017
+24,19,Maryland,Dorchester,32093,32483,24019
+24,21,Maryland,Frederick,251037,239705,24021
+24,23,Maryland,Garrett,29276,29976,24023
+24,25,Maryland,Harford,251948,248609,24025
+24,27,Maryland,Howard,319409,299223,24027
+24,29,Maryland,Kent,19486,19987,24029
+24,31,Maryland,Montgomery,1047239,1005310,24031
+24,33,Maryland,Prince George's,910946,882787,24033
+24,35,Maryland,Queen Anne's,49648,48506,24035
+24,37,Maryland,St. Mary's,112627,108847,24037
+24,39,Maryland,Somerset,25922,26044,24039
+24,41,Maryland,Talbot,37057,37995,24041
+24,43,Maryland,Washington,150247,149090,24043
+24,45,Maryland,Wicomico,102471,100593,24045
+24,47,Maryland,Worcester,51721,51578,24047
+24,510,Maryland,Baltimore city,610853,623035,24510
+42,1,Pennsylvania,Adams,102629,101265,42001
+42,3,Pennsylvania,Allegheny,1220423,1231129,42003
+42,5,Pennsylvania,Armstrong,66042,68223,42005
+42,7,Pennsylvania,Beaver,165779,170091,42007
+42,9,Pennsylvania,Bedford,48359,49592,42009
+42,11,Pennsylvania,Berks,417601,413552,42011
+42,13,Pennsylvania,Blair,123173,126569,42013
+42,15,Pennsylvania,Bradford,60996,63005,42015
+42,17,Pennsylvania,Bucks,627302,625603,42017
+42,19,Pennsylvania,Butler,187083,185016,42019
+42,21,Pennsylvania,Cambria,133035,141563,42021
+42,23,Pennsylvania,Cameron,4611,4974,42023
+42,25,Pennsylvania,Carbon,63885,64799,42025
+42,27,Pennsylvania,Centre,162549,155905,42027
+42,29,Pennsylvania,Chester,519057,506049,42029
+42,31,Pennsylvania,Clarion,39020,39472,42031
+42,33,Pennsylvania,Clearfield,79803,81407,42033
+42,35,Pennsylvania,Clinton,38830,39739,42035
+42,37,Pennsylvania,Columbia,65638,67045,42037
+42,39,Pennsylvania,Crawford,85790,87745,42039
+42,41,Pennsylvania,Cumberland,249328,239315,42041
+42,43,Pennsylvania,Dauphin,275796,270058,42043
+42,45,Pennsylvania,Delaware,564015,560865,42045
+42,47,Pennsylvania,Elk,30274,31619,42047
+42,49,Pennsylvania,Erie,273855,281416,42049
+42,51,Pennsylvania,Fayette,131340,135283,42051
+42,53,Pennsylvania,Forest,7328,7587,42053
+42,55,Pennsylvania,Franklin,154731,151518,42055
+42,57,Pennsylvania,Fulton,14469,14701,42057
+42,59,Pennsylvania,Greene,36875,38048,42059
+42,61,Pennsylvania,Huntingdon,45447,45948,42061
+42,63,Pennsylvania,Indiana,84809,88243,42063
+42,65,Pennsylvania,Jefferson,43829,44805,42065
+42,67,Pennsylvania,Juniata,24628,24609,42067
+42,69,Pennsylvania,Lackawanna,210603,214232,42069
+42,71,Pennsylvania,Lancaster,541352,526949,42071
+42,73,Pennsylvania,Lawrence,86608,89895,42073
+42,75,Pennsylvania,Lebanon,139473,135531,42075
+42,77,Pennsylvania,Lehigh,365772,354673,42077
+42,79,Pennsylvania,Luzerne,318031,321232,42079
+42,81,Pennsylvania,Lycoming,114146,117237,42081
+42,83,Pennsylvania,McKean,41427,43151,42083
+42,85,Pennsylvania,Mercer,111526,115660,42085
+42,87,Pennsylvania,Mifflin,46270,46755,42087
+42,89,Pennsylvania,Monroe,168033,168675,42089
+42,91,Pennsylvania,Montgomery,824533,808782,42091
+42,93,Pennsylvania,Montour,18255,18429,42093
+42,95,Pennsylvania,Northampton,303178,299099,42095
+42,97,Pennsylvania,Northumberland,91766,94413,42097
+42,99,Pennsylvania,Perry,46043,45807,42099
+42,101,Pennsylvania,Philadelphia,1581699,1552087,42101
+42,103,Pennsylvania,Pike,55492,56334,42103
+42,105,Pennsylvania,Potter,16839,17556,42105
+42,107,Pennsylvania,Schuylkill,142550,147131,42107
+42,109,Pennsylvania,Snyder,40621,39886,42109
+42,111,Pennsylvania,Somerset,74273,77028,42111
+42,113,Pennsylvania,Sullivan,6136,6405,42113
+42,115,Pennsylvania,Susquehanna,40939,42923,42115
+42,117,Pennsylvania,Tioga,40729,42486,42117
+42,119,Pennsylvania,Union,44744,45195,42119
+42,121,Pennsylvania,Venango,51800,54185,42121
+42,123,Pennsylvania,Warren,39682,41268,42123
+42,125,Pennsylvania,Washington,207152,208350,42125
+42,127,Pennsylvania,Wayne,51193,52244,42127
+42,129,Pennsylvania,Westmoreland,352152,362825,42129
+42,131,Pennsylvania,Wyoming,27409,28391,42131
+42,133,Pennsylvania,York,445924,437551,42133
+51,1,Virginia,Accomack,32729,33276,51001
+51,3,Virginia,Albemarle,108107,101504,51003
+51,5,Virginia,Alleghany,15143,16035,51005
+51,7,Virginia,Amelia,12974,12741,51007
+51,9,Virginia,Amherst,31893,32640,51009
+51,11,Virginia,Appomattox,15715,15240,51011
+51,13,Virginia,Arlington,235193,221614,51013
+51,15,Virginia,Augusta,75324,73599,51015
+51,17,Virginia,Bath,4270,4642,51017
+51,19,Virginia,Bedford,78445,75755,51019
+51,21,Virginia,Bland,6361,6693,51021
+51,23,Virginia,Botetourt,33355,33121,51023
+51,25,Virginia,Brunswick,16572,17023,51025
+51,27,Virginia,Buchanan,21622,23835,51027
+51,29,Virginia,Buckingham,17046,17071,51029
+51,31,Virginia,Campbell,55440,54843,51031
+51,33,Virginia,Caroline,30441,28950,51033
+51,35,Virginia,Carroll,29845,29920,51035
+51,36,Virginia,Charles City,7024,7123,51036
+51,37,Virginia,Charlotte,12078,12400,51037
+51,41,Virginia,Chesterfield,343500,323942,51041
+51,43,Virginia,Clarke,14468,14255,51043
+51,45,Virginia,Craig,5070,5139,51045
+51,47,Virginia,Culpeper,51261,47850,51047
+51,49,Virginia,Cumberland,9840,9845,51049
+51,51,Virginia,Dickenson,14728,15708,51051
+51,53,Virginia,Dinwiddie,28678,28222,51053
+51,57,Virginia,Essex,10960,11133,51057
+51,59,Virginia,Fairfax,1149346,1120654,51059
+51,61,Virginia,Fauquier,69555,66567,51061
+51,63,Virginia,Floyd,15783,15438,51063
+51,65,Virginia,Fluvanna,26517,25889,51065
+51,67,Virginia,Franklin,56341,56293,51067
+51,69,Virginia,Frederick,86568,80247,51069
+51,71,Virginia,Giles,16759,17024,51071
+51,73,Virginia,Gloucester,37332,36849,51073
+51,75,Virginia,Goochland,22893,21438,51075
+51,77,Virginia,Grayson,15699,15146,51077
+51,79,Virginia,Greene,19608,18831,51079
+51,81,Virginia,Greensville,11552,11746,51081
+51,83,Virginia,Halifax,34592,35740,51083
+51,85,Virginia,Hanover,105729,100340,51085
+51,87,Virginia,Henrico,328008,315575,51087
+51,89,Virginia,Henry,51370,53098,51089
+51,91,Virginia,Highland,2215,2234,51091
+51,93,Virginia,Isle of Wight,36758,35352,51093
+51,95,Virginia,James City,75429,69460,51095
+51,97,Virginia,King and Queen,7010,7008,51097
+51,99,Virginia,King George,26379,24615,51099
+51,101,Virginia,King William,16706,15977,51101
+51,103,Virginia,Lancaster,10724,11125,51103
+51,105,Virginia,Lee,23934,25433,51105
+51,107,Virginia,Loudoun,397192,337902,51107
+51,109,Virginia,Louisa,35803,33357,51109
+51,111,Virginia,Lunenburg,12353,12639,51111
+51,113,Virginia,Madison,13218,13135,51113
+51,115,Virginia,Mathews,8704,8911,51115
+51,117,Virginia,Mecklenburg,30705,31698,51117
+51,119,Virginia,Middlesex,10614,10851,51119
+51,121,Virginia,Montgomery,98230,95698,51121
+51,125,Virginia,Nelson,14800,14802,51125
+51,127,Virginia,New Kent,21629,19148,51127
+51,131,Virginia,Northampton,11867,12209,51131
+51,133,Virginia,Northumberland,12270,12421,51133
+51,135,Virginia,Nottoway,15439,15758,51135
+51,137,Virginia,Orange,35882,34263,51137
+51,139,Virginia,Page,23801,23841,51139
+51,141,Virginia,Patrick,17727,18339,51141
+51,143,Virginia,Pittsylvania,61334,62900,51143
+51,145,Virginia,Powhatan,28722,28186,51145
+51,147,Virginia,Prince Edward,22698,23187,51147
+51,149,Virginia,Prince George,38049,37155,51149
+51,153,Virginia,Prince William,463400,429716,51153
+51,155,Virginia,Pulaski,34255,34734,51155
+51,157,Virginia,Rappahannock,7409,7414,51157
+51,159,Virginia,Richmond,8882,9076,51159
+51,161,Virginia,Roanoke,93900,92771,51161
+51,163,Virginia,Rockbridge,22736,22384,51163
+51,165,Virginia,Rockingham,80448,77149,51165
+51,167,Virginia,Russell,27054,28429,51167
+51,169,Virginia,Scott,21897,22956,51169
+51,171,Virginia,Shenandoah,43319,42532,51171
+51,173,Virginia,Smyth,30772,31911,51173
+51,175,Virginia,Southampton,17866,18506,51175
+51,177,Virginia,Spotsylvania,132889,125867,51177
+51,179,Virginia,Stafford,146868,133449,51179
+51,181,Virginia,Surry,6508,6844,51181
+51,183,Virginia,Sussex,11369,11927,51183
+51,185,Virginia,Tazewell,41362,44276,51185
+51,187,Virginia,Warren,39478,37898,51187
+51,191,Virginia,Washington,54202,55110,51191
+51,193,Virginia,Westmoreland,17723,17515,51193
+51,195,Virginia,Wise,38593,40928,51195
+51,197,Virginia,Wythe,28832,29331,51197
+51,199,Virginia,York,68117,65872,51199
+51,510,Virginia,Alexandria city,158772,147379,51510
+51,520,Virginia,Bristol city,16956,17706,51520
+51,530,Virginia,Buena Vista city,6504,6751,51530
+51,540,Virginia,Charlottesville city,47456,44610,51540
+51,550,Virginia,Chesapeake city,240416,228134,51550
+51,570,Virginia,Colonial Heights city,17382,17390,51570
+51,580,Virginia,Covington city,5660,5846,51580
+51,590,Virginia,Danville city,41078,42725,51590
+51,595,Virginia,Emporia city,5489,5816,51595
+51,600,Virginia,Fairfax city,23274,22904,51600
+51,610,Virginia,Falls Church city,14273,13126,51610
+51,620,Virginia,Franklin city,8132,8488,51620
+51,630,Virginia,Fredericksburg city,28718,27190,51630
+51,640,Virginia,Galax city,6477,6850,51640
+51,650,Virginia,Hampton city,135007,137222,51650
+51,660,Virginia,Harrisonburg city,53807,51336,51660
+51,670,Virginia,Hopewell city,22533,22306,51670
+51,678,Virginia,Lexington city,7139,7027,51678
+51,680,Virginia,Lynchburg city,80567,77326,51680
+51,683,Virginia,Manassas city,41171,40284,51683
+51,685,Virginia,Manassas Park city,17209,15404,51685
+51,690,Virginia,Martinsville city,12827,13518,51690
+51,700,Virginia,Newport News city,179738,180148,51700
+51,710,Virginia,Norfolk city,244908,246247,51710
+51,720,Virginia,Norton city,3927,4125,51720
+51,730,Virginia,Petersburg city,30966,31995,51730
+51,735,Virginia,Poquoson city,12041,12115,51735
+51,740,Virginia,Portsmouth city,94964,96516,51740
+51,750,Virginia,Radford city,17470,16720,51750
+51,760,Virginia,Richmond city,227620,210922,51760
+51,770,Virginia,Roanoke city,98989,98034,51770
+51,775,Virginia,Salem city,25362,25190,51775
+51,790,Virginia,Staunton city,24395,23808,51790
+51,800,Virginia,Suffolk city,90228,85320,51800
+51,810,Virginia,Virginia Beach city,450417,445189,51810
+51,820,Virginia,Waynesboro city,22196,21065,51820
+51,830,Virginia,Williamsburg city,14990,14519,51830
+51,840,Virginia,Winchester city,28148,27012,51840
+54,1,West Virginia,Barbour,16530,16869,54001
+54,3,West Virginia,Berkeley,115234,107024,54003
+54,5,West Virginia,Boone,22368,24356,54005
+54,7,West Virginia,Braxton,14218,14452,54007
+54,9,West Virginia,Brooke,22406,23677,54009
+54,11,West Virginia,Cabell,94511,96933,54011
+54,13,West Virginia,Calhoun,7321,7604,54013
+54,15,West Virginia,Clay,8704,9217,54015
+54,17,West Virginia,Doddridge,8530,8300,54017
+54,19,West Virginia,Fayette,43620,45873,54019
+54,21,West Virginia,Gilmer,8060,8760,54021
+54,23,West Virginia,Grant,11625,11801,54023
+54,25,West Virginia,Greenbrier,35206,35892,54025
+54,27,West Virginia,Hampshire,23398,23668,54027
+54,29,West Virginia,Hancock,29411,30480,54029
+54,31,West Virginia,Hardy,13859,13857,54031
+54,33,West Virginia,Harrison,67951,69113,54033
+54,35,West Virginia,Jackson,28919,29285,54035
+54,37,West Virginia,Jefferson,56586,54736,54037
+54,39,West Virginia,Kanawha,183525,192306,54039
+54,41,West Virginia,Lewis,16166,16450,54041
+54,43,West Virginia,Lincoln,20895,21606,54043
+54,45,West Virginia,Logan,33030,36322,54045
+54,47,West Virginia,McDowell,18517,21318,54047
+54,49,West Virginia,Marion,56430,56791,54049
+54,51,West Virginia,Marshall,31260,32827,54051
+54,53,West Virginia,Mason,26841,27233,54053
+54,55,West Virginia,Mercer,59903,62441,54055
+54,57,West Virginia,Mineral,27227,27895,54057
+54,59,West Virginia,Mingo,24151,26193,54059
+54,61,West Virginia,Monongalia,106086,101009,54061
+54,63,West Virginia,Monroe,13397,13503,54063
+54,65,West Virginia,Morgan,17740,17434,54065
+54,67,West Virginia,Nicholas,25126,26255,54067
+54,69,West Virginia,Ohio,42069,44017,54069
+54,71,West Virginia,Pendleton,6978,7474,54071
+54,73,West Virginia,Pleasants,7460,7531,54073
+54,75,West Virginia,Pocahontas,8494,8704,54075
+54,77,West Virginia,Preston,33846,33905,54077
+54,79,West Virginia,Putnam,56704,56448,54079
+54,81,West Virginia,Raleigh,75106,79284,54081
+54,83,West Virginia,Randolph,28896,29388,54083
+54,85,West Virginia,Ritchie,9856,10254,54085
+54,87,West Virginia,Roane,14020,14679,54087
+54,89,West Virginia,Summers,12897,13838,54089
+54,91,West Virginia,Taylor,16907,16960,54091
+54,93,West Virginia,Tucker,6994,7079,54093
+54,95,West Virginia,Tyler,8803,9052,54095
+54,97,West Virginia,Upshur,24589,24456,54097
+54,99,West Virginia,Wayne,40301,41933,54099
+54,101,West Virginia,Webster,8349,8981,54101
+54,103,West Virginia,Wetzel,15444,16345,54103
+54,105,West Virginia,Wirt,5781,5770,54105
+54,107,West Virginia,Wood,85163,86655,54107
+54,109,West Virginia,Wyoming,21275,23213,54109
+36,1,New York,Albany,307919,305776,36001
+36,3,New York,Allegany,46669,48221,36003
+36,5,New York,Bronx,1439956,1411087,36005
+36,7,New York,Broome,193255,198689,36007
+36,9,New York,Cattaraugus,77199,79354,36009
+36,11,New York,Cayuga,77495,79524,36011
+36,13,New York,Chautauqua,128424,133333,36013
+36,15,New York,Chemung,84825,89162,36015
+36,17,New York,Chenango,47842,49898,36017
+36,19,New York,Clinton,80595,81730,36019
+36,21,New York,Columbia,60312,62450,36021
+36,23,New York,Cortland,47834,49028,36023
+36,25,New York,Delaware,45061,47217,36025
+36,27,New York,Dutchess,293512,297028,36027
+36,29,New York,Erie,919378,919998,36029
+36,31,New York,Essex,37521,38884,36031
+36,33,New York,Franklin,50478,51791,36033
+36,35,New York,Fulton,53815,54851,36035
+36,37,New York,Genesee,57828,59684,36037
+36,39,New York,Greene,47403,48589,36039
+36,41,New York,Hamilton,4477,4803,36041
+36,43,New York,Herkimer,62193,64232,36043
+36,45,New York,Jefferson,113488,120335,36045
+36,47,New York,Kings,2594357,2568538,36047
+36,49,New York,Lewis,26606,27190,36049
+36,51,New York,Livingston,63503,64780,36051
+36,53,New York,Madison,70993,72438,36053
+36,55,New York,Monroe,743528,747468,36055
+36,57,New York,Montgomery,49203,49836,36057
+36,59,New York,Nassau,1357260,1349753,36059
+36,61,New York,New York,1632337,1624573,36061
+36,63,New York,Niagara,210911,214724,36063
+36,65,New York,Oneida,229980,233778,36065
+36,67,New York,Onondaga,461843,467138,36067
+36,69,New York,Ontario,109652,108641,36069
+36,71,New York,Orange,379896,373795,36071
+36,73,New York,Orleans,40815,42396,36073
+36,75,New York,Oswego,118444,121469,36075
+36,77,New York,Otsego,59955,61763,36077
+36,79,New York,Putnam,98901,99600,36079
+36,81,New York,Queens,2295226,2271920,36081
+36,83,New York,Rensselaer,159214,159466,36083
+36,85,New York,Richmond,475819,470597,36085
+36,87,New York,Rockland,324600,317201,36087
+36,89,New York,St. Lawrence,108768,112388,36089
+36,91,New York,Saratoga,229314,222527,36091
+36,93,New York,Schenectady,154716,155044,36093
+36,95,New York,Schoharie,31260,32038,36095
+36,97,New York,Schuyler,17910,18505,36097
+36,99,New York,Seneca,34293,35354,36099
+36,101,New York,Steuben,96379,98903,36101
+36,103,New York,Suffolk,1483862,1497017,36103
+36,105,New York,Sullivan,75000,76940,36105
+36,107,New York,Tioga,48659,50297,36107
+36,109,New York,Tompkins,102731,102800,36109
+36,111,New York,Ulster,178650,181555,36111
+36,113,New York,Warren,64406,65438,36113
+36,115,New York,Washington,61600,63016,36115
+36,117,New York,Wayne,90429,93038,36117
+36,119,New York,Westchester,970033,959731,36119
+36,121,New York,Wyoming,40296,41702,36121
+36,123,New York,Yates,25021,25341,36123
+11,1,District of Columbia,District of Columbia,697079,635737,11001

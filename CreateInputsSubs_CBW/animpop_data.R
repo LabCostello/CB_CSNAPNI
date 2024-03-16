@@ -40,29 +40,31 @@ for(n in 1:length(import_yrs)){
   # watershed crop production
   animpopws[,,n] = t(cnty_ws)%*%animpopcnty[,,n]
   
-  dummy <- merge(cbind(percent_crop_in_cbw,percent_corn_in_cbw$percentage.corn),cbind(FIPS,animpopcnty[,,n]))
+  dummy <- merge(cbind(percent_crop_in_cbw[1:3],percent_crop_in_cbw[3+n],percent_corn_in_cbw[3+n]),cbind(FIPS,animpopcnty[,,n]))
   animws <- data.frame("FIPS"=dummy$FIPS,
                        "LNDRVRSEG"=dummy$LNDRVRSEG,
                        "OBJECTID"=dummy$OBJECTID,
-                       "fattened cattle"=dummy$percentage*dummy$V2,
-                       "milk cows"=dummy$`percent_corn_in_cbw$percentage.corn`*dummy$V3,
-                       "hogs for breeding"=dummy$percentage*dummy$V4,
-                       "hogs for slaughter"=dummy$percentage*dummy$V5,
-                       "chicken layers"=dummy$percentage*dummy$V6,
-                       "breeding turkeys"=dummy$percentage*dummy$V7,
-                       "chicken pullets"=dummy$percentage*dummy$V8,
-                       "chicken broilers"=dummy$percentage*dummy$V9,
-                       "slaughter turkeys"=dummy$percentage*dummy$V10,
-                       "beef breeding herd"=dummy$percentage*dummy$V11,
-                       "beef calves"=dummy$percentage*dummy$V12,
-                       "dairy calves"=dummy$percentage*dummy$V13,
-                       "beef heifers"=dummy$percentage*dummy$V14,
-                       "dairy heifers"=dummy$percentage*dummy$V15,
-                       "beef stockers"=dummy$percentage*dummy$V16,
-                       "dairy stockers"=dummy$percentage*dummy$V17,
-                       "sheep"=dummy$percentage*dummy$V18,
-                       "horses"=dummy$percentage*dummy$V19,
-                       "goats"=dummy$percentage*dummy$V20)
+                       "fattened cattle"=dummy[,4]*dummy$V2,
+                       "milk cows"=dummy[,5]*dummy$V3,
+                       "hogs for breeding"=dummy[,4]*dummy$V4,
+                       "hogs for slaughter"=dummy[,4]*dummy$V5,
+                       "chicken layers"=dummy[,4]*dummy$V6,
+                       "breeding turkeys"=dummy[,4]*dummy$V7,
+                       "chicken pullets"=dummy[,4]*dummy$V8,
+                       "chicken broilers"=dummy[,4]*dummy$V9,
+                       "slaughter turkeys"=dummy[,4]*dummy$V10,
+                       "beef breeding herd"=dummy[,4]*dummy$V11,
+                       "beef calves"=dummy[,4]*dummy$V12,
+                       "dairy calves"=dummy[,4]*dummy$V13,
+                       "beef heifers"=dummy[,4]*dummy$V14,
+                       "dairy heifers"=dummy[,4]*dummy$V15,
+                       "beef stockers"=dummy[,4]*dummy$V16,
+                       "dairy stockers"=dummy[,4]*dummy$V17,
+                       "sheep"=dummy[,4]*dummy$V18,
+                       "horses"=dummy[,4]*dummy$V19,
+                       "goats"=dummy[,4]*dummy$V20)
+  
+  animws <- animws %>% arrange(FIPS,LNDRVRSEG)
   
   animpopcnty_old[,,n] <- animpopcnty[,,n]
   

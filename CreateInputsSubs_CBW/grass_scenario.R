@@ -1,19 +1,19 @@
-# Constants and Variables ####
-land_use_grass <- 0.10 # Reference: Zhou et al.(2014)
-grass_yield_no_fert <- 9.9 # Reference: Woodbury et al.(2018) Unit: M*100**g/ha (DM)
-# grass_yield_fert <- 19.7 # Reference: Kering et al.(2012) Unit: Mg/ha
+if(print_tags == 1){
+  print("CreateInputsSubs_CBW/grass_scenario.R")
+}
 
 grass_dry_matter <- (1-0.0816) # Not in use, because the yield provided above is in dry matter already
 biogascnty <- array(0,c(n_cnty,length(import_yrs))) 
 biogasws <- array(0,c(n_ws_NEEA,length(import_yrs))) 
 
-# Area that will receive grass#####
+# Area Harvested
+
+cropareacty_old = array(0,c(n_cnty,n_crops,length(import_yrs)))
 cropareacty = array(0,c(n_cnty,n_crops,length(import_yrs)))
-cropareacty[,1:(n_crops-3),] = areas_array
+cropareacty[,1:(n_crops-3),] = areas_array #crop harvested areas, in km2
 cropareaws=array(0,c(n_ws_tbx,n_crops,length(import_yrs)))
 cornareanoetoh=array(0,c(n_cnty,length(import_yrs)))
 yr_col=array(0,c(length(import_yrs),1))
-
 for(n in 1:length(import_yrs)){
   # calc amounts of etoh coproducts
   cropareacty[,(n_crops-2),n]=cornuse[5,n]*cropareacty[,1,n]*to_FC_wetmill[alloc_method]*wetmill_CGF
@@ -30,28 +30,52 @@ for(n in 1:length(import_yrs)){
       }
     }
   }
-  # Reduction in the corn area and production (grain & silage)
-  if(grass_scenario == 1){
-    # Build an if depending if it is grass fertilized or not
-    cropareacty[,17,n] <- (cropareacty[,1,n]+cropareacty[,2,n]+cropareacty[,12,n])*land_use_grass
-    if(grass_fert_scenario == 1){grass_prod <- (cropareacty[,17,n]*grass_yield_fert)}else{
-      grass_prod <- (cropareacty[,17,n]*grass_yield_no_fert)} # In the future change 
-    
-    # Reduction of 90% of area harvested for corn
-    cropareacty[,1,n] <- cropareacty[,1,n]*(1-land_use_grass) # Corn Grain
-    cropareacty[,2,n] <- cropareacty[,2,n]*(1-land_use_grass) # Corn Silage
-    cropareacty[,12,n] <- cropareacty[,12,n]*(1-land_use_grass) # Soybeans
-    
-  }
-  cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
+  
+  #cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
+  dummy <- merge(as.data.frame(lrs_cdl_percents[n],check.names=FALSE),cbind(FIPS,cropareacty[,,n]))
+  colnames(dummy)[17:36] <- cropareaharvested_key[-1,1]
+  cropws <- data.frame("FIPS"=dummy$FIPS,
+                       "LNDRVRSEG"=dummy$LNDRVRSEG,
+                       "OBJECTID"=dummy$OBJECTID,
+                       "REGION"=dummy$REGION,
+                       "Corn.grain" = dummy$Corn*dummy$`corn for grain`*(1-(land_use_grass*0.4)),
+                       "Corn.silage" = dummy$Corn*dummy$`corn for silage`*(1-(land_use_grass*0.4)),
+                       "Wheat" = dummy$Wheat*dummy$wheat,
+                       "Oats" = dummy$Oats*dummy$oats,
+                       "Barley" = dummy$Barley*dummy$barley,
+                       "Sorghum.grain" = dummy$Sorghum*dummy$`sorghum for grain`,
+                       "Sorghum.grain" = dummy$Sorghum*dummy$`sorghum for silage`,
+                       "Potatoes" = dummy$Potatoes*dummy$potatoes,
+                       "Rye" = dummy$Rye*dummy$rye,
+                       "Alfalfa" = dummy$Alfalfa*dummy$`alfalfa hay`,
+                       "Other Hay/Non Alfalfa" = dummy$Other.Hay.Non.Alfalfa*dummy$`other hay`,
+                       "Soybeans" = dummy$Soybeans*dummy$soybeans*(1-(land_use_grass*0.2)),
+                       "Cropland pasture" = dummy$Grass.Pasture*dummy$`cropland pasture`,
+                       "Noncropland pasture" = dummy$Grass.Pasture*dummy$`noncropland pasture`,
+                       "Rice" = 0,
+                       "Peanuts" = dummy$Peanuts*dummy$grass,
+#                       "Grass" = ((0.5*dummy$Corn*dummy$V2)+(0.5*dummy$Corn*dummy$V3)+(0.25*dummy$Soybeans*dummy$V13))*land_use_grass, # CG-CG-S-CS-CS rotation
+                       "Grass" = ((dummy[,Crotation[1]]*dummy[,Crotation[2]])+(dummy[,Crotation[3]]*dummy[,Crotation[4]])+(dummy[,Crotation[5]]*dummy[,Crotation[6]])+(dummy[,Crotation[7]]*dummy[,Crotation[8]])+(dummy[,Crotation[9]]*dummy[,Crotation[10]]))*0.2*land_use_grass, # CG-CG-S-CS-CS rotation
+                       "CGM" = dummy$Corn*dummy$CGF,
+                       "CGF" = dummy$Corn*dummy$CGM,
+                       "DGS" = dummy$Corn*dummy$DGS)
+  cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
+  
+  cropws <- cropws %>% arrange(FIPS,LNDRVRSEG)
+  
+  cropareacty_old[,,n] <- cropareacty[,,n]
+  
+  cropareacty[,,n] <- as.matrix(subset(aggregate(cropws[,5:24], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  
+  cropareaws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
   
   write_name = paste("InputFiles_CBW/cropareaharvestedcnty",run_yrs[n],".txt",sep = "")
   write.table(cropareacty[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
-  
 }
 croparea=colSums(cropareaws)
 cornareanoetohsum=colSums(cornareanoetoh)
-etoh_landuse = cornuse[5,]*cornareanoetohsum*(1-to_FC_wetmill[alloc_method])+cornuse[6,]*cornareanoetohsum*(1-to_FC_drymill[alloc_method]) #ag land use for etoh
+#etoh_landuse = cornuse[5,]*cornareanoetohsum*(1-to_FC_wetmill[alloc_method])+cornuse[6,]*cornareanoetohsum*(1-to_FC_drymill[alloc_method]) #ag land use for etoh
+etoh_landuse <- c(0,0,0,0,0) # There is no land use to produce ethanol in the region. The corn that is produced for etoh is from outside of the CBW (assumption)
 
 #write files
 write_name = paste("InputFiles_CBW/corntotareaharvested.txt")
@@ -68,16 +92,7 @@ cropareaharvested_key[1,] = c(" ", import_yrs) #column headings
 cropareaharvested_key[,1]=c("crop", cropname) #row headings
 write.table(cropareaharvested_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 
-
-# Production of grass ####
-cropprodcnty = array(0,c(n_cnty,length(cropname),length(import_yrs)))
-cropprodcnty[,1:(n_crops-3),] = prod_array
-etohprodcnty = array(0,c(n_cnty,length(import_yrs)))
-cropprodws = array(0,c(n_ws_tbx,length(cropname),length(import_yrs)))
-etohprodws = array(0,c(n_ws_tbx,length(import_yrs)))
-cropproddensws = array(0,c(n_ws_tbx,length(cropname),length(import_yrs)))
-etohproddensws = array(0,c(n_ws_tbx,length(import_yrs)))
-cornprodnoetoh=array(0,c(n_cnty,length(import_yrs)))
+#Production
 
 for(n in 1:(length(import_yrs))){ 
   # build a matrix of extracted data
@@ -85,23 +100,77 @@ for(n in 1:(length(import_yrs))){
     # calc amounts of etoh coproducts
     cropprodcnty[j,(n_crops-2),n] = cornuse[5,n]*cropprodcnty[j,1,n]*CGF_from_corn #CGF (the CGF produced by corn reported by the USDA in "alcohol for fuel" that is not DDGS)
     cropprodcnty[j,(n_crops-1),n] = cornuse[5,n]*cropprodcnty[j,1,n]*CGM_from_corn #CGM (the CGM produced by corn reported by the USDA in "alcohol for fuel" that is not DDGS)
+    #cropprodcnty[j,n_crops,n] = cornuse[6,n]*cropprodcnty[j,1,n]*DGS_from_corn #DGS (the DDGS produced by corn from ethanol plants, as reported by the USDA)
+    #etohprodcnty[j,n] = (cornuse[5,n]+cornuse[6,n])*cropprodcnty[j,1,n]*etoh_from_corn[n] #liters of etoh from corn for etoh, assumption that every county contributes equally to corn for ethanol
+    
     # calc new corn total
     cornprodnoetoh[j,n] = drop(cropprodcnty[j,1,n])
     cropprodcnty[j,1,n] = cornprodnoetoh[j,n]*(1-(cornuse[5,n])) #proportion of corn not allocated to fuel ethanol production
     #pastures: "take half, leave half"
     cropprodcnty[j,13:14,n] = cropprodcnty[j,13:14,n]/2
   }
-  # Grass scenario
-  if(grass_scenario == 1){
-    if(grass_fert_scenario == 1){cropprodcnty[,17,n] <- (cropareacty[,17,n]*grass_yield_fert)}else{
-      cropprodcnty[,17,n] <- (cropareacty[,17,n]*grass_yield_no_fert)} # In the future change 
-    # Reduction of 90% of production for corn
-    cropprodcnty[,1,n] <- cropprodcnty[,1,n]*0.9
-    cropprodcnty[,2,n] <- cropprodcnty[,2,n]*0.9
-  }
+  
   # watershed crop production
   cropprodws[,,n] = t(cnty_ws)%*%cropprodcnty[,,n]
   etohprodws[,n] = t(cnty_ws)%*%etohprodcnty[,n]
+  
+  dummy <- merge(as.data.frame(lrs_cdl_percents[n],check.names=FALSE),cbind(FIPS,cropprodcnty[,,n]))
+  cropws <- data.frame("FIPS"=dummy$FIPS,
+                       "LNDRVRSEG"=dummy$LNDRVRSEG,
+                       "OBJECTID"=dummy$OBJECTID,
+                       "REGION"=dummy$REGION,
+                       "Corn.grain" = dummy$Corn*dummy$V2*(1-(land_use_grass*0.4)),
+                       "Corn.silage" = dummy$Corn*dummy$V3*(1-(land_use_grass*0.4)),
+                       "Wheat" = dummy$Wheat*dummy$V4,
+                       "Oats" = dummy$Oats*dummy$V5,
+                       "Barley" = dummy$Barley*dummy$V6,
+                       "Sorghum.grain" = dummy$Sorghum*dummy$V7,
+                       "Sorghum.grain" = dummy$Sorghum*dummy$V8,
+                       "Potatoes" = dummy$Potatoes*dummy$V9,
+                       "Rye" = dummy$Rye*dummy$V10,
+                       "Alfalfa" = dummy$Alfalfa*dummy$V11,
+                       "Other Hay/Non Alfalfa" = dummy$Other.Hay.Non.Alfalfa*dummy$V12,
+                       "Soybeans" = dummy$Soybeans*dummy$V13*(1-(land_use_grass*0.2)),
+                       "Cropland pasture" = dummy$Grass.Pasture*dummy$V14,
+                       "Noncropland pasture" = dummy$Grass.Pasture*dummy$V15,
+                       "Rice" = 0,
+                       "Peanuts" = dummy$Peanuts*dummy$V17,
+                       "Grass" = 0,
+                       "CGM" = dummy$Corn*dummy$V19,
+                       "CGF" = dummy$Corn*dummy$V20,
+                       "DGS" = dummy$Corn*dummy$V21)
+  cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
+  
+  cropws <- cropws %>% arrange(FIPS,LNDRVRSEG)
+  
+  cropprodcnty_old[,,n] <- cropprodcnty[,,n]
+  
+  cropprodcnty[,,n] <- as.matrix(subset(aggregate(cropws[,5:24], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  
+  cropprodws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
+  
+  dummy <- merge(as.data.frame(lrs_cdl_percents[n],check.names=FALSE)[,1:5],cbind(FIPS,etohprodcnty[,n]))
+  cropwse <- data.frame("FIPS"=dummy$FIPS,
+                        "LNDRVRSEG"=dummy$LNDRVRSEG,
+                        "OBJECTID"=dummy$OBJECTID,
+                        "REGION"=dummy$REGION,
+                        "Ethanol" = dummy$Corn*dummy$V2)
+  
+  cropwse <- cropwse[cropwse$REGION=="Chesapeake Bay Watershed",]
+  
+  etohprodcnty[,n] <- as.matrix(subset(aggregate(cropwse[,5], by=list(cropwse$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  
+  etohprodws[,n] <- as.matrix(subset(cropwse,select=-c(1:4)))  
+  
+
+  # Grass scenario
+  cropprodcnty[,17,n] <- if(grass_fert_scenario == 1) {cropareacty[,17,n]*grass_yield_fert*100000} else {cropareacty[,17,n]*grass_yield_no_fert*100000} # Multiplying 10^5 to transform from Mg/ha to kg/km2
+  cropprodws[,17,n] <- if(grass_fert_scenario == 1) {cropareaws[,17,n]*grass_yield_fert*100000} else {cropareaws[,17,n]*grass_yield_no_fert*100000} # Multiplying 10^5 to transform from Mg/ha to kg/km2
+  
+  # Winter crop scenario
+  
+  
+  # Calculating densities of crops per area
   for(i in 1:(length(cropname))){ #columns (crops)
     cropproddensws[,i,n] = cropprodws[,i,n]/area
   }
@@ -141,15 +210,6 @@ etohproddensws_key[1,]=c(" ", import_yrs) #column headings
 etohproddensws_key[,1]=c("L/km^2", 1:n_ws_tbx) #row headings
 write.table(etohproddensws_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 
-# Biogas production #####
-  # Calculate biogas
-for (n in 1:length(import_yrs)){
-  biogascnty[,n] <- cropprodcnty[,17,n]*1000*.834*111*0.001 #m3
-  biogasws[,n] <- cropprodws[,17,n]*1000*.834*111*0.001 #m3 521,692.8 (Mg->kg->dm3->L)
-}
-
-biogas_electricitycnty <- biogascnty*2
-biogas_electricityws <- biogasws*2
 
 # References ####
 # Murphy, J., Bochmann, G., Weiland, P., & Wellinger, A. (2011). Biogas from Crop Digestion. IEA Bioenergy - Task 37, 24. (298 in the biogas calculation)

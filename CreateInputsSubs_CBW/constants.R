@@ -22,6 +22,7 @@ cnty_ws = t(array(0, c(n_ws_tbx,n_cnty)))
 lrs_shp <- read_excel("RawData/table_lrs_information.xls") # This file contains info from land river segments, their FIPS, names, acreage, basins. It comes from CAST Source Data.
 CBW_lrs_shp <- lrs_shp[lrs_shp$Region=="Chesapeake Bay Watershed",] # Filtering the file to have only CBW counties
 CBW_lrs_shp <- CBW_lrs_shp[order(CBW_lrs_shp$FIPS),] # Ascending order for FIPS
+CBW_lrs_shp <- CBW_lrs_shp %>% arrange(FIPS,LndRvrSeg)
 
 # Area of each Land River Segment based in the Acreage information available in the shapefile table provided from CAST
 area <- as.matrix(unlist(CBW_lrs_shp$Acres*0.0040468564224, use.names = FALSE)) # Convert from acres to km2

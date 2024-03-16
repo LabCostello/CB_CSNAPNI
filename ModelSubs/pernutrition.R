@@ -15,12 +15,13 @@ fertPmeattot = array(0,c(n_meats,n_crops,nyrs))
 fixNmeattot = array(0,c(n_meats,n_crops,nyrs)) 
 fixNperCkcal = array(0,c(n_crops,nyrs))
 fixNperCprot = array(0,c(n_crops,nyrs))
-fertNperMkcal = array(0,c(n_meats,n_crops,nyrs))  #kg N fertilizer per kcal in 1 kg crop or animal product  M = meat
 fertNperMprot = array(0,c(n_meats,n_crops,nyrs))  #kg N fertilizer per g protein in 1 kg crop or animal product
 fixNperMkcal = array(0,c(n_meats,n_crops,nyrs))   #kg N fixation per kcal in 1 kg crop or animal product
 fixNperMprot = array(0,c(n_meats,n_crops,nyrs))   #kg N fixation per g protein in 1 kg crop or animal product
 fertPperMkcal = array(0,c(n_meats,n_crops,nyrs))  #kg P fertilizer per kcal in 1 kg crop or animal product  M = meat
 fertPperMprot = array(0,c(n_meats,n_crops,nyrs))  #kg P fertilizer per g protein in 1 kg crop or animal product
+
+cropdata[,9] <- Nin_crops*1000/0.16 # Transforming to grams of protein in kg of crop (This way you have also info about kg fertilizer/kg protein of animal crops)
 
 for(n in 1:nyrs){
   #crops
@@ -35,18 +36,20 @@ for(n in 1:nyrs){
   
   #correct for errors, rows 2 & 7 silage, no human consumption
   #rows 10, 11, 13, 14
-  fertNperCkcal[2,n] = 0
-  fertNperCkcal[7,n] = 0
-  fertNperCkcal[10,n] = 0
-  fertNperCkcal[11,n] = 0
-  fertNperCkcal[13,n] = 0
-  fertNperCkcal[14,n] = 0
-  fertNperCprot[2,n] = 0
-  fertNperCprot[7,n] = 0
-  fertNperCprot[10,n] = 0
-  fertNperCprot[11,n] = 0
-  fertNperCprot[13,n] = 0
-  fertNperCprot[14,n] = 0
+  # fertNperCkcal[2,n] = 0
+  # fertNperCkcal[7,n] = 0
+  # fertNperCkcal[10,n] = 0
+  # fertNperCkcal[11,n] = 0
+  # fertNperCkcal[13,n] = 0
+  # fertNperCkcal[14,n] = 0
+  # fertNperCkcal[17,n] <- 0
+  # fertNperCprot[2,n] = 0
+  # fertNperCprot[7,n] = 0
+  # fertNperCprot[10,n] = 0
+  # fertNperCprot[11,n] = 0
+  # fertNperCprot[13,n] = 0
+  # fertNperCprot[14,n] = 0
+  # fertNperCprot[17,n] <- 0
   
   fertPperCkcal[2,n] = 0
   fertPperCkcal[7,n] = 0

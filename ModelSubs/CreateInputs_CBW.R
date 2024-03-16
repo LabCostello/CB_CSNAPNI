@@ -81,7 +81,7 @@ source("CreateInputsSubs_CBW/fertrates_data.r") #Check adding clipped area consi
 
 #####################################################################################
 ##Crop fertilization rate data (from USDA ERS and NASS, and MN extension recommendations)
-source("CreateInputsSubs_CBW/mcs_uncertainty.r") #Check adding clipped area considering ratios for counties in CBW considering ratios for counties in CBW
+#source("CreateInputsSubs_CBW/mcs_uncertainty.r") #Check adding clipped area considering ratios for counties in CBW considering ratios for counties in CBW
 
 #####################################################################################
 
