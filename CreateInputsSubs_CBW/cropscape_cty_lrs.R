@@ -26,6 +26,7 @@ code_class_cdl <- read_excel("RawData/code_class_cdl.xlsx")
 table2007 <- "RawData/Table_LRS_CDL_2008.xlsx"
 table2012 <- "RawData/Table_LRS_CDL_2012.xlsx"
 table2017 <- "RawData/Table_LRS_CDL_2017.xlsx"
+table2022 <- "RawData/Table_LRS_CDL_2022.xlsx"
 developedland <- c("Developed/Open Space","Developed/Low Intensity","Developed/Med Intensity","Developed/High Intensity")
 
 ### < 2007 ################################################################################################################################################
@@ -106,11 +107,11 @@ lrs_cdl_crop_pxl <- data.frame("OBJECTID"=lrs_cdl_2007$OBJECTID,
                                "Peanuts" = lrs_cdl_2007[,8],
                                "Barley" = Barley_pixels,
                                "Wheat" = Wheat_pixels,
-                               "Rye" = lrs_cdl_2007[,15],
+                               "Rye" = lrs_cdl_2007[,17],
                                "Oats" = Oats_pixels,
-                               "Alfalfa" = lrs_cdl_2007[,21],
-                               "Other Hay/Non Alfalfa" = lrs_cdl_2007[,22],
-                               "Potatoes" = lrs_cdl_2007[,26],
+                               "Alfalfa" = lrs_cdl_2007[,22],
+                               "Other Hay/Non Alfalfa" = lrs_cdl_2007[,23],
+                               "Potatoes" = lrs_cdl_2007[,28],
                                "Grass/Pasture" = lrs_cdl_2007[,58]) 
 
 lrs_cdl_crop_pxl_groupby_cty <- lrs_cdl_crop_pxl %>% group_by(lrs_cdl_crop_pxl$FIPS) %>% summarize(across(colnames(lrs_cdl_crop_pxl[,5:16]),sum))
@@ -141,7 +142,6 @@ lrs_cdl_percent[is.na(lrs_cdl_percent)] <- 0
 lrs_cdl_percent <- lrs_cdl_percent %>% arrange(FIPS,LNDRVRSEG)
 lrs_cdl_percent2007 <- lrs_cdl_percent
 ### 2012 ################################################################################################################################################
-
 lrs_cdl_2012 <- as.data.frame(read_and_preprocess_cdl(table2012,code_class_cdl,lrs_shp)[1],check.names=FALSE)
 cbw_lrs_cdl_2012 <- as.data.frame(read_and_preprocess_cdl(table2012,code_class_cdl,lrs_shp)[2],check.names=FALSE)
 cbw_lrs_cdl_2012 <- cbw_lrs_cdl_2012 %>% arrange(FIPS,LNDRVRSEG)
@@ -218,11 +218,11 @@ lrs_cdl_crop_pxl <- data.frame("OBJECTID"=lrs_cdl_2012$OBJECTID,
                                "Peanuts" = lrs_cdl_2012[,8],
                                "Barley" = Barley_pixels,
                                "Wheat" = Wheat_pixels,
-                               "Rye" = lrs_cdl_2012[,15],
+                               "Rye" = lrs_cdl_2012[,17],
                                "Oats" = Oats_pixels,
-                               "Alfalfa" = lrs_cdl_2012[,21],
-                               "Other Hay/Non Alfalfa" = lrs_cdl_2012[,22],
-                               "Potatoes" = lrs_cdl_2012[,26],
+                               "Alfalfa" = lrs_cdl_2012[,22],
+                               "Other Hay/Non Alfalfa" = lrs_cdl_2012[,23],
+                               "Potatoes" = lrs_cdl_2012[,27],
                                "Grass/Pasture" = lrs_cdl_2012[,58]) 
 
 lrs_cdl_crop_pxl_groupby_cty <- lrs_cdl_crop_pxl %>% group_by(lrs_cdl_crop_pxl$FIPS) %>% summarize(across(colnames(lrs_cdl_crop_pxl[,5:16]),sum))
@@ -366,18 +366,132 @@ lrs_cdl_percent <- lrs_cdl_percent %>% arrange(FIPS,LNDRVRSEG)
 
 lrs_cdl_percent2017 <- lrs_cdl_percent
 
+### 2022 ####
+lrs_cdl_2022 <- as.data.frame(read_and_preprocess_cdl(table2022,code_class_cdl,lrs_shp)[1],check.names=FALSE)
+cbw_lrs_cdl_2022 <- as.data.frame(read_and_preprocess_cdl(table2022,code_class_cdl,lrs_shp)[2],check.names=FALSE)
+cbw_lrs_cdl_2022 <- cbw_lrs_cdl_2022 %>% arrange(FIPS,LNDRVRSEG)
+
+### Population Allocation ##
+# This section corresponds to allocation of population to the land river segments. The variable percent_developed_in_cbw will be used in the population_data.R
+# The variable has to be restricted to cbw only because the populationcty is already calculated for the counties inside of cbw, which means just the 1925 LRSs
+cdl_developed_aggregated_2022 <- data.frame("OBJECTID"=cbw_lrs_cdl_2022$OBJECTID,
+                                            "LNDRVRSEG"=cbw_lrs_cdl_2022$LNDRVRSEG,
+                                            "FIPS"=cbw_lrs_cdl_2022$FIPS,
+                                            "REGION"=cbw_lrs_cdl_2022$Region,
+                                            "DEVELOPED2022"=rowSums(cbw_lrs_cdl_2022[,55:58]))
+
+cdl_developed_aggregated_2022_fips <- cdl_developed_aggregated_2022 %>% group_by(FIPS) %>% summarize(across(DEVELOPED2022,sum))
+
+dummy <- merge(cdl_developed_aggregated_2022,cdl_developed_aggregated_2022_fips,by="FIPS")
+
+dummy <-  cbind(dummy,"percentage" = dummy$DEVELOPED2022.x/dummy$DEVELOPED2022.y)
+
+percent_developed_in_cbw <- dummy[,-c(4,5,6)]
+percent_developed_in_cbw2022 <- percent_developed_in_cbw
+
+### Animal Allocation ###
+# This section corresponds to allocation of animals to the land river segments. That should be done using the cropland as a proxy (one of the Booth approach).
+allnames <- names(lrs_cdl_2022)
+noncropnames <- c("Open Water","Developed/Open Space","Developed/Low Intensity","Developed/Med Intensity","Developed/High Intensity","Barren",
+                  "Deciduous Forest","Evergreen Forest","Mixed Forest","Shrubland","Woody Wetlands","Herbaceous Wetlands")
+cropnames2022 <- allnames[!allnames %in% c(noncropnames,"OBJECTID","LNDRVRSEG","FIPS","Region")]
+
+cdl_cropland_aggregated <- data.frame("OBJECTID"=lrs_cdl_2022$OBJECTID,
+                                      "LNDRVRSEG"=lrs_cdl_2022$LNDRVRSEG,
+                                      "FIPS"=lrs_cdl_2022$FIPS,
+                                      "REGION"=lrs_cdl_2022$Region,
+                                      "CROPLAND"=rowSums(lrs_cdl_2022[,cropnames2022]),
+                                      "NONCROP"=rowSums(lrs_cdl_2022[,noncropnames]),
+                                      "CORN"=lrs_cdl_2022[,3])
+
+cdl_cropland_aggregated_fips <- cdl_cropland_aggregated %>% group_by(FIPS) %>% summarize(across(CROPLAND,sum))
+cdl_corn_aggregated_fips <- cdl_cropland_aggregated %>% group_by(FIPS) %>% summarize(across(CORN,sum))
+
+dummy <- merge(cdl_cropland_aggregated,cdl_cropland_aggregated_fips,by="FIPS")
+
+dummy <-  cbind(dummy,"percentage2022" = dummy$CROPLAND.x/dummy$CROPLAND.y)
+percent_crop_lrs <- dummy[,-c(5,6,7)]
+percent_crop_in_cbw <- dummy[dummy$REGION == "Chesapeake Bay Watershed",]
+percent_crop_in_cbw <- percent_crop_in_cbw[,-c(4,5,6,7,8)]
+percent_crop_in_cbw2022 <- percent_crop_in_cbw
+
+dummy_corn <- merge(cdl_cropland_aggregated,cdl_corn_aggregated_fips,by="FIPS")
+
+dummy_corn <-  cbind(dummy_corn,"percentage.corn2022" = dummy_corn$CORN.x/dummy_corn$CORN.y)
+percent_corn_lrs <- dummy_corn[,-c(5,6,7,8)]
+percent_corn_in_cbw <- percent_corn_lrs[percent_corn_lrs$REGION == "Chesapeake Bay Watershed",]
+percent_corn_in_cbw <- percent_corn_in_cbw[,-c(4)]
+percent_corn_in_cbw[is.na(percent_corn_in_cbw)] <- 0
+percent_corn_in_cbw2022 <- percent_corn_in_cbw
+
+### Crop Allocation ##
+# This section corresponds to allocation of crop to the land river segments. 
+Corn_pixels <- rowSums(lrs_cdl_2022[,grep("Corn",names(lrs_cdl_2022))])
+Soybean_pixels <- rowSums(lrs_cdl_2022[,grep("Soybean",names(lrs_cdl_2022))])
+Sorghum_pixels <- rowSums(lrs_cdl_2022[,grep("Sorghum",names(lrs_cdl_2022))])
+Wheat_pixels <- rowSums(lrs_cdl_2022[,grep("Wheat",names(lrs_cdl_2022))])
+Oats_pixels <- rowSums(lrs_cdl_2022[,grep("Oats",names(lrs_cdl_2022))])
+Barley_pixels <- rowSums(lrs_cdl_2022[,grep("Barley",names(lrs_cdl_2022))])
+
+lrs_cdl_crop_pxl <- data.frame("OBJECTID"=lrs_cdl_2022$OBJECTID,
+                               "LNDRVRSEG"=lrs_cdl_2022$LNDRVRSEG,
+                               "FIPS"=lrs_cdl_2022$FIPS,
+                               "REGION"=lrs_cdl_2022$Region,
+                               "Corn" = Corn_pixels,
+                               "Sorghum" = Sorghum_pixels,
+                               "Soybeans" = Soybean_pixels,
+                               "Peanuts" = lrs_cdl_2022[,8],
+                               "Barley" = Barley_pixels,
+                               "Wheat" = Wheat_pixels,
+                               "Rye" = lrs_cdl_2022[,15],
+                               "Oats" = Oats_pixels,
+                               "Alfalfa" = lrs_cdl_2022[,21],
+                               "Other Hay/Non Alfalfa" = lrs_cdl_2022[,22],
+                               "Potatoes" = lrs_cdl_2022[,26],
+                               "Grass/Pasture" = lrs_cdl_2022[,58]) 
+
+lrs_cdl_crop_pxl_groupby_cty <- lrs_cdl_crop_pxl %>% group_by(lrs_cdl_crop_pxl$FIPS) %>% summarize(across(colnames(lrs_cdl_crop_pxl[,5:16]),sum))
+colnames(lrs_cdl_crop_pxl_groupby_cty)[1] <- "FIPS"
+
+lrs_cdl_crop_pxl_merged <- merge(lrs_cdl_crop_pxl, lrs_cdl_crop_pxl_groupby_cty, by="FIPS")
+
+lrs_cdl_crop_pxl_merged[,29:40] <- lrs_cdl_crop_pxl_merged[,5:16]/lrs_cdl_crop_pxl_merged[,17:28]
+
+lrs_cdl_percent <-  data.frame("FIPS"=lrs_cdl_crop_pxl_merged$FIPS,
+                               "LNDRVRSEG"=lrs_cdl_crop_pxl_merged$LNDRVRSEG,
+                               "OBJECTID"=lrs_cdl_crop_pxl_merged$OBJECTID,
+                               "REGION"=lrs_cdl_crop_pxl_merged$REGION,
+                               "Corn" = lrs_cdl_crop_pxl_merged[,29],
+                               "Sorghum" = lrs_cdl_crop_pxl_merged[,30],
+                               "Soybeans" = lrs_cdl_crop_pxl_merged[,31],
+                               "Peanuts" = lrs_cdl_crop_pxl_merged[,32],
+                               "Barley" = lrs_cdl_crop_pxl_merged[,33],
+                               "Wheat" = lrs_cdl_crop_pxl_merged[,34],
+                               "Rye" = lrs_cdl_crop_pxl_merged[,35],
+                               "Oats" = lrs_cdl_crop_pxl_merged[,36],
+                               "Alfalfa" = lrs_cdl_crop_pxl_merged[,37],
+                               "Other Hay/Non Alfalfa" = lrs_cdl_crop_pxl_merged[,38],
+                               "Potatoes" = lrs_cdl_crop_pxl_merged[,39],
+                               "Grass/Pasture" = lrs_cdl_crop_pxl_merged[,40])
+lrs_cdl_percent[is.na(lrs_cdl_percent)] <- 0
+
+lrs_cdl_percent <- lrs_cdl_percent %>% arrange(FIPS,LNDRVRSEG)
+
+lrs_cdl_percent2022 <- lrs_cdl_percent
+
 ### Adjusting variables for multiple years ####
 # Population
-percent_developed_in_cbw <- percent_developed_in_cbw2007 %>%  left_join(percent_developed_in_cbw2012, by="LNDRVRSEG") %>%  left_join(percent_developed_in_cbw2017, by="LNDRVRSEG")
+percent_developed_in_cbw <- percent_developed_in_cbw2007 %>%  left_join(percent_developed_in_cbw2012, by="LNDRVRSEG") %>%  left_join(percent_developed_in_cbw2017, by="LNDRVRSEG") %>%  left_join(percent_developed_in_cbw2022, by="LNDRVRSEG")
 percent_developed_in_cbw <- data.frame("FIPS"=percent_developed_in_cbw$FIPS.x,
                                        "OBJECTID"=percent_developed_in_cbw$OBJECTID.x,
                                        "LNDRVRSEG"=percent_developed_in_cbw$LNDRVRSEG,
                                        "percentage2007"=percent_developed_in_cbw$percentage.x,
                                        "percentage2012"=percent_developed_in_cbw$percentage.y,
-                                       "percentage2017"=percent_developed_in_cbw$percentage)
+                                       "percentage2017"=percent_developed_in_cbw$percentage.x.x,
+                                       "percentage2022"=percent_developed_in_cbw$percentage.y.y)
 
 # Animal allocation
-percent_crop_in_cbw <- percent_crop_in_cbw2007 %>% left_join(percent_crop_in_cbw2012,by="LNDRVRSEG") %>% left_join(percent_crop_in_cbw2017, by="LNDRVRSEG")
+percent_crop_in_cbw <- percent_crop_in_cbw2007 %>% left_join(percent_crop_in_cbw2012,by="LNDRVRSEG") %>% left_join(percent_crop_in_cbw2017, by="LNDRVRSEG") %>% left_join(percent_crop_in_cbw2022, by="LNDRVRSEG")
 percent_crop_in_cbw <- data.frame("FIPS"=percent_crop_in_cbw$FIPS.x,
                                   "OBJECTID"=percent_crop_in_cbw$OBJECTID.x,
                                   "LNDRVRSEG"=percent_crop_in_cbw$LNDRVRSEG,
@@ -385,11 +499,12 @@ percent_crop_in_cbw <- data.frame("FIPS"=percent_crop_in_cbw$FIPS.x,
                                   "percentage2002"=percent_crop_in_cbw$percentage2007,
                                   "percentage2007"=percent_crop_in_cbw$percentage2007,
                                   "percentage2012"=percent_crop_in_cbw$percentage2012,
-                                  "percentage2017"=percent_crop_in_cbw$percentage2017)
+                                  "percentage2017"=percent_crop_in_cbw$percentage2017,
+                                  "percentage2017"=percent_crop_in_cbw$percentage2022)
 
 percent_crop_in_cbw <- percent_crop_in_cbw %>% arrange(FIPS,LNDRVRSEG) # To keep the order of FIPS and LRS the same as original variables
 
-percent_corn_in_cbw <- percent_corn_in_cbw2007 %>% left_join(percent_corn_in_cbw2012,by="LNDRVRSEG") %>% left_join(percent_corn_in_cbw2017, by="LNDRVRSEG")
+percent_corn_in_cbw <- percent_corn_in_cbw2007 %>% left_join(percent_corn_in_cbw2012,by="LNDRVRSEG") %>% left_join(percent_corn_in_cbw2017, by="LNDRVRSEG") %>% left_join(percent_corn_in_cbw2022, by="LNDRVRSEG")
 percent_corn_in_cbw <- data.frame("FIPS"=percent_corn_in_cbw$FIPS.x,
                                   "OBJECTID"=percent_corn_in_cbw$OBJECTID.x,
                                   "LNDRVRSEG"=percent_corn_in_cbw$LNDRVRSEG,
@@ -397,18 +512,20 @@ percent_corn_in_cbw <- data.frame("FIPS"=percent_corn_in_cbw$FIPS.x,
                                   "percentage2002c"=percent_corn_in_cbw$percentage.corn2007,
                                   "percentage2007c"=percent_corn_in_cbw$percentage.corn2007,
                                   "percentage2012c"=percent_corn_in_cbw$percentage.corn2012,
-                                  "percentage2017c"=percent_corn_in_cbw$percentage.corn2017)
+                                  "percentage2017c"=percent_corn_in_cbw$percentage.corn2017,
+                                  "percentage2022c"=percent_corn_in_cbw$percentage.corn2022)
 
 percent_corn_in_cbw <- percent_corn_in_cbw %>% arrange(FIPS,LNDRVRSEG) # To keep the order of FIPS and LRS the same as original variables
 
 # Crop allocation
-lrs_cdl_percents <- array(0, c(2058,16,5))
+lrs_cdl_percents <- array(0, c(2058,16,n_years))
 lrs_cdl_percents[,,1] <- as.matrix(lrs_cdl_percent2007)
 lrs_cdl_percents[,,2] <- as.matrix(lrs_cdl_percent2007)
 lrs_cdl_percents[,,3] <- as.matrix(lrs_cdl_percent2007)
 lrs_cdl_percents[,,4] <- as.matrix(lrs_cdl_percent2012)
 lrs_cdl_percents[,,5] <- as.matrix(lrs_cdl_percent2017)
+lrs_cdl_percents[,,6] <- as.matrix(lrs_cdl_percent2022)
 
-lrs_cdl_percents <- list(lrs_cdl_percent2007,lrs_cdl_percent2007,lrs_cdl_percent2007,lrs_cdl_percent2012,lrs_cdl_percent2017)
+lrs_cdl_percents <- list(lrs_cdl_percent2007,lrs_cdl_percent2007,lrs_cdl_percent2007,lrs_cdl_percent2012,lrs_cdl_percent2017,lrs_cdl_percent2017)
 
 # as.data.frame(a[1],check.names=FALSE)

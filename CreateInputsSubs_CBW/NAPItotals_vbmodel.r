@@ -11,7 +11,7 @@ if(print_tags == 1){
 
 read_file = 'RawData/NAPIdata_extract.xlsx'
 import_yrs3 = c("1997","2002","2007","2012","2017") #data years to import
-import_yrs = c("97","02","07","12","17")  #years for file names
+import_yrs = c("97","02","07","12","17","22")  #years for file names
 read_sheet1 = 'Fert_P_App'
 read_sheet2 = 'Food_Feed_P'
 read_sheet3 = 'Non_Food_Crops'
@@ -45,10 +45,10 @@ dummy <- merge(dummy1,dummy2,by="FIPS")
 dummy <- data.frame("FIPS" = dummy$FIPS, "Area_ratio" = dummy$Area/dummy$Areacty)
 
 ncolumns=7
-NAPIdatactydens=array(0,c(n_cnty,ncolumns,length(import_yrs3)))
-NAPIdatacty=array(0,c(n_cnty,ncolumns,length(import_yrs3)))
-NAPIdataws=array(0,c(n_ws_tbx,ncolumns,length(import_yrs3)))
-NAPIdatadensws=array(0,c(n_ws_tbx,ncolumns,length(import_yrs3)))
+NAPIdatactydens=array(0,c(n_cnty,ncolumns,length(import_yrs)))
+NAPIdatacty=array(0,c(n_cnty,ncolumns,length(import_yrs)))
+NAPIdataws=array(0,c(n_ws_tbx,ncolumns,length(import_yrs)))
+NAPIdatadensws=array(0,c(n_ws_tbx,ncolumns,length(import_yrs)))
 
 #Fert_P_App in kgP/km2/yr (columns 1, 2, 3)
 nfertcols=3
@@ -92,7 +92,11 @@ for(n in 1:length(import_yrs3)){
   for(i in 1:nnfccols){
     NAPIdatactydens[,nfertcols+nffcols+i,n]=data_range3[2:length(data_range3[,1]),yr_cols[n,i]]
     NAPIdatacty[,nfertcols+nffcols+i,n]=as.numeric(NAPIdatactydens[,nfertcols+nffcols+i,n])*areakm2_cnty
-  }
+  }}
+
+NAPIdatacty[,,6] <- NAPIdatacty[,,5]
+  
+for(n in 1:length(year_labels)){  
   #watershed crop production
   dummy_lrs <- 0
   dummy_cty <- cbind("FIPS"=FIPS, NAPIdatacty[,,n])
@@ -115,6 +119,8 @@ for(n in 1:length(import_yrs3)){
   write_name =paste("InputFiles_CBW/NAPIdata",import_yrs[n],".txt",sep = "")
   write.table(NAPIdatadensws[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 }
+
+
 
 #write key
 write_name = paste("InputFileKeys/NAPIdata_key.txt")

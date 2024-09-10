@@ -8,7 +8,7 @@ if(print_tags == 1){
   print("CreateInputsSubs_CBW/cropalloc_model.R")
 }
 
-model_yrs = c("97","02","07","12","17")  #data years to import
+model_yrs = c("97","02","07","12","17","22")  #data years to import
 
 #Calculate crops available for domestic use
 cropusedom = cropprodtotal-exports
@@ -19,7 +19,7 @@ cropusedom = cropprodtotal-exports
 #crop forage/grain classifications ([10] grain?)
 #citations in cropdata_master.xlsx
 #key in cropdata_key.txt
-cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,20)))
+cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,21)))
 
 #Load anim data (calculated for silage as grain) for
 #animal forage/grain ratios ([3] prop N from grain,	[4] prop N from forage,	[5] prop P from grain,	[6] prop P from forage)
@@ -101,7 +101,7 @@ for(n in 1:data_yrs){
   }
 }
 
-cropsforfeed[17,] <- c(0,0,0,0,0) # That informs that grass won't be used for feed
+cropsforfeed[17,] <- c(0,0,0,0,0,0) # That informs that grass won't be used for feed
 
 #ANIMALS
 #get livestock N and P requirements and diet propgrain and propforage
@@ -134,8 +134,8 @@ cropkgtoanim = array(0, c(n_anims,n_crops,data_yrs)) #modeled allocation of each
 for(n in 1:data_yrs){
   #allocate DGS and other etoh coproducts first
   for(c in (n_crops-2):n_crops){
-    cropNtoanimtotal[,c,n]=coprod_prop[,n+1]*totalNincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%, based on total animal N requirements and total N in grains produced)
-    cropPtoanimtotal[,c,n]=coprod_prop[,n+1]*totalPincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%)
+    cropNtoanimtotal[,c,n]=coprod_prop[,n]*totalNincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%, based on total animal N requirements and total N in grains produced)
+    cropPtoanimtotal[,c,n]=coprod_prop[,n]*totalPincrop[c,n]*.95 #assumed 5% losses of etoh coproducts (we overproduce grains by 12%)
     cropNtoanim[,c,n]=cropNtoanimtotal[,c,n]/animpoptotal[,n]
     cropPtoanim[,c,n]=cropPtoanimtotal[,c,n]/animpoptotal[,n]
     #fix NaN problem with animal populations of zero
@@ -190,14 +190,14 @@ for(n in 1:data_yrs){
   cropkgtoanimtotal_N[1,,n] <- unlist(as.matrix(diet_crops_model)[1,])*animpoptotal[1,n]/Nincrop
   
   #broilers
-  if (n>3) {
+  if (n>=1) {
     cropNtoanim[8,,n] <- unlist(as.matrix(diet_crops_model)[2,])
     cropNtoanimtotal[8,,n] <- cropNtoanim[8,,n]*animpoptotal[8,n]
     cropkgtoanimtotal_N[8,,n] <- unlist(as.matrix(diet_crops_model)[2,])*animpoptotal[8,n]/Nincrop
   }
   
-  #broilers
-  if (n>3) {
+  #hogs
+  if (n>=1) {
     cropNtoanim[4,,n] <- unlist(as.matrix(diet_crops_model)[4,])
     cropNtoanimtotal[4,,n] <- cropNtoanim[4,,n]*animpoptotal[4,n]
     cropkgtoanimtotal_N[4,,n] <- unlist(as.matrix(diet_crops_model)[4,])*animpoptotal[4,n]/Nincrop

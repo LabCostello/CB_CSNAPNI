@@ -38,7 +38,7 @@ for(i in 1:data_yrs){
 missingPtotal = colSums(missingPanimtotals) # total missing P in each year
 
 #result of calculations in Pfeedsupplementprod.xlsx
-mineral_P_to_feed_supplements = c(0.89,0.36,0.28,0.68,0.93)*10^9
+mineral_P_to_feed_supplements = c(0.89,0.36,0.28,0.68,0.93,0.93)*10^9 # FIX this for 2022
 avg_prop_P_need_avail = mean(mineral_P_to_feed_supplements)/missingPtotal
 other_p_intake = missingPtotal - mineral_P_to_feed_supplements
 

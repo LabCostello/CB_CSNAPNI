@@ -9,7 +9,7 @@ library(readxl)
 n_cnty = 197 #number of counties (in continental US)
 n_ws_NEEA = 1925 #number of NEEA watersheds
 n_ws_tbx = 1925 #number of watersheds in NANI Toolbox watershed set
-n_crops = 20 #number of crops tracked (includes etoh coproducts)
+n_crops = 21 #number of crops tracked (includes etoh coproducts)
 n_anims = 19 #number of animal types tracked
 n_meats = 9 #number of meat products tracked
 
@@ -136,7 +136,7 @@ etoh_landuse = t(array(scan("InputFiles_CBW/etoh_landuse_harvestedarea.txt")))
 #CROP DATA
 #citations in cropdata_master.xlsx
 #key in cropdata_key.txt
-cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,20)))
+cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,n_crops)))
 
 #ANIMAL DATA
 # key is in animdatadyn_master.txt (in RawData)

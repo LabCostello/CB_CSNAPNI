@@ -1,4 +1,4 @@
-# Script to extract and save National-level 1997-2017 ag census data from USDA NASS database
+# Script to extract and save National-level 1997-2022 ag census data from USDA NASS database
 
 if(print_tags == 1){
   print("CreateInputsSubs_CBW/NASSpull/NASS_national.R")
@@ -18,7 +18,7 @@ for (i in 1:length(year)){
     data_year = year[i]
     note = ""
     #SPECIAL CASES
-    if((any(year[i]==c(2017,2012,2007)))&(query_desc[j]=='POTATOES - PRODUCTION, MEASURED IN CWT')){
+    if((any(year[i]==c(2022,2017,2012,2007)))&(query_desc[j]=='POTATOES - PRODUCTION, MEASURED IN CWT')){
       #for potato production in 2012 and 2017
       #National-level data does not exist in the CENSUS, only in the SURVEY
       data_source = "SURVEY"
@@ -42,6 +42,11 @@ for (i in 1:length(year)){
       data_year = 2002
       note = "_using2002"
     }else if((any(year[i]==c(2017)))&(query_desc[j]=='HOGS, BREEDING - INVENTORY')){
+      #for breeding hogs (missing 2017)
+      #use the 2012 CENSUS data
+      data_year = 2012
+      note = "_using2012"
+    }else if((any(year[i]==c(2022)))&(query_desc[j]=='HOGS, BREEDING - INVENTORY')){
       #for breeding hogs (missing 2017)
       #use the 2012 CENSUS data
       data_year = 2012

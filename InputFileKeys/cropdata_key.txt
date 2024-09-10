@@ -14,7 +14,9 @@ soybeans
 cropland pasture																		
 noncropland pasture																		
 rice																		
-peanuts																		
+peanuts
+grass
+winter rye																		
 CGF																		
 CGM																		
 DGS																		

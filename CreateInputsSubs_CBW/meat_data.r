@@ -11,7 +11,7 @@ if(print_tags == 1){
 }
 
 #meat production
-import_yrs = c("97","02","07","12","17")  #last two digits of data years to import, only needed for length in this file
+import_yrs = c("97","02","07","12","17","22")  #last two digits of data years to import, only needed for length in this file
 meatprod_old=t(array(scan("RawData/meatprod_old.txt"), c(10,n_meats))) # OLD AND NOT REPRESENT THE REALITY FOR CBW, BUT FOR THE COUNTRY (DON'T USE THIS VALUE)
 old = 2 #two columns to use from the old file
 meatprodnew = array(0,c(n_meats,length(import_yrs)))

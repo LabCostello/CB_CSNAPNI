@@ -56,4 +56,12 @@ for(n in 1:nyrs){
   newNAPIws[,,n] = NEEAws_NAPI[,,n]/array(areaws,c(length(areaws),length(NEEAws_NAPI[1,,n]))) 
   totNAPIws[,,n] = newNAPIws[,,n]*array(areaws,c(length(areaws),length(NEEAws_NAPI[1,,n]))) #total kg P values for NANI values
 }
+atmdep2017 <- read.csv("RawData/CMAQ_data/CMAQv5.0.2_2017/atmdep2017.csv")
+atmdep2017 <- atmdep2017 %>% arrange(FIPS,LRS)
+totNANIws[,1,5] <- atmdep2017$AtmDep2017
+newNANIws[,1,5] <- atmdep2017$AtmDep2017/areaws
 
+atmdep2022 <- read.csv("RawData/CMAQ_data/CMAQv5.0.2_2022/atmdep2019.csv")
+atmdep2022 <- atmdep2022 %>% arrange(FIPS,LRS)
+totNANIws[,1,6] <- atmdep2022$AtmDep2019
+newNANIws[,1,6] <- atmdep2022$AtmDep2019/areaws

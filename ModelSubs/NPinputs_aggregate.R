@@ -51,11 +51,8 @@ N4humanppWW = array(0,c(nyrs,1))
 P4humanppWW = array(0,c(nyrs,1))
 
 
-NEEA = 144
+NEEA = n_ws_tbx
 
-if(filter_region==1){
-  NEEA = n_ws_tbx
-}
 
 for(n in 1:nyrs){
   NANIanimreq[,n] = rowSums(kganimNreqs[,,n]) / areaws

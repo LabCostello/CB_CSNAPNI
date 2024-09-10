@@ -22,6 +22,12 @@ for (i in 1:length(year)){
       #for potato production in 2012 and 2017
       #county-level data does not exist in the CENSUS, only in the SURVEY
       data_source = "SURVEY"
+    }else if((any(year[i]==c(2022)))&(query_desc[j]=='POTATOES - PRODUCTION, MEASURED IN CWT')){
+      #for breeding hogs (missing 2017)
+      #use the 2012 CENSUS data
+      data_source = "SURVEY"
+      data_year = 2017
+      note = "_using2017"
     }else if((any(year[i]==c(1997)))&(any(query_desc[j]==c('HAY - ACRES HARVESTED',
                                                            'HAY - PRODUCTION, MEASURED IN TONS')))){
       #for hay in 1997
@@ -44,6 +50,11 @@ for (i in 1:length(year)){
       data_source = "CENSUS"
       note = "_using2002"  
     }else if((any(year[i]==c(2017)))&(query_desc[j]=='HOGS, BREEDING - INVENTORY')){
+      #for breeding hogs (missing 2017)
+      #use the 2012 CENSUS data
+      data_year = 2012
+      note = "_using2012"
+    }else if((any(year[i]==c(2022)))&(query_desc[j]=='HOGS, BREEDING - INVENTORY')){
       #for breeding hogs (missing 2017)
       #use the 2012 CENSUS data
       data_year = 2012
@@ -410,7 +421,7 @@ for(j in 1:n_years){
 #Filtering Counties to consider only CB
 NASS_County2 <- cbind(countydatalevel[,1],NASS_County) # Column Binding FIPS to NASS_County to filter in the next line
 NASS_County_cbw <- NASS_County2[NASS_County2[,1]%in%FIPS,] 
-NASS_County <- NASS_County_cbw[,2:256]
+NASS_County <- NASS_County_cbw[,2:307]
 
 list_fips_cbw <- cbind(1:nrow(countydatalevel),countydatalevel)
 list_fips_cbw <- list_fips_cbw[list_fips_cbw[,2]%in%FIPS,]
@@ -418,7 +429,10 @@ list_row_cbw <- list_fips_cbw[,1]
 list_fips_cbw <- list_fips_cbw[,2]
 NASS_County_withheld <- NASS_County_withheld[list_row_cbw,,]
 
-#Considering only 
+#Potatoes issue (fix in the future)
+grep("POTATOES_PRODUCTION",names(NASS_County))
+colSums(NASS_County[,grep("POTATOES_PRODUCTION",names(NASS_County))])
+NASS_County[,271] <- NASS_County[,220]
 
 #write County data to a file
 file_name = "CreateInputsSubs_CBW/NASSpull/RawNASSData/CountyData/All_County_Data.txt"

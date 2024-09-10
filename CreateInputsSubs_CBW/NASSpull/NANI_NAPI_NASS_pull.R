@@ -25,7 +25,7 @@ NASSQS_TOKEN="E737E9C9-A62A-3D17-9EBD-87FCCD7D5058"
 nassqs_auth(key = NASSQS_TOKEN)
 
 #define query variables
-year <- c(1997,2002,2007,2012,2017) #removed 1987 and 1992 because only survey data was available in the quickstats database, 
+year <- c(1997,2002,2007,2012,2017,2022) #removed 1987 and 1992 because only survey data was available in the quickstats database, 
                                     #and only for some commodities
 n_years = length(year)
 
@@ -40,6 +40,7 @@ source("CreateInputsSubs_CBW/NASSpull/NASS_national.R") #pulls the national leve
 source("CreateInputsSubs_CBW/NASSpull/NASS_states.R") #pulls the state level data and uses national level data and state ag land areas to fill anonymity gaps
 source("CreateInputsSubs_CBW/NASSpull/NASS_counties.R") #pulls the county level data and uses state level data and county ag land areas to fill anonymity gaps
 
+#Adjust potatoes and hogs for breeding data for 2022
 
 #use NASS data to calculate NANI/NAPI commodity categories
 source('CreateInputsSubs_CBW/NASSpull/crop_calcs.r')

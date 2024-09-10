@@ -13,9 +13,10 @@ hmnNreqs = array(0,c(n_ws_NEEA,nyrs))         # total kg N per km2 version for F
 hmnfoodPreqs = array(0,c(n_ws_NEEA,nyrs))         # total kg P per km2 version for FF calcs
 hmndetPreqs = array(0,c(n_ws_NEEA,nyrs))         # total kg P per km2 version
 
-prot_per_hmn_per_day = c(121,123,123,120,120) #grams of protein available per person per day in the US (1997,2002,2007,2010,2010)
+prot_per_hmn_per_day = c(121,123,123,120,120,130) #grams of protein available per person per day in the US (1997,2002,2007,2010,2010)
 #from https://www.ers.usda.gov/data-products/food-availability-per-capita-data-system/
 #no data post-2010
+#Ourworldindata.org for 2022 (they have for previous years)
 
 #annual human N consumption (kg)
 N_per_prot = 0.16  #(Han and Allen 2008) N consumption

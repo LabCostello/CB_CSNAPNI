@@ -2,20 +2,24 @@
 title: "CB-CSNAPNIv1"
 author: "Lucas de Lima Casseres"
 date: "2023-04-01"
-output: html_document
+output: html_document: self_contained:no
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(dev = "png",
+                      dpi = 300,
+                      echo = FALSE,
+                      cache = TRUE)
 ```
 
 ```{r}
 #fig_setup.R
 source("FigureSubs/commodity_colorbank.r")
-year_labels = c(1997,2002,2007,2012,2017)
+year_labels = c(1997,2002,2007,2012,2017,2022)
 crop_labels = c("corn grain","corn silage","wheat","oats","barley","sorghum grain","sorghum silage",
                 "potatoes","rye","alfalfa hay","other hay","soybeans","cropland pasture","noncropland pasture",
-                "rice","peanuts","CGF","CGM","DGS")
+                "rice","peanuts","grass","winter rye","CGF","CGM","DGS")
 meat_labels = c("beef","dairy","swine","sheep","horse","layers","broilers",
                 "turkey","goats")
 corn_labels = c("Corn not used for ethanol","Corn for dry milling","Corn for wet milling")
@@ -64,7 +68,33 @@ CGM = rgb(244/260, 147/260, 141/260) #CGM
 DGS = rgb(244/260, 185/260, 181/260) #DGS
 etoh = rgb(247/260, 29/260, 127/260) #ethanol
 
-crop_colors = c(corn,csilage,wheat,oats,barley,sorghum,ssilage,potatoes,rye,ahay,nahay,soy,cpasture,ncpasture,rice,peanuts,CGF,CGM,DGS,etoh)
+# Crop commodities
+corn = rgb(255/260, 46/260, 67/260)        # corn
+csilage = rgb(224/300, 67/300, 117/300)    # corn silage
+wheat = rgb(225/260, 245/260, 254/260)     # wheat
+oats = rgb(156/260, 39/260, 176/260)       # oats
+barley = rgb(240/240, 120/240, 146/240)    # barley
+sorghum = rgb(25/260, 118/260, 210/260)    # sorghum
+ssilage = rgb(144/260, 202/260, 249/260)   # sorghum silage
+potatoes = rgb(255/260, 255/260, 141/260)  # potatoes
+rye = rgb(199/260, 0/260, 57/260)          # rye
+ahay = rgb(214/260, 183/260, 92/260)       # alfalfa hay
+nahay = rgb(158/260, 124/260, 22/260)      # non alfalfa hay
+soy = rgb(255/260, 182/260, 38/260)        # soybeans
+cpasture = rgb(127/260, 81/260, 52/260)    # cropland pasture
+ncpasture = rgb(209/260, 165/260, 138/260) # non cropland pasture
+rice = rgb(239/260, 235/260, 233/260)      # rice
+peanuts = rgb(109/260, 76/260, 65/260)     # peanuts
+CGF = rgb(244/260, 115/260, 106/260)       # CGF
+CGM = rgb(244/260, 147/260, 141/260)       # CGM
+DGS = rgb(244/260, 185/260, 181/260)       # DGS
+etoh = rgb(247/260, 29/260, 127/260)       # ethanol
+
+# New variables
+grass = rgb(85/255, 107/255, 47/255)       # grass (olive drab color)
+winter_rye = rgb(32/255, 178/255, 170/255) # winter rye (light sea green color)
+
+crop_colors = c(corn,csilage,wheat,oats,barley,sorghum,ssilage,potatoes,rye,ahay,nahay,soy,cpasture,ncpasture,rice,peanuts,grass,winter_rye,CGF,CGM,DGS,etoh)
 ```
 
 
@@ -74,15 +104,17 @@ crop_colors = c(corn,csilage,wheat,oats,barley,sorghum,ssilage,potatoes,rye,ahay
 positives1 <- negatives1 <- NANIBtot_US
 positives1[positives1<0] <- 0
 negatives1[negatives1>0] <- 0
+positives1[3,] <- positives1[3,] + positives1[5,] + positives1[6,]
+positives1 <- positives1[1:4,]
 # positives2 <- negatives2 <- NANIorigtot_US
 # positives2[positives2<0] <- 0
 # negatives2[negatives2>0] <- 0
 # myrange <- c(min(c(colSums(negatives1),colSums(negatives2)))-1,max(c(colSums(positives1),colSums(positives2)))+1)
-myrange <- c(min(colSums(negatives1))-0.1,max(colSums(positives1))+10)
+myrange <- c(min(colSums(negatives1))-0.1,max(colSums(positives1))+50)
 
-par(mai=c(1, 3.6, 1, 0.4), xpd=TRUE, mfrow=c(1,2))
+par(mai=c(2, 1, 1, 0.4), xpd=TRUE)
 barplot(positives1,
-        main="a) CB-CSNANI",
+#        main="a) CB-CSNANI",
         ylab="N (10^6 kg)",
         col=NANI_colors,
         axes=FALSE,
@@ -92,7 +124,7 @@ barplot(positives1,
 barplot(negatives1,add=TRUE,ylim=rev(myrange),col=NANI_colors, width = 1, space = 0.5)
 axis(2)
 box()
-legend("topright", inset=c(1.3,0), legend=c("atmospheric deposition","biological fixation","fertilizer for food","net food and feed imports","non-ag fertilizer","non-food fertilizer"), fill=NANI_colors)
+legend("bottom", inset=c(0,-0.2), legend=c("atmospheric deposition","biological fixation","inorganic fertilizer","net food and feed imports"),ncol=4,  fill=NANI_colors)
 
 # par(mai=c(1, 1, 1, 3), xpd=TRUE)
 # myrange <- c(min(c(colSums(negatives1),colSums(negatives2)))-1,max(c(colSums(positives1),colSums(positives2)))+1)
@@ -109,6 +141,83 @@ legend("topright", inset=c(1.3,0), legend=c("atmospheric deposition","biological
 # box()
 ```
 
+```{r NANItotals_plot,echo=FALSE,fig.width=15,fig.height=8,fig.cap="\\label{fig:Rn`}***Figure 1.1: Net Anthropogenic Nitrogen Input (NANI) totals for the US.** Results shown are from the commodity-specific NANI (CSNANI) model.*"}
+positives1 <- negatives1 <- NANIBtot_US
+positives1[positives1<0] <- 0
+negatives1[negatives1>0] <- 0
+positives1[3,] <- positives1[3,] + positives1[5,] + positives1[6,]
+positives1 <- positives1[1:4,]
+# positives2 <- negatives2 <- NANIorigtot_US
+# positives2[positives2<0] <- 0
+# negatives2[negatives2>0] <- 0
+# myrange <- c(min(c(colSums(negatives1),colSums(negatives2)))-1,max(c(colSums(positives1),colSums(positives2)))+1)
+myrange <- c(min(colSums(negatives1))-0.1,max(colSums(positives1))+10)
+
+opar = par(oma = c(2,1,1,1))
+barplot(positives1,
+        ylab="N (10^6 kg)",
+        col=NANI_colors,
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=1.5, cex.axis=2, cex.main=2,
+        ylim=myrange, bty='L', width = 1, space = 0.5)
+barplot(negatives1,add=TRUE,ylim=rev(myrange),col=NANI_colors, width = 1, space = 0.5)
+axis(2)
+par(opar)
+legend("bottom", legend=c("atmospheric deposition","biological fixation","fertilizer for food","net food and feed imports"), fill=NANI_colors, ncol=4, inset = -0.05)
+
+# par(mai=c(1, 1, 1, 3), xpd=TRUE)
+# myrange <- c(min(c(colSums(negatives1),colSums(negatives2)))-1,max(c(colSums(positives1),colSums(positives2)))+1)
+# barplot(positives2,
+#         main="b) VB NANI Toolbox",
+#         ylab="N (10^3 kg)",
+#         col=NANI_colors,
+#         axes=FALSE,
+#         names.arg = year_labels,
+#         cex.lab=1.5, cex.axis=1.5, cex.main=1.5,
+#         ylim=myrange, bty='L', width = 1, space = 0.5)
+# barplot(negatives2,add=TRUE,ylim=rev(myrange),col=NANI_colors, width = 1, space = 0.5)
+# axis(2)
+# box()
+```
+```{r NANItotals_plot,echo=FALSE,fig.width=15,fig.height=8,fig.cap="\\label{fig:Rn`}***Figure 1.1: Net Anthropogenic Nitrogen Input (NANI) totals for the US.** Results shown are from the commodity-specific NANI (CSNANI) model.*"}
+positives1 <- negatives1 <- NANIBtot_US[2:4,]
+positives1[positives1<0] <- 0
+negatives1[negatives1>0] <- 0
+# positives2 <- negatives2 <- NANIorigtot_US
+# positives2[positives2<0] <- 0
+# negatives2[negatives2>0] <- 0
+# myrange <- c(min(c(colSums(negatives1),colSums(negatives2)))-1,max(c(colSums(positives1),colSums(positives2)))+1)
+myrange <- c(min(colSums(negatives1))-0.1,max(colSums(positives1))+10)
+
+par(mai=c(1, 3.6, 1, 0.4), xpd=TRUE, mfrow=c(1,2))
+barplot(positives1,
+        main="a) CB-CSNANI",
+        ylab="N (10^6 kg)",
+        col=NANI_colors[2:4],
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=1.5, cex.axis=1.5, cex.main=1.5,
+        ylim=myrange, bty='L', width = 1, space = 0.5)
+barplot(negatives1,add=TRUE,ylim=rev(myrange),col=NANI_colors[2:4], width = 1, space = 0.5)
+axis(2)
+box()
+legend("topright", inset=c(1.3,0), legend=c("biological fixation","fertilizer for food","net food and feed imports"), fill=NANI_colors[2:4])
+
+# par(mai=c(1, 1, 1, 3), xpd=TRUE)
+# myrange <- c(min(c(colSums(negatives1),colSums(negatives2)))-1,max(c(colSums(positives1),colSums(positives2)))+1)
+# barplot(positives2,
+#         main="b) VB NANI Toolbox",
+#         ylab="N (10^3 kg)",
+#         col=NANI_colors,
+#         axes=FALSE,
+#         names.arg = year_labels,
+#         cex.lab=1.5, cex.axis=1.5, cex.main=1.5,
+#         ylim=myrange, bty='L', width = 1, space = 0.5)
+# barplot(negatives2,add=TRUE,ylim=rev(myrange),col=NANI_colors, width = 1, space = 0.5)
+# axis(2)
+# box()
+```
 <br>
 <br>
 <br>
@@ -168,61 +277,11 @@ box()
 # The reason why 2002 has little amount of fertilizer is because the way that fertilizer is calculated in the model right now is multiplying the productivity, and since the yield was lower than average it got lower fertilizer.
 ```
 <br>
-```{r fertandfixN_plot,echo=FALSE,fig.width=15,fig.height=8,fig.cap="\\label{fig:Rn`}***Figure 1.3: Total commodity-disaggregated fertilizer (a) and fixation (b) inputs for selected watersheds.***"}
-par(mai=c(1, 3.6, 1, 0.4), xpd=TRUE,mfrow=c(1,2))
-barplot(t(total_commoddisag_fertN),
-        main="a) fertilizer N",
-        ylab="N (10^6 kg)",
-        col=crop_colors,
-        axes=FALSE,
-        names.arg = year_labels,
-        cex.lab=1.5, cex.axis=2, cex.main=2, cex.names = 1,
-        ylim=c(0,180), bty='L', width = 1, space = 0.5)
-axis(2,cex.axis=1.5)
-box()
-legend("topright", inset=c(1.4,0), legend=c(crop_labels),  fill=crop_colors)
-
-par(mai=c(1, 1, 1, 3), xpd=TRUE)
-barplot(total_commoddisag_fixN,
-        main="b) fixation N",
-        ylab="N (10^6 kg)",
-        col=crop_colors,
-        axes=FALSE,
-        names.arg = year_labels,
-        cex.lab=1.5, cex.axis=2, cex.main=2, cex.names = 1,
-        ylim=c(0,180), bty='L', width = 1, space = 0.5)
-axis(2,cex.axis=1.5)
-box()
-
-# The reason why 2002 has little amount of fertilizer is because the way that fertilizer is calculated in the model right now is multiplying the productivity, and since the yield was lower than average it got lower fertilizer.
-```
-<br>
-<br>
-```{r etohNperL_plot,echo=FALSE,fig.width=11,fig.height=8,fig.cap="\\label{fig:Rn`}***Figure 1.4: Fertilizer N inputs per liter of ethanol fuel from 1987-2012.** This estimate excludes N inputs allocated to ethanol coproducts. Decreasing N inputs per liter from 1997-2007 are driven by improved corn to ethanol conversion efficiency and reduced N inputs per mass of corn. The increase in 2012 resulted from drought conditions and reduced corn yield.*"}
-par(mai=c(1, 1, 1, 1), xpd=TRUE)
-barplot(unitfertNetoh*10^3,
-        main="Fertilizer N inputs per liter of ethanol fuel",
-        ylab="g N / L ethanol",
-        col=crop_colors[20],
-        axes=FALSE,
-        names.arg = year_labels,
-        cex.lab=1.5, cex.axis=1.5, cex.main=1.5,
-        ylim=c(0,80), bty='L', width = 1, space = 0.5)
-axis(2)
-box()
-```
-
-```{r echo=FALSE, results = 'asis'}
-library(knitr)
-unitfertNetoh_df = data.frame(unitfertNetoh*10^3)
-rownames(unitfertNetoh_df) = year_labels
-kable(unitfertNetoh_df, caption = "Figure 1.4: Fertilizer N inputs per liter of ethanol fuel from 1987-2012. This estimate excludes N inputs allocated to ethanol coproducts. Decreasing N inputs per liter from 1997-2007 are driven by improved corn to ethanol conversion efficiency and reduced N inputs per mass of corn. The increase in 2012 resulted from drought conditions and reduced corn yield.")
-```
-<br>
 <br>
 <br>
 ```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
-year_range = 1:5
+
+year_range = 1:6
 par(mai=c(0.5, 4, 0.5, 0.25), xpd=TRUE, mfrow=c(3,2))
 meat_type=1 #beef
 major_feeds_for_beef=c(10:11,13:14,12,1:2,19) #reordered to keep grains and forage together
@@ -236,7 +295,120 @@ barplot(rbind(Nimpacts_major_feeds,Nimpacts_minor_feeds), #N requirements of mea
         axes=FALSE,
         names.arg = year_labels,
         cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
-        ylim=c(0,2.5), bty='L', width = 1, space = 0.5)
+        ylim=c(0,2), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+legend(cex=2.1,"topright", inset=c(1.18,0), legend=c(crop_labels[major_feeds_for_beef],"other grains"),  fill=c(crop_colors[major_feeds_for_beef],"white"))
+#Other grains = CGF, CGM, Wheat, Barley, Sorghum, Rye
+
+par(mai=c(0.5, 0.75, 0.5, 3.6))
+meat_type=3 #pork
+major_feeds_for_beef=c(10:11,13:14,12,1:2,19) #reordered to keep grains and forage together
+minor_feeds_for_beef=c(3:9,15:18)
+Nimpacts_major_feeds=fertNperMprot[meat_type,major_feeds_for_beef,year_range]+fixNperMprot[meat_type,major_feeds_for_beef,year_range]
+Nimpacts_minor_feeds=colSums(fertNperMprot[meat_type,minor_feeds_for_beef,year_range])+colSums(fixNperMprot[meat_type,minor_feeds_for_beef,year_range]) #this combines the minor feeds into a single category
+barplot(rbind(Nimpacts_major_feeds,Nimpacts_minor_feeds), #N requirements of meat products over time
+        main="b) pork",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,2), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+par(mai=c(0.5, 4, 0.5, 0.25))
+meat_type=2 #milk
+major_feeds_for_beef=c(10:11,13:14,12,1:2,19) #reordered to keep grains and forage together
+minor_feeds_for_beef=c(3:9,15:18)
+Nimpacts_major_feeds=fertNperMprot[meat_type,major_feeds_for_beef,year_range]+fixNperMprot[meat_type,major_feeds_for_beef,year_range]
+Nimpacts_minor_feeds=colSums(fertNperMprot[meat_type,minor_feeds_for_beef,year_range])+colSums(fixNperMprot[meat_type,minor_feeds_for_beef,year_range]) #this combines the minor feeds into a single category
+barplot(rbind(Nimpacts_major_feeds,Nimpacts_minor_feeds), #N requirements of meat products over time
+        main="c) milk",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,1.8), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+par(mai=c(0.5, 0.75, 0.5, 3.6))
+meat_type=6 #eggs
+major_feeds_for_beef=c(10:11,13:14,12,1:2,19) #reordered to keep grains and forage together
+minor_feeds_for_beef=c(3:9,15:18)
+Nimpacts_major_feeds=fertNperMprot[meat_type,major_feeds_for_beef,year_range]+fixNperMprot[meat_type,major_feeds_for_beef,year_range]
+Nimpacts_minor_feeds=colSums(fertNperMprot[meat_type,minor_feeds_for_beef,year_range])+colSums(fixNperMprot[meat_type,minor_feeds_for_beef,year_range]) #this combines the minor feeds into a single category
+barplot(rbind(Nimpacts_major_feeds,Nimpacts_minor_feeds), #N requirements of meat products over time
+        main="d) eggs",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,1.8), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+par(mai=c(0.5, 4, 0.5, 0.25))
+meat_type=7 #chicken
+major_feeds_for_beef=c(10:11,13:14,12,1:2,19) #reordered to keep grains and forage together
+minor_feeds_for_beef=c(3:9,15:18)
+Nimpacts_major_feeds=fertNperMprot[meat_type,major_feeds_for_beef,year_range]+fixNperMprot[meat_type,major_feeds_for_beef,year_range]
+Nimpacts_minor_feeds=colSums(fertNperMprot[meat_type,minor_feeds_for_beef,year_range])+colSums(fixNperMprot[meat_type,minor_feeds_for_beef,year_range]) #this combines the minor feeds into a single category
+barplot(rbind(Nimpacts_major_feeds,Nimpacts_minor_feeds), #N requirements of meat products over time
+        main="e) chicken",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,1.8), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+par(mai=c(0.5, 0.75, 0.5, 3.6))
+meat_type=8 #turkey
+major_feeds_for_beef=c(10:11,13:14,12,1:2,19) #reordered to keep grains and forage together
+minor_feeds_for_beef=c(3:9,15:18)
+Nimpacts_major_feeds=fertNperMprot[meat_type,major_feeds_for_beef,year_range]+fixNperMprot[meat_type,major_feeds_for_beef,year_range]
+Nimpacts_minor_feeds=colSums(fertNperMprot[meat_type,minor_feeds_for_beef,year_range])+colSums(fixNperMprot[meat_type,minor_feeds_for_beef,year_range]) #this combines the minor feeds into a single category
+barplot(rbind(Nimpacts_major_feeds,Nimpacts_minor_feeds), #N requirements of meat products over time
+        main="f) turkey",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,1.8), bty='L', width = 1, space = 0.5)
+axis(2,cex.axis=1.5)
+box()
+
+```
+<br>
+```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
+year_range = 1:6
+par(mai=c(0.5, 4, 0.5, 0.25), xpd=TRUE, mfrow=c(3,2))
+meat_type=1 #beef
+major_feeds_for_beef=c(10:11,13:14,12,1:2,19) #reordered to keep grains and forage together
+minor_feeds_for_beef=c(3:9,15:18)
+Nimpacts_major_feeds=fertNperMprot[meat_type,major_feeds_for_beef,year_range]+fixNperMprot[meat_type,major_feeds_for_beef,year_range]
+Nimpacts_minor_feeds=colSums(fertNperMprot[meat_type,minor_feeds_for_beef,year_range])+colSums(fixNperMprot[meat_type,minor_feeds_for_beef,year_range])
+ManureN=manureNperprot[meat_type,year_range]
+AmmoniaN=NH3perMprot[meat_type,year_range]
+ManureN=ManureN-AmmoniaN
+#this combines the minor feeds into a single category
+
+barplot(rbind(Nimpacts_major_feeds,Nimpacts_minor_feeds,ManureN,AmmoniaN), #N requirements of meat products over time
+        main="a) beef",
+        ylab="kg N input / kg protein",
+        col=c(crop_colors[major_feeds_for_beef],"white"),
+        axes=FALSE,
+        names.arg = year_labels,
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2,
+        ylim=c(0,5), bty='L', width = 2, space = 0.5)
 axis(2,cex.axis=1.5)
 box()
 legend(cex=2.1,"topright", inset=c(1.18,0), legend=c(crop_labels[major_feeds_for_beef],"other grains"),  fill=c(crop_colors[major_feeds_for_beef],"white"))
@@ -327,7 +499,6 @@ barplot(rbind(Nimpacts_major_feeds,Nimpacts_minor_feeds), #N requirements of mea
 axis(2,cex.axis=1.5)
 box()
 ```
-<br>
 <br>
 <br>
 ```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
@@ -493,16 +664,16 @@ AmmoniaN=c(NH3perMprot[animal_types,year_range])
 par(mar = c(5, 6, 4, 2) + 0.1)  # c(bottom, left, top, right)
 
 
-barplot(rbind(Fertilizer,Fixation), #N requirements of meat products over time
+barplot(rbind(Fertilizer,Fixation, ManureN, AmmoniaN), #N requirements of meat products over time
         ylab="kg N / kg protein",
         axes=FALSE,
-        names.arg = c(meat_labels[animal_types]),col = c("red", "green"),
+        names.arg = c(meat_labels[animal_types]),col = c("red", "green", "blue","purple"),
         cex.lab=2, cex.axis=3, cex.main=3, cex.names = 2.5,
-        ylim=c(0,2.5), bty='L', width = 1, space = 0.5)
+        ylim=c(0,3.5), bty='L', width = 1, space = 0.5)
 
-axis(2.5,cex.axis=2.5,at = seq(0, 2.5, 0.5))
+axis(2.5,cex.axis=2.5,at = seq(0, 3.5, 0.5))
 
-legend("topright", inset=c(0.1,0.1), legend=c("Fertilizer", "N Fixation"),  fill=c("red", "green","white"),cex=2.1)
+legend("topright", inset=c(0.1,0.1), legend=c("Fertilizer", "N Fixation", "Manure", "Ammonia"),  fill=c("red", "green","blue","purple","white"),cex=2.1)
 
 box()
 
@@ -512,14 +683,37 @@ box()
 year_range = 5 # 2017
 
 animal_types=c(1,2,3,6,7,8)
-crop_types=c(1,2,3,4,5,9,10,11,12,18,19)
+crop_types=c(1,2,3,4,5,9,10,11,12,18,19,20)
 
 
 Fertilizer=c(rowSums(fertNperMprot[animal_types,,year_range]),fertNperCprot[crop_types,year_range])
 Fixation=c(rowSums(fixNperMprot[animal_types,,year_range]),fixNperCprot[crop_types,year_range])
-ManureN=c(manureNperprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0)
-AmmoniaN=c(NH3perMprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0)
+ManureN=c(manureNperprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0,0)
+AmmoniaN=c(NH3perMprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0,0)
+ManureN <- ManureN-AmmoniaN
 
+if(wr_scenario==0 & grass_scenario==1){
+  Fertilizer=Fertilizers=c(rowSums(fertNperMprot[animal_types,,year_range]),fertNperCprot[crop_types,year_range])
+  Fixation=Fixations=c(rowSums(fixNperMprot[animal_types,,year_range]),fixNperCprot[crop_types,year_range])
+  ManureN=ManureNs=c(manureNperprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0,0)
+  AmmoniaN=AmmoniaNs=c(NH3perMprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0,0)
+  ManureN=ManureNs <- ManureNs-AmmoniaNs
+}
+
+if(wr_scenario==1 & grass_scenario==0){
+  Fertilizer=Fertilizerwr=c(rowSums(fertNperMprot[animal_types,,year_range]),fertNperCprot[crop_types,year_range])
+  Fixation=Fixationwr=c(rowSums(fixNperMprot[animal_types,,year_range]),fixNperCprot[crop_types,year_range])
+  ManureN=ManureNwr=c(manureNperprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0,0)
+  AmmoniaNwr=c(NH3perMprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0,0)
+  ManureN=ManureNwr <- ManureNwr-AmmoniaNwr
+}
+if(wr_scenario==1& grass_scenario==1){
+  Fertilizer=Fertilizerwrs=c(rowSums(fertNperMprot[animal_types,,year_range]),fertNperCprot[crop_types,year_range])
+  Fixation=Fixationwrs=c(rowSums(fixNperMprot[animal_types,,year_range]),fixNperCprot[crop_types,year_range])
+  ManureN=ManureNwrs=c(manureNperprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0,0)
+  AmmoniaN=AmmoniaNwrs=c(NH3perMprot[animal_types,year_range],0,0,0,0,0,0,0,0,0,0,0,0)
+  ManureN=ManureNwrs <- ManureNwrs-AmmoniaNwrs
+}
 # Adjust margins
 par(mar = c(5, 6, 4, 2) + 0.1)  # c(bottom, left, top, right)
 
@@ -538,6 +732,108 @@ legend("topright", inset=c(0.1,0.1), legend=c("Fertilizer", "N Fixation", "Manur
 box()
 
 ```
+<br>
+```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
+year_range = 5 # 2017
+
+animal_types=c(1,2,3,6,7,8)
+crop_types=c(1,2,3,4,5,9,10,11,12,18,19)
+
+
+Fertilizerm=rowSums(fertNpermeat[animal_types,,year_range])
+Fixationm=rowSums(fixNpermeat[animal_types,,year_range])
+ManureNm=manureNpermeat[year_range,animal_types]
+AmmoniaNm=NH3permeat[year_range,animal_types]
+ManureNm <- ManureNm-AmmoniaNm
+# Adjust margins
+par(mar = c(5, 6, 4, 2) + 0.1)  # c(bottom, left, top, right)
+
+
+barplot(rbind(Fertilizerm,Fixationm,ManureNm,AmmoniaNm), #N requirements of meat products over time
+        ylab="kg N / kg protein",
+        axes=FALSE,
+        names.arg = c(meat_labels[animal_types]),col = c("red", "green", "blue", "purple"),
+        cex.lab=2, cex.axis=3, cex.main=3, cex.names = 1,
+        ylim=c(0,3.5), bty='L', width = 1, space = 0.5)
+
+axis(2,cex.axis=1.5,at = seq(0, 3.5, 0.5))
+
+legend("topright", inset=c(0.1,0.1), legend=c("Fertilizer", "N Fixation", "Manure-N", "NH3-N"),  fill=c("red", "green", "blue", "purple","white"),cex=2.1)
+
+box()
+
+```
+<br>
+```{r}
+df = data.frame(
+  names=rep(crop_labels[crop_types],5),
+  fertelizer=c(fertNperCprot[c(1,2,3,4,5,9,10,11,12,18,19),]+fixNperCprot[c(1,2,3,4,5,9,10,11,12,18,19),]),
+  year=rep(year_labels,each=length(c(1,2,3,4,5,9,10,11,12,18,19)))
+)
+
+# Create the ggplot boxplot
+# ggplot(df, aes(x = names, y = fertelizer)) +
+#   geom_boxplot(fill = "gold") +
+#   theme_minimal() +
+#   labs(y="kg N / kg protein")+
+#   theme(axis.text.x = element_text(size=14,angle = 30, vjust = 1.1, hjust = 1),
+#         axis.title.x = element_blank(),
+#         axis.text.y = element_text(size=14),
+#         axis.title.y = element_text(size=16),
+#         panel.border = element_rect(color = "Black", fill=NA, linewidth =1 ))
+
+# Calculate the mean and standard deviation for each group
+summary_df <- aggregate(fertelizer ~ names, df, function(x) c(mean = mean(x), sd = sd(x)))
+
+# Create the ggplot bar plot with error bars
+ggplot(summary_df, aes(x = names, y = fertelizer.mean, fill = "gold")) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = fertelizer$mean - fertelizer$sd, ymax = fertelizer$mean + fertelizer$sd), 
+                width = 0.4,                    # Width of the error bars
+                position = position_dodge(0.9)) + # Position of the error bars
+  theme_minimal() +
+  labs(y = "kg N / kg protein") +
+  theme(axis.text.x = element_text(size = 14, angle = 30, vjust = 1.1, hjust = 1),
+        axis.title.x = element_blank(),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 16),
+        panel.border = element_rect(color = "black", fill = NA, size = 1))  # Add a box around the plot
+
+```
+
+<br>
+```{r}
+# Set the size of the plotting device
+options(repr.plot.width = 10, repr.plot.height = 8)
+
+# Adjust margins
+par(mar = c(5, 6, 4, 2) + 0.1)  # c(bottom, left, top, right)
+
+barplot(
+  rbind(Fertilizer, Fixation, ManureN, AmmoniaN), # N requirements of meat products over time
+  ylab = "kg N / kg protein",
+  axes = FALSE,
+  names.arg = c(meat_labels[animal_types], crop_labels[crop_types]),
+  density = c(20, 17, 19, 23), # Different patterns for each bar
+  angle = c(280, 45, 90, 11),
+  cex.lab = 2, cex.axis = 3, cex.main = 3, cex.names = 2,
+  ylim = c(0, 3.5), bty = 'L', width = 1, space = 0.5
+)
+
+axis(2, cex.axis = 1.5, at = seq(0, 3.5, 0.5))
+
+
+legend(
+  "topright", inset = c(0.1, 0.1),
+  legend = c("Fertilizer", "N Fixation", "Manure-N", "NH3-N"),
+  fill = c("black", "black", "black", "black"),
+  density = c(20, 17, 19, 23), # Corresponding patterns for the legend
+  angle = c(280, 45, 90, 11),
+  cex = 1
+)
+
+```
+
 <br>
 ```{r}
 # Sankey Diagram ####

@@ -129,10 +129,18 @@ diet_crops_model$'cropland pasture' <- 0
 diet_crops_model$'peanuts' <- 0
 diet_crops_model$'sorghum for grain' <- 0
 diet_crops_model$'sorghum for silage' <- 0
+diet_crops_model$wr <- 0
 
-diet_crops_model <- diet_crops_model[,c(1,20,4,5,27,34,35,30,29,21,22,26,32,31,11,33,28,24,23,2)]
-colnames(diet_crops_model) <- c('corn.grain','corn.silage','wheat','oats','barley','sorghum for grain','sorghum for silage','potatoes','rye','alfalfa hay','other hay','soybeans','cropland pasture','noncropland pasture','rice','peanuts','grass','CGF','CGM','DGS')
 
+diet_crops_model <- diet_crops_model[,c(1,20,4,5,27,34,35,30,29,21,22,26,32,31,11,33,28,36,24,23,2)]
+colnames(diet_crops_model) <- c('corn.grain','corn.silage','wheat','oats','barley','sorghum for grain','sorghum for silage','potatoes','rye','alfalfa hay','other hay','soybeans','cropland pasture','noncropland pasture','rice','peanuts','grass','winter rye','CGF','CGM','DGS')
+# Feeding winter rye silage just to dairy and beef
+if (wr_use == 2 & wr_scenario==1) {
+  diet_crops_model$`winter rye` <- c((diet_crops_model$`alfalfa hay`[1]+diet_crops_model$corn.silage[1])*0.5,0,(diet_crops_model$`alfalfa hay`[3]+diet_crops_model$corn.silage[3])*0.5,0,0,0,0,0) 
+  diet_crops_model$corn.silage <- diet_crops_model$corn.silage*0.5 
+  diet_crops_model$`alfalfa hay` <-diet_crops_model$`alfalfa hay`*0.5
+  }
+# I antecipate a problem here in the case we have low amount of adoption of winter rye, so we would have less than we can offer for the animals. Idk the effects to the model. Maybe will be solved in Mprodimpacts...
 diet_crops_model <- as.matrix(diet_crops_model)
 
 diet_animal_byproducts <- diet[,c(3,15,16,17,18)]

@@ -17,9 +17,11 @@ data = data[data[,32] %in% list,] #filtering
 
 # Population in 2017
 #### Population fix for 2017 ####
-census_pop <- read.csv("RawData/new_pop.csv")
+census_pop <- read.csv("RawData/new_pop.csv") # Data estimates from: https://www2.census.gov/programs-surveys/popest/datasets/
+census_pop <- census_pop[census_pop$FIPS %in% list,]
 
-new_pop <- merge(data.frame(FIPS=FIPS, Area = areakm2_cnty), census_pop, by = "FIPS")
+new_pop <- merge(data.frame(FIPS=FIPS, Area = areakm2_cnty_orig$x), census_pop, by = "FIPS")
+new_pop$density22 <- new_pop$POPESTIMATE2022/new_pop$Area 
 new_pop$density17 <- new_pop$POPESTIMATE2017/new_pop$Area 
 new_pop$density12 <- new_pop$POPESTIMATE2012/new_pop$Area 
 new_pop$realdens12 <- as.numeric(populationdenscty[,1])
@@ -78,12 +80,13 @@ for(i in 1:length(import_yrs)){
   populationws[,i]=populationcty[,i]%*%cnty_ws
   populationdensws[,i]=populationws[,i]/area
 }
-
+populationcty <- cbind(populationcty,new_pop$density22*areakm2_cnty)
 dummy <- merge(cbind(FIPS,populationcty),percent_developed_in_cbw,by="FIPS")
-dummy <- dummy[,2:6]*c(dummy[,9],dummy[,9],dummy[,9],dummy[,10],dummy[,11])
-colnames(dummy) <- c("V1","V2","V3","V4","V5")
+dummy <- dummy[,2:7]*c(dummy$percentage2007,dummy$percentage2007,dummy$percentage2007,dummy$percentage2012,dummy$percentage2017,dummy$percentage2022)
+colnames(dummy) <- c("V1","V2","V3","V4","V5","V6")
 populationws <- as.matrix(dummy)
 for (i in 1:length(import_yrs)) {populationdensws[,i] <- populationws[,i]/area}
+populationdensws <- cbind(populationdensws,populationws[,6]/area)
 
 # write text files
 write_name = "InputFiles_CBW/population.txt"

@@ -7,49 +7,26 @@ if(print_tags == 1){
   print("CreateInputsSubs_CBW/cropprod_data.R")
 }
 
-cropname=array("",c(n_crops))
-cropname[1] = 'corn for grain'
-cropname[2] = 'corn for silage'
-cropname[3] = 'wheat'
-cropname[4] = 'oats'
-cropname[5] = 'barley'
-cropname[6] = 'sorghum for grain'
-cropname[7] = 'sorghum for silage'
-cropname[8] = 'potatoes'
-cropname[9] = 'rye'
-cropname[10] = 'alfalfa hay'
-cropname[11] = 'other hay'
-cropname[12] = 'soybeans'
-cropname[13] = 'cropland pasture'
-cropname[14] = 'noncropland pasture'
-cropname[15] = 'rice'
-cropname[16] = 'peanuts'
-cropname[17] = 'grass'
-cropname[18] = 'CGF'
-cropname[19] = 'CGM'
-cropname[20] = 'DGS'
-
-
 # allocate space to matrices
-cropprodcnty_old <- array(0,c(n_cnty,length(cropname),length(import_yrs)))
-cropprodcnty = array(0,c(n_cnty,length(cropname),length(import_yrs)))
+cropprodcnty_old <- array(0,c(n_cnty,length(cropname),length(year_labels)))
+cropprodcnty = array(0,c(n_cnty,length(cropname),length(year_labels)))
 cropprodcnty[,1:(n_crops-3),] = prod_array
-etohprodcnty = array(0,c(n_cnty,length(import_yrs)))
-cropprodws = array(0,c(n_ws_tbx,length(cropname),length(import_yrs)))
-etohprodws = array(0,c(n_ws_tbx,length(import_yrs)))
-cropproddensws = array(0,c(n_ws_tbx,length(cropname),length(import_yrs)))
-etohproddensws = array(0,c(n_ws_tbx,length(import_yrs)))
-cornprodnoetoh=array(0,c(n_cnty,length(import_yrs)))
+etohprodcnty = array(0,c(n_cnty,length(year_labels)))
+cropprodws = array(0,c(n_ws_tbx,length(cropname),length(year_labels)))
+etohprodws = array(0,c(n_ws_tbx,length(year_labels)))
+cropproddensws = array(0,c(n_ws_tbx,length(cropname),length(year_labels)))
+etohproddensws = array(0,c(n_ws_tbx,length(year_labels)))
+cornprodnoetoh=array(0,c(n_cnty,length(year_labels)))
 
 # Ethanol information 2012 (https://neo.ne.gov/programs/stats/122/2012/122_201201.htm) and 2017 (https://neo.ne.gov/programs/stats/122/2017/122_201702.htm)
-etohprodcnty[58,] <- c(0, 0, 0, 416395296.24,416395296.24) # Clearfield plant produces 110 Mgal in 2012 and 2017
-etohprodcnty[170,] <- c(0, 0, 0, 246051765.96,227124707.04)# Hopewell plant produces 65 Mgal in 2012 and 60Mgal in 2017 it is barley ethanol
+etohprodcnty[58,] <- c(0, 0, 0, 416395296.24,416395296.24,416395296.24) # Clearfield plant produces 110 Mgal in 2012 and 2017
+etohprodcnty[170,] <- c(0, 0, 0, 246051765.96,227124707.04,227124707.04) # Hopewell plant produces 65 Mgal in 2012 and 60Mgal in 2017 it is barley ethanol
 
 # DGS information for 2012 and 2017
-cropprodcnty[58,n_crops,] <- c(0, 0, 0, 258168.1*1000,258168.1*1000) # in kg (data comes from Supplementary Info Table 7 from Ruffatto et al. 2023)
+cropprodcnty[58,n_crops,] <- c(0, 0, 0, 258168.1*1000,258168.1*1000,258168.1*1000) # in kg (data comes from Supplementary Info Table 7 from Ruffatto et al. 2023)
 
 
-for(n in 1:(length(import_yrs))){ 
+for(n in 1:(length(year_labels))){ 
   # build a matrix of extracted data
   for(j in 1:n_cnty){ #rows (counties)
     # calc amounts of etoh coproducts
@@ -90,21 +67,29 @@ for(n in 1:(length(import_yrs))){
                        "Noncropland pasture" = dummy$Grass.Pasture*dummy$V15,
                        "Rice" = 0,
                        "Peanuts" = dummy$Peanuts*dummy$V17,
-                       "Grass" = if (grass_scenario == 1){"Grass" = dummy$Corn*0.1*dummy$V2} else {"Grass" = 0},
-                       "CGM" = dummy$Corn*dummy$V19,
-                       "CGF" = dummy$Corn*dummy$V20,
-                       "DGS" = dummy$Corn*dummy$V21)
+                       "Grass" = 0,
+                       "WinterRye" = 0,
+                       "CGM" = dummy$Corn*dummy$V20,
+                       "CGF" = dummy$Corn*dummy$V21,
+                       "DGS" = dummy$Corn*dummy$V22)
   cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
   
   cropws <- cropws %>% arrange(FIPS,LNDRVRSEG)
   
+  cropws[,22] <- cropws[,22] <- ifelse(wr_use == 1 & wr_scenario == 1,
+                                       cropareaws[,18,n] * wr_yield_cc * 100000,
+                                       ifelse(wr_use == 2 & wr_scenario == 1,
+                                              cropareaws[,18,n] * wr_yield_dc * 100000,
+                                              0))
+  
   cropprodcnty_old[,,n] <- cropprodcnty[,,n]
   
-  cropprodcnty[,,n] <- as.matrix(subset(aggregate(cropws[,5:24], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  cropprodcnty[,,n] <- as.matrix(subset(aggregate(cropws[,5:length(cropws)], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
   
   cropprodws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
   
   dummy <- merge(as.data.frame(lrs_cdl_percents[n],check.names=FALSE)[,1:5],cbind(FIPS,etohprodcnty[,n]))
+ 
   cropwse <- data.frame("FIPS"=dummy$FIPS,
                        "LNDRVRSEG"=dummy$LNDRVRSEG,
                        "OBJECTID"=dummy$OBJECTID,
@@ -146,12 +131,12 @@ write.table(cropprod_key, file = write_name, sep = " ", row.names = FALSE, col.n
 cropprodtotal = colSums(cropprodcnty) #total crop prod in each year
 ##total corn production
 write_name = "InputFileKeys/cornprodnoetoh_key.txt"
-cornprodnoetoh_key = array(" ", c(n_cnty+1,length(import_yrs)+1))
-cornprodnoetoh_key[1,]=c(" ", import_yrs) #column headings
+cornprodnoetoh_key = array(" ", c(n_cnty+1,length(year_labels)+1))
+cornprodnoetoh_key[1,]=c(" ", year_labels) #column headings
 cornprodnoetoh_key[,1]=c("total_corn", 1:n_cnty) #row headings
 ##ethanol production
 write_name = "InputFileKeys/etohproddensws_key.txt"
-etohproddensws_key = array(" ", c(n_ws_tbx+1,length(import_yrs)+1))
-etohproddensws_key[1,]=c(" ", import_yrs) #column headings
+etohproddensws_key = array(" ", c(n_ws_tbx+1,length(year_labels)+1))
+etohproddensws_key[1,]=c(" ", year_labels) #column headings
 etohproddensws_key[,1]=c("L/km^2", 1:n_ws_tbx) #row headings
 write.table(etohproddensws_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)

@@ -93,6 +93,8 @@ cornusename[6] = "Dry milling ethanol"
 #   cornuse[6,n] = 0
 # }
 
+cornuse <- cbind(cornuse,cornuse[,5])
+
 # write text files
 write_name = "InputFiles_CBW/cornuse.txt"
 write.table(cornuse, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)

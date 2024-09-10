@@ -15,7 +15,7 @@ if(print_tags == 1){
 # range=array("",c(n_sheets,1))
 # yearindex=array(0,c(n_sheets,1))
 # exportindex=array(0,c(n_sheets,1))
- n_export_crops=20
+ n_export_crops=21
 #   
 # #define sheet names
 # read_sheet=array("",c(n_sheets,1))
@@ -227,10 +227,10 @@ for (i in 1:length(import_yrs1)) {
   exports[12,i] <- cropprodtotal[12,i]*0.4981 # Soybeans
 }
 
-exports=array(0,c(n_export_crops,length(import_yrs1)))
+exports=array(0,c(n_export_crops,length(year_labels)))
 
 # DGS
-exports[20,] <- c(0, 0, 0, 41557.5*1000,41557.5*1000) # Information came from the SI from the Ruffatto et al. 2023 paper (Assumed the same exports for 2012 and 2017)
+exports[21,] <- c(0, 0, 0, 41557.5*1000,41557.5*1000,41557.5*1000) # Information came from the SI from the Ruffatto et al. 2023 paper (Assumed the same exports for 2012 and 2017)
 
 #write exports to text file
 write_name = "InputFiles_CBW/exports.txt"

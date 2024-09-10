@@ -18,7 +18,7 @@ for (i in 1:length(year)){
     data_year = year[i]
     note = ""
     #SPECIAL CASES
-    if((any(year[i]==c(2017,2012,2007)))&(query_desc[j]=='POTATOES - PRODUCTION, MEASURED IN CWT')){
+    if((any(year[i]==c(2022,2017,2012,2007)))&(query_desc[j]=='POTATOES - PRODUCTION, MEASURED IN CWT')){
       #for potato production in 2012 and 2017
       #State-level data does not exist in the CENSUS, only in the SURVEY
       data_source = "SURVEY"
@@ -45,6 +45,12 @@ for (i in 1:length(year)){
       data_year = 2002
       note = "_using2002"
     }else if((any(year[i]==c(2017)))&(query_desc[j]=='HOGS, BREEDING - INVENTORY')){
+      #for breeding hogs (missing 2017)
+      #use the 2012 CENSUS data
+      data_year = 2012
+      note = "_using2012"
+    }
+    else if((any(year[i]==c(2022)))&(query_desc[j]=='HOGS, BREEDING - INVENTORY')){
       #for breeding hogs (missing 2017)
       #use the 2012 CENSUS data
       data_year = 2012
@@ -231,7 +237,8 @@ for(j in 1:n_years){
 NASS_states <- data.frame(state_name= NASS_states[c(7,18,30,36,44,46),])
 NASS_State <- NASS_State[c(7,18,30,36,44,46),] # "DELAWARE"  "MARYLAND" "NEW YORK" "PENNSYLVANIA" "VIRGINIA" "WEST VIRGINIA"
 NASS_State_withheld <- NASS_State_withheld[c(7,18,30,36,44,46),,]
-
+grep("POTATOES_PRODUCTION",names(NASS_State))
+NASS_State[,c(169,271)] <- NASS_State[,220] # FIX in the future
 
 #write State data to a file
 file_name = "CreateInputsSubs_CBW/NASSpull/RawNASSData/StateData/All_State_Data.txt"

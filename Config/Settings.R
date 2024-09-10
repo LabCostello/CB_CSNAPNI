@@ -39,7 +39,7 @@ if(protassump==1){
 animdatadyn = t(array(scan("InputFiles_CBW/animdatadyn_max_updated.txt"), c(23,19))) #maximum P intakes (new version updated)
 
 #data years to load
-run_yrs = c("97","02","07","12","17") #last two digits of data years to import
+run_yrs = c("97","02","07","12","17","22") #last two digits of data years to import
 nyrs = length(run_yrs)
 print(paste("Running for the following year(s): "), quote=FALSE)
 print(paste(run_yrs), quote=FALSE)
@@ -52,7 +52,7 @@ ws <- 919:933 ## Lancaster LRS
 
 
 # Fertilizer assumptions
-fertassump=3
+fertassump=2
 if(fertassump==1){
   print(paste("Using national CSNAPNI fertilizer values."),quote=FALSE)
 }else if(fertassump==2){
@@ -67,16 +67,22 @@ grass_scenario <-  0 # (Y = 1, N = 0)
 grass_fert_scenario <- 0 # (Y = 1, N = 0)
 
 #[Options] "Corn","Sorghum","Soybeans","Peanuts","Barley","Wheat","Rye","Oats","Alfalfa","Other.Hay.Non.Alfalfa","Potatoes","Grass.Pasture"  
-crot1 <- c("Corn","Corn","Soybeans","Other.Hay.Non.Alfalfa","Other.Hay.Non.Alfalfa")
+#crot1 <- c("Corn","Corn","Soybeans","Other.Hay.Non.Alfalfa","Other.Hay.Non.Alfalfa")
 #[Options] "corn for grain","corn for silage","wheat","oats","barley","sorghum for grain","sorghum for silage","potatoes","rye",
 #"alfalfa hay","other hay","soybeans","cropland pasture","noncropland pasture","rice","peanuts","grass","CGF","CGM","DGS"    
-crot2 <- c("corn for grain","corn for grain","soybeans","other hay","other hay")
+#crot2 <- c("corn for grain","corn for grain","soybeans","other hay","other hay")
 
-Crotation <- c(crot1[1],crot2[1],crot1[2],crot2[2],crot1[3],crot2[3],crot1[4],crot2[4],crot1[5],crot2[5]) # Don't change this one (updated automatically)
+#Crotation <- c(crot1[1],crot2[1],crot1[2],crot2[2],crot1[3],crot2[3],crot1[4],crot2[4],crot1[5],crot2[5]) # Don't change this one (updated automatically)
 # Constants and Variables
 land_use_grass <- 0.10 # Reference: Zhou et al.(2014)
 grass_yield_no_fert <- 9.9 # Reference: Woodbury et al.(2018) Unit: Mg/ha (DM)
 # grass_yield_fert <- 19.7 # Reference: Kering et al.(2012) Unit: Mg/ha
 
 # Winter crop scenario ####
-
+wr_scenario <- 0 # (Y = 1, N = 0)
+wr_use <- 1 # (Cover crop = 1, Double Crop = 2)
+wr_adoption_corn <- 0.2 # Percentage of corn land adopting cover crop
+wr_adoption_soybean <- 0 # Percentage of corn land adopting cover crop
+wr_yield_cc <- 5.856 # ton DM/ha (eqv 2.37 ton DM/acre)
+wr_yield_dc <- 9.588 # ton DM/ha (eqv 3.88 ton DM/acre)
+wr_biogas <- 1 # (Y = 1, N = 0)

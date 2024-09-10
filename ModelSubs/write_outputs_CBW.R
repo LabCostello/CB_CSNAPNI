@@ -37,7 +37,7 @@ for(n in 1:nyrs){
 }
 
 total_commoddisag_fertN = array(c(t(colSums(CfertNwswE)), t(colSums(etohfertNws))),c(nyrs,(n_crops+1)))/(10^6) #total disaggregated fert N inputs (10^6 kg N)
-total_commoddisag_fertP = array(c(t(colSums(CfertPwswE)), t(colSums(etohfertPws))),c(nyrs,20))/(10^3) #total disaggregated fert P inputs (10^3 kg P)
+total_commoddisag_fertP = array(c(t(colSums(CfertPwswE)), t(colSums(etohfertPws))),c(nyrs,(n_crops+1)))/(10^3) #total disaggregated fert P inputs (10^3 kg P)
 total_commoddisag_fixN = colSums(CfixNwswE[,,])/10^6 #total commodity disaggregated fixation N inputs in millions kg N (10^6 kg N)
 
 if (length(ws)>1){
@@ -74,7 +74,7 @@ commoddisag_key = array(" ", c(1+n_crops+1,1+nyrs))
 commoddisag_key[1,] = c(" ", run_yrs) #column headings
 commoddisag_key[,1]=c("10^3 kg N or P","corn (etoh use removed)","corn silage","wheat","oats",
                       "barley","sorghum grain","sorghum silage","rice","rye","soybeans","potatoes",
-                      "alfalfa hay","other hay","cropland pasture","noncropland pasture","peanuts","grass",
+                      "alfalfa hay","other hay","cropland pasture","noncropland pasture","peanuts","grass","winter rye",
                       "CGF","CGM","DGS","etoh") #row headings
 write.table(commoddisag_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 
@@ -294,3 +294,4 @@ etohfert_key = array(" ", c(1,1+nyrs))
 etohfert_key[1,] = c(" ", run_yrs) #column headings
 etohfert_key[,1]=c("kg N or P") #row headings
 write.table(etohfert_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
+

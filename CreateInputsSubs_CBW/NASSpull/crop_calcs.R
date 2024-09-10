@@ -17,6 +17,7 @@
 # (15) rice, ('RICE - ACRES HARVESTED', 'RICE - PRODUCTION, MEASURED IN CWT')
 # (16) peanuts ('PEANUTS - ACRES HARVESTED','PEANUTS - PRODUCTION, MEASURED IN LB')
 # (17) grass
+# (18) winter rye
 
 #conversion factors
 bushelperton_corn = 39.368 #bushels / (metric)ton
@@ -220,41 +221,27 @@ for(i in 1:length(peanuts_prod_list)){
 # (17) Grass scenario
 
 # Creating the arrays of grass production and area harvested
-grass_prod <- array(0,c(length(NASS_County[,1]),5))
-grass_areas <- array(0,c(length(NASS_County[,1]),5))
+grass_prod <- array(0,c(length(NASS_County[,1]),n_years))
+grass_areas <- array(0,c(length(NASS_County[,1]),n_years))
 
-
-# Assumptions
-# Reduction of 10% of area harvested of corn implies on a reduction of 10% of corn production
-
-# # Reduction in the corn area and production (grain & silage)
-# if(grass_scenario == 1){
-#   # Build an if depending if it is grass fertilized or not
-#   grass_areas <- (corn_grain_areas+corn_silage_areas)*land_use_grass
-#   if(grass_fert_scenario == 1){grass_prod <- (grass_areas*grass_yield_fert)}else{
-#   grass_prod <- (grass_areas*grass_yield_no_fert)} # In the future change 
-#   
-#   # Reduction of 90% of area harvested for corn
-#   corn_grain_areas <- corn_grain_areas*0.9
-#   corn_silage_areas <- corn_silage_areas*0.9
-#   
-#   # Reduction of 90% of production for corn
-#   corn_grain_prod <- corn_grain_prod*0.9
-#   corn_silage_prod <- corn_silage_prod*0.9
-#   
-# }
-
+# (18) Winter Rye
+wr_prod <- array(0,c(length(NASS_County[,1]),n_years))
+wr_areas <- array(0,c(length(NASS_County[,1]),n_years))
+if (wr_scenario==1) {
+  wr_areas <- ((corn_grain_areas+corn_silage_areas)*wr_adoption_corn)+((soybeans_areas)*wr_adoption_soybean)
+  wr_prod <- if(wr_use == 1) {wr_areas*wr_yield_cc*100000} else {wr_areas*wr_yield_dc*100000} # Multiplying 10^5 to transform from Mg/ha to kg/km2
+  }
 
 area_sums=c(colSums(corn_grain_areas),colSums(corn_silage_areas),colSums(wheat_areas),colSums(oats_areas),colSums(barley_areas),
             colSums(sorghum_grain_areas),colSums(sorghum_silage_areas),colSums(potatoes_areas),colSums(rye_areas),
             colSums(alfalfa_hay_areas),colSums(other_hay_areas),colSums(soybeans_areas),colSums(cropland_pasture_areas),
-            colSums(noncropland_pasture_areas),colSums(rice_areas),colSums(peanuts_areas),colSums(grass_areas))
+            colSums(noncropland_pasture_areas),colSums(rice_areas),colSums(peanuts_areas),colSums(grass_areas),colSums(wr_areas))
 area_sums_array=t(array(area_sums,c(length(year),n_crops-3)))
 
 prod_sums=c(colSums(corn_grain_prod),colSums(corn_silage_prod),colSums(wheat_prod),colSums(oats_prod),colSums(barley_prod),
             colSums(sorghum_grain_prod),colSums(sorghum_silage_prod),colSums(potatoes_prod),colSums(rye_prod),
             colSums(alfalfa_hay_prod),colSums(other_hay_prod),colSums(soybeans_prod),colSums(cropland_pasture_prod),
-            colSums(noncropland_pasture_prod),colSums(rice_prod),colSums(peanuts_prod),colSums(grass_prod))
+            colSums(noncropland_pasture_prod),colSums(rice_prod),colSums(peanuts_prod),colSums(grass_prod),colSums(wr_prod))
 prod_sums_array=t(array(prod_sums,c(length(year),n_crops-3)))
 
 NASS_area_sums = data.frame(area_sums_array)
@@ -267,12 +254,12 @@ for(n in 1:(length(year))){
   areas = c(corn_grain_areas[,n],corn_silage_areas[,n],wheat_areas[,n],oats_areas[,n],barley_areas[,n],
             sorghum_grain_areas[,n],sorghum_silage_areas[,n],potatoes_areas[,n],rye_areas[,n],
             alfalfa_hay_areas[,n],other_hay_areas[,n],soybeans_areas[,n],cropland_pasture_areas[,n],
-            noncropland_pasture_areas[,n],rice_areas[,n],peanuts_areas[,n],grass_areas[,n])
+            noncropland_pasture_areas[,n],rice_areas[,n],peanuts_areas[,n],grass_areas[,n],wr_areas[,n])
   areas_array[,,n]=array(areas,c(length(NASS_County[,1]),n_crops-3))
   prod = c(corn_grain_prod[,n],corn_silage_prod[,n],wheat_prod[,n],oats_prod[,n],barley_prod[,n],
            sorghum_grain_prod[,n],sorghum_silage_prod[,n],potatoes_prod[,n],rye_prod[,n],
            alfalfa_hay_prod[,n],other_hay_prod[,n],soybeans_prod[,n],cropland_pasture_prod[,n],
-           noncropland_pasture_prod[,n],rice_prod[,n],peanuts_prod[,n],grass_prod[,n])
+           noncropland_pasture_prod[,n],rice_prod[,n],peanuts_prod[,n],grass_prod[,n],wr_prod[,n])
   prod_array[,,n]=array(prod,c(length(NASS_County[,1]),n_crops-3))
   
   #write data files
@@ -287,4 +274,4 @@ write_name = paste("InputFileKeys/NASScropareas&prodkey.txt",sep = "")
 write.table(c("areas in km2, production in kg", "cols: [1] corn_grain, [2] corn_silage, [3] wheat_areas, [4] oats_areas, [5] barley_areas,
            [6] sorghum_grain, [7] sorghum_silage, [8] potatoes, [9] rye,
            [10] alfalfa_hay, [11] other_hay, [12] soybeans, [13] cropland_pasture,
-           [14] noncropland_pasture, [15] rice, [16] peanuts, [17] grass", "rows: US counties (IDs listed below)", cnty_IDs_NANI_NAPI[,1]), file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
+           [14] noncropland_pasture, [15] rice, [16] peanuts, [17] grass, [18] winter_rye", "rows: US counties (IDs listed below)", cnty_IDs_NANI_NAPI[,1]), file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)

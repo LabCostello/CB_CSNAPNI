@@ -13,7 +13,7 @@ if(print_tags == 1){
 
 read_file = 'RawData/NANIdata_extract.xlsx'
 import_yrs3 = c("1997","2002","2007","2012","2017") #data years to import
-import_yrs = c("97","02","07","12","17")  #years for file names
+import_yrs = c("97","02","07","12","17","22")  #years for file names
 read_sheet1 = 'Atm_N_Dep'
 read_sheet2 = 'Fert_N_App'
 read_sheet3 = 'Ag_N_Fix'
@@ -60,10 +60,10 @@ dummy <- merge(dummy1,dummy2,by="FIPS")
 dummy <- data.frame("FIPS" = dummy$FIPS, "Area_ratio" = dummy$Area/dummy$Areacty)
 
 ncolumns=15
-NANIdatactydens=array(0,c(n_cnty,ncolumns,length(import_yrs3)))
-NANIdatacty=array(0,c(n_cnty,ncolumns,length(import_yrs3)))
-NANIdataws=array(0,c(n_ws_tbx,ncolumns,length(import_yrs3)))
-NANIdatadensws=array(0,c(n_ws_tbx,ncolumns,length(import_yrs3)))
+NANIdatactydens=array(0,c(n_cnty,ncolumns,length(import_yrs3)+1))
+NANIdatacty=array(0,c(n_cnty,ncolumns,length(import_yrs3)+1))
+NANIdataws=array(0,c(n_ws_tbx,ncolumns,length(import_yrs3)+1))
+NANIdatadensws=array(0,c(n_ws_tbx,ncolumns,length(import_yrs3)+1))
 
 #Atm_N_Dep in kg/km2/yr (column 1)
 ndepcols=1
@@ -89,6 +89,19 @@ for(n in 1:length(import_yrs3)){
   }
 }
 
+# Changing NANI Atm deposition for 2017
+atmdep2017 <- read.csv("RawData/CMAQ_data/CMAQv5.0.2_2017/atmdep2017.csv")
+atmdep2017cty <- aggregate(atmdep2017$AtmDep2017, by=list(atmdep2017$FIPS),FUN = sum)
+NANIdatacty[,1,5] <- atmdep2017cty$x
+NANIdatactydens[,1,5] <- NANIdatacty[,1,5]/areakm2_cnty
+
+# Changing NANI Atm deposition for 2022
+atmdep2022 <- read.csv("RawData/CMAQ_data/CMAQv5.0.2_2022/atmdep2019.csv")
+atmdep2022cty <- aggregate(atmdep2022$AtmDep2019, by=list(atmdep2022$FIPS),FUN = sum)
+NANIdatacty[,1,6] <- atmdep2022cty$x
+NANIdatactydens[,1,6] <- NANIdatacty[,1,5]/areakm2_cnty
+
+#
 #Fert_N_App in kgN/km2/yr (columns 2, 3, 4)
 nfertcols=3
 yr_cols=array(0,c(length(import_yrs3),nfertcols))
@@ -137,6 +150,7 @@ for(n in 1:length(import_yrs3)){
 #Non_Food_Crops in kgN/km2/yr (columns 13, 14, 15)
 nnfccols=3
 yr_cols=array(0,c(length(import_yrs3),nnfccols))
+
 for(n in 1:length(import_yrs3)){
   if(length(which(as.numeric(data_range5[1,]) %in% import_yrs3[n]))==0){
     yr_cols[n,] = yr_cols[n-1,] #if there is no data from year n use the data from the previous year
@@ -146,7 +160,11 @@ for(n in 1:length(import_yrs3)){
   for(i in 1:nnfccols){
     NANIdatactydens[,ndepcols+nfertcols+nfixcols+nffcols+i,n]=data_range5[2:length(data_range5[,1]),yr_cols[n,i]]
     NANIdatacty[,ndepcols+nfertcols+nfixcols+nffcols+i,n]=as.numeric(NANIdatactydens[,ndepcols+nfertcols+nfixcols+nffcols+i,n])*areakm2_cnty
-  }
+  }}
+
+NANIdatacty[,2:15,6] <- NANIdatacty[,2:15,5]
+
+for(n in 1:length(year_labels)){
   #watershed crop production
   dummy_lrs <- 0
   dummy_cty <- cbind("FIPS"=FIPS, NANIdatacty[,,n])

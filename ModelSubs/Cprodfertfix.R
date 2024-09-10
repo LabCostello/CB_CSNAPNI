@@ -18,7 +18,7 @@ for(n in 1:nyrs){ #(NANIdata columns 5, 6, 7, 8, 9, 10, 11)
   #unitfixNC[13,n] = sum(totNANIws[,9,n]) / sum(CkgwswE_orig[,13,n]) #cropland pasture
   unitfixNC[13,n] <- 0.02670564 #cropland pasture
   #unitfixNC[(n_crops-4),n] = sum(totNANIws[,11,n]) / sum(CkgwswE_orig[,(n_crops-4),n]) #peanuts
-  unitfixNC[(n_crops-4),n] <- 0.05667428 #peanuts
+  unitfixNC[(16),n] <- 0.05667428 #peanuts
 }
 
 #allocate space to matrices

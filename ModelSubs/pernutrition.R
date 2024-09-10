@@ -9,6 +9,7 @@ if(print_tags == 1){
 fertNperCkcal = array(0,c(n_crops,nyrs))
 fertNperCprot = array(0,c(n_crops,nyrs))
 fertNmeattot = array(0,c(n_meats,n_crops,nyrs))
+fertNperMkcal <- array(0,c(n_meats,n_crops,nyrs)) 
 fertPperCkcal = array(0,c(n_crops,nyrs))
 fertPperCprot = array(0,c(n_crops,nyrs))
 fertPmeattot = array(0,c(n_meats,n_crops,nyrs))

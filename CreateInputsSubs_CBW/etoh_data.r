@@ -16,6 +16,7 @@ import_yrs5=c(1997,2002,2007,2012,2017)
 #etohprodallyears=etohproddata*literspergal*10^3
 #etohprod=etohprodselectyrs*literspergal*10^3
 etohprod <-colSums(etohprodcnty)
+etohprod <- c(etohprod,576912634)
 
 #write etohprod file
 write_name = paste('InputFiles_CBW/etohprod.txt')

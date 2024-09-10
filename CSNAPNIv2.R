@@ -5,6 +5,9 @@ ptm <- proc.time()
 this.dir <- getwd()
 setwd(this.dir)
 
+print("Welcome to...")
+cat(readLines("ascii_art.txt",warn=FALSE), sep = "\n")
+
 #settings
 source("Config/Settings.R")
 
@@ -14,6 +17,7 @@ print("CSNAPNI for CB is running")
 if (get_new_data == 1){
   source("ModelSubs/CreateInputs_CBW.R")
 }
+
 source("ModelSubs/LoadData_CBW.R")
   
 ##Calculate recoverable manure for NANI/NAPI Toolbox Watersheds
@@ -34,9 +38,6 @@ source("ModelSubs/meat_alloc.R") #creates kgmeat
 ## ANIMAL AND CROPS AS FOOD
 source("ModelSubs/food_totals.R")
 
-## BIOGAS PRODUCTION
-source("ModelSubs/biogas.R")
-
 ## CROP, ETHANOL, and CROPRODUCT FERTILIZER AND FIXATION
 source("ModelSubs/Cprodfertfix.R")
 
@@ -45,6 +46,9 @@ source("ModelSubs/Mprodimpacts.R")
 
 ## IMPACTS PER NUTRITIONAL UNIT
 source("ModelSubs/pernutrition.R")
+
+## BIOGAS PRODUCTION
+source("ModelSubs/biogas.R")
 
 ## calculates domestic meat availability given trade, also calculates N lost due to food waste SUBROUTINE
 #Temporarily commented-out - *this code has not been converted to R and updated for additional years yet*
@@ -59,6 +63,15 @@ source("ModelSubs/NPinputs_aggregate.R")
    }else if(filter_region == 0){
    source("ModelSubs/write_outputs.R")}
 
+## TOTAL NITROGEN CALCULATION
+source("ModelSubs/TN.R")
+
+## TMDL
+#source("ModelSubs/TMDL.R")
+
+## OUTPUTS
+source("ModelSubs/OutputN.R")
+
 ## UNCERTAINTY CALCULATION
 #source("ModelSubs/mcs_uncertainty.R")
 
@@ -66,3 +79,4 @@ source("ModelSubs/NPinputs_aggregate.R")
 runtime = proc.time() - ptm
 runtime_msg = paste("input files created in", runtime, "seconds", sep = " ")
 print(runtime_msg[3])
+

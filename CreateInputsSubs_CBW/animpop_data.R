@@ -32,11 +32,11 @@ animtyp[18] = 'horses'
 animtyp[19] = 'goats'
 
 # allocate space to matrices
-animpopcnty_old <- array(0,c(n_cnty,length(animtyp),length(import_yrs)))
-animpopcnty = array(0,c(n_cnty,length(animtyp),length(import_yrs)))
+animpopcnty_old <- array(0,c(n_cnty,length(animtyp),length(year_labels)))
+animpopcnty = array(0,c(n_cnty,length(animtyp),length(year_labels)))
 animpopcnty = anim_avg_inv_array
-animpopws = array(0,c(n_ws_tbx,length(animtyp),length(import_yrs)))
-for(n in 1:length(import_yrs)){
+animpopws = array(0,c(n_ws_tbx,length(animtyp),length(year_labels)))
+for(n in 1:length(year_labels)){
   # watershed crop production
   animpopws[,,n] = t(cnty_ws)%*%animpopcnty[,,n]
   

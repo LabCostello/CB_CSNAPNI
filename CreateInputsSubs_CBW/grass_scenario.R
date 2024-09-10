@@ -3,18 +3,18 @@ if(print_tags == 1){
 }
 
 grass_dry_matter <- (1-0.0816) # Not in use, because the yield provided above is in dry matter already
-biogascnty <- array(0,c(n_cnty,length(import_yrs))) 
-biogasws <- array(0,c(n_ws_NEEA,length(import_yrs))) 
+biogascnty <- array(0,c(n_cnty,length(year_labels))) 
+biogasws <- array(0,c(n_ws_NEEA,length(year_labels))) 
 
 # Area Harvested
 
-cropareacty_old = array(0,c(n_cnty,n_crops,length(import_yrs)))
-cropareacty = array(0,c(n_cnty,n_crops,length(import_yrs)))
+cropareacty_old = array(0,c(n_cnty,n_crops,length(year_labels)))
+cropareacty = array(0,c(n_cnty,n_crops,length(year_labels)))
 cropareacty[,1:(n_crops-3),] = areas_array #crop harvested areas, in km2
-cropareaws=array(0,c(n_ws_tbx,n_crops,length(import_yrs)))
-cornareanoetoh=array(0,c(n_cnty,length(import_yrs)))
-yr_col=array(0,c(length(import_yrs),1))
-for(n in 1:length(import_yrs)){
+cropareaws=array(0,c(n_ws_tbx,n_crops,length(year_labels)))
+cornareanoetoh=array(0,c(n_cnty,length(year_labels)))
+yr_col=array(0,c(length(year_labels),1))
+for(n in 1:length(year_labels)){
   # calc amounts of etoh coproducts
   cropareacty[,(n_crops-2),n]=cornuse[5,n]*cropareacty[,1,n]*to_FC_wetmill[alloc_method]*wetmill_CGF
   cropareacty[,(n_crops-1),n]=cornuse[5,n]*cropareacty[,1,n]*to_FC_wetmill[alloc_method]*wetmill_CGM
@@ -33,13 +33,13 @@ for(n in 1:length(import_yrs)){
   
   #cropareaws[,,n]=t(cnty_ws)%*%cropareacty[,,n]
   dummy <- merge(as.data.frame(lrs_cdl_percents[n],check.names=FALSE),cbind(FIPS,cropareacty[,,n]))
-  colnames(dummy)[17:36] <- cropareaharvested_key[-1,1]
+  colnames(dummy)[17:37] <- cropareaharvested_key[-1,1]
   cropws <- data.frame("FIPS"=dummy$FIPS,
                        "LNDRVRSEG"=dummy$LNDRVRSEG,
                        "OBJECTID"=dummy$OBJECTID,
                        "REGION"=dummy$REGION,
-                       "Corn.grain" = dummy$Corn*dummy$`corn for grain`*(1-(land_use_grass*0.4)),
-                       "Corn.silage" = dummy$Corn*dummy$`corn for silage`*(1-(land_use_grass*0.4)),
+                       "Corn.grain" = dummy$Corn*dummy$`corn for grain`*(1-(land_use_grass*1)),
+                       "Corn.silage" = dummy$Corn*dummy$`corn for silage`*(1-(land_use_grass*1)),
                        "Wheat" = dummy$Wheat*dummy$wheat,
                        "Oats" = dummy$Oats*dummy$oats,
                        "Barley" = dummy$Barley*dummy$barley,
@@ -49,13 +49,15 @@ for(n in 1:length(import_yrs)){
                        "Rye" = dummy$Rye*dummy$rye,
                        "Alfalfa" = dummy$Alfalfa*dummy$`alfalfa hay`,
                        "Other Hay/Non Alfalfa" = dummy$Other.Hay.Non.Alfalfa*dummy$`other hay`,
-                       "Soybeans" = dummy$Soybeans*dummy$soybeans*(1-(land_use_grass*0.2)),
+                       "Soybeans" = dummy$Soybeans*dummy$soybeans*(1-(land_use_grass*0)),
                        "Cropland pasture" = dummy$Grass.Pasture*dummy$`cropland pasture`,
                        "Noncropland pasture" = dummy$Grass.Pasture*dummy$`noncropland pasture`,
                        "Rice" = 0,
                        "Peanuts" = dummy$Peanuts*dummy$grass,
-#                       "Grass" = ((0.5*dummy$Corn*dummy$V2)+(0.5*dummy$Corn*dummy$V3)+(0.25*dummy$Soybeans*dummy$V13))*land_use_grass, # CG-CG-S-CS-CS rotation
-                       "Grass" = ((dummy[,Crotation[1]]*dummy[,Crotation[2]])+(dummy[,Crotation[3]]*dummy[,Crotation[4]])+(dummy[,Crotation[5]]*dummy[,Crotation[6]])+(dummy[,Crotation[7]]*dummy[,Crotation[8]])+(dummy[,Crotation[9]]*dummy[,Crotation[10]]))*0.2*land_use_grass, # CG-CG-S-CS-CS rotation
+                       "Grass" = ((0.5*dummy$Corn*dummy$`corn for grain`)+(0.5*dummy$Corn*dummy$`corn for silage`)+(0*dummy$Soybeans*dummy$soybeans))*land_use_grass, # CG-CG-S-CS-CS rotation
+#                       "Grass" = ((dummy[,Crotation[1]]*dummy[,Crotation[2]])+(dummy[,Crotation[3]]*dummy[,Crotation[4]])+(dummy[,Crotation[5]]*dummy[,Crotation[6]])+(dummy[,Crotation[7]]*dummy[,Crotation[8]])+(dummy[,Crotation[9]]*dummy[,Crotation[10]]))*0.2*land_use_grass, # CG-CG-S-CS-CS rotation
+#                       "Grass" = 
+                       "WinterRye" = ((dummy$Corn*dummy$`corn for grain`*(1-(land_use_grass*0.4))+dummy$Corn*dummy$`corn for silage`*(1-(land_use_grass*0.4)))*wr_adoption_corn)+((dummy$Soybeans*dummy$soybeans*(1-(land_use_grass*0.2)))*wr_adoption_soybean),
                        "CGM" = dummy$Corn*dummy$CGF,
                        "CGF" = dummy$Corn*dummy$CGM,
                        "DGS" = dummy$Corn*dummy$DGS)
@@ -65,7 +67,7 @@ for(n in 1:length(import_yrs)){
   
   cropareacty_old[,,n] <- cropareacty[,,n]
   
-  cropareacty[,,n] <- as.matrix(subset(aggregate(cropws[,5:24], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  cropareacty[,,n] <- as.matrix(subset(aggregate(cropws[,5:length(cropws)], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
   
   cropareaws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
   
@@ -75,7 +77,7 @@ for(n in 1:length(import_yrs)){
 croparea=colSums(cropareaws)
 cornareanoetohsum=colSums(cornareanoetoh)
 #etoh_landuse = cornuse[5,]*cornareanoetohsum*(1-to_FC_wetmill[alloc_method])+cornuse[6,]*cornareanoetohsum*(1-to_FC_drymill[alloc_method]) #ag land use for etoh
-etoh_landuse <- c(0,0,0,0,0) # There is no land use to produce ethanol in the region. The corn that is produced for etoh is from outside of the CBW (assumption)
+etoh_landuse <- c(0,0,0,0,0,0) # There is no land use to produce ethanol in the region. The corn that is produced for etoh is from outside of the CBW (assumption)
 
 #write files
 write_name = paste("InputFiles_CBW/corntotareaharvested.txt")
@@ -87,14 +89,31 @@ write.table(etoh_landuse, file = write_name, sep = " ", row.names = FALSE, col.n
 
 #write key
 write_name = paste("InputFileKeys/cropareaharvested_key.txt")
-cropareaharvested_key = array(" ", c(n_crops+1,length(import_yrs)+1))
-cropareaharvested_key[1,] = c(" ", import_yrs) #column headings
+cropareaharvested_key = array(" ", c(n_crops+1,length(year_labels)+1))
+cropareaharvested_key[1,] = c(" ", year_labels) #column headings
 cropareaharvested_key[,1]=c("crop", cropname) #row headings
 write.table(cropareaharvested_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 
 #Production
+# allocate space to matrices
+cropprodcnty_old <- array(0,c(n_cnty,length(cropname),length(year_labels)))
+cropprodcnty = array(0,c(n_cnty,length(cropname),length(year_labels)))
+cropprodcnty[,1:(n_crops-3),] = prod_array
+etohprodcnty = array(0,c(n_cnty,length(year_labels)))
+cropprodws = array(0,c(n_ws_tbx,length(cropname),length(year_labels)))
+etohprodws = array(0,c(n_ws_tbx,length(year_labels)))
+cropproddensws = array(0,c(n_ws_tbx,length(cropname),length(year_labels)))
+etohproddensws = array(0,c(n_ws_tbx,length(year_labels)))
+cornprodnoetoh=array(0,c(n_cnty,length(year_labels)))
 
-for(n in 1:(length(import_yrs))){ 
+# Ethanol information 2012 (https://neo.ne.gov/programs/stats/122/2012/122_201201.htm) and 2017 (https://neo.ne.gov/programs/stats/122/2017/122_201702.htm)
+etohprodcnty[58,] <- c(0, 0, 0, 416395296.24,416395296.24,416395296.24) # Clearfield plant produces 110 Mgal in 2012 and 2017
+etohprodcnty[170,] <- c(0, 0, 0, 246051765.96,227124707.04,227124707.04) # Hopewell plant produces 65 Mgal in 2012 and 60Mgal in 2017 it is barley ethanol
+
+# DGS information for 2012 and 2017
+cropprodcnty[58,n_crops,] <- c(0, 0, 0, 258168.1*1000,258168.1*1000,258168.1*1000) # in kg (data comes from Supplementary Info Table 7 from Ruffatto et al. 2023)
+
+for(n in 1:(length(year_labels))){ 
   # build a matrix of extracted data
   for(j in 1:n_cnty){ #rows (counties)
     # calc amounts of etoh coproducts
@@ -119,8 +138,8 @@ for(n in 1:(length(import_yrs))){
                        "LNDRVRSEG"=dummy$LNDRVRSEG,
                        "OBJECTID"=dummy$OBJECTID,
                        "REGION"=dummy$REGION,
-                       "Corn.grain" = dummy$Corn*dummy$V2*(1-(land_use_grass*0.4)),
-                       "Corn.silage" = dummy$Corn*dummy$V3*(1-(land_use_grass*0.4)),
+                       "Corn.grain" = dummy$Corn*dummy$V2*(1-(land_use_grass*0.8)),
+                       "Corn.silage" = dummy$Corn*dummy$V3*(1-(land_use_grass*0.8)),
                        "Wheat" = dummy$Wheat*dummy$V4,
                        "Oats" = dummy$Oats*dummy$V5,
                        "Barley" = dummy$Barley*dummy$V6,
@@ -136,16 +155,17 @@ for(n in 1:(length(import_yrs))){
                        "Rice" = 0,
                        "Peanuts" = dummy$Peanuts*dummy$V17,
                        "Grass" = 0,
-                       "CGM" = dummy$Corn*dummy$V19,
-                       "CGF" = dummy$Corn*dummy$V20,
-                       "DGS" = dummy$Corn*dummy$V21)
+                       "WinterRye" = 0,
+                       "CGM" = dummy$Corn*dummy$V20,
+                       "CGF" = dummy$Corn*dummy$V21,
+                       "DGS" = dummy$Corn*dummy$V22)
   cropws <- cropws[cropws$REGION=="Chesapeake Bay Watershed",]
   
   cropws <- cropws %>% arrange(FIPS,LNDRVRSEG)
   
   cropprodcnty_old[,,n] <- cropprodcnty[,,n]
   
-  cropprodcnty[,,n] <- as.matrix(subset(aggregate(cropws[,5:24], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  cropprodcnty[,,n] <- as.matrix(subset(aggregate(cropws[,5:length(cropws)], by=list(cropws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
   
   cropprodws[,,n] <- as.matrix(subset(cropws,select=-c(1:4)))
   
@@ -168,7 +188,10 @@ for(n in 1:(length(import_yrs))){
   cropprodws[,17,n] <- if(grass_fert_scenario == 1) {cropareaws[,17,n]*grass_yield_fert*100000} else {cropareaws[,17,n]*grass_yield_no_fert*100000} # Multiplying 10^5 to transform from Mg/ha to kg/km2
   
   # Winter crop scenario
-  
+  if (wr_scenario==1) {
+    cropprodcnty[,18,n] <- if(wr_use == 1) {cropareacty[,18,n]*wr_yield_cc*100000} else {cropareacty[,18,n]*wr_yield_dc*100000} # Multiplying 10^5 to transform from Mg/ha to kg/km2
+    cropprodws[,18,n] <- if(wr_use == 1) {cropareaws[,18,n]*wr_yield_cc*100000} else {cropareaws[,18,n]*wr_yield_dc*100000} # Multiplying 10^5 to transform from Mg/ha to kg/km2
+  }
   
   # Calculating densities of crops per area
   for(i in 1:(length(cropname))){ #columns (crops)
@@ -200,13 +223,13 @@ write.table(cropprod_key, file = write_name, sep = " ", row.names = FALSE, col.n
 cropprodtotal = colSums(cropprodcnty) #total crop prod in each year
 ##total corn production
 write_name = "InputFileKeys/cornprodnoetoh_key.txt"
-cornprodnoetoh_key = array(" ", c(n_cnty+1,length(import_yrs)+1))
-cornprodnoetoh_key[1,]=c(" ", import_yrs) #column headings
+cornprodnoetoh_key = array(" ", c(n_cnty+1,length(year_labels)+1))
+cornprodnoetoh_key[1,]=c(" ", year_labels) #column headings
 cornprodnoetoh_key[,1]=c("total_corn", 1:n_cnty) #row headings
 ##ethanol production
 write_name = "InputFileKeys/etohproddensws_key.txt"
-etohproddensws_key = array(" ", c(n_ws_tbx+1,length(import_yrs)+1))
-etohproddensws_key[1,]=c(" ", import_yrs) #column headings
+etohproddensws_key = array(" ", c(n_ws_tbx+1,length(year_labels)+1))
+etohproddensws_key[1,]=c(" ", year_labels) #column headings
 etohproddensws_key[,1]=c("L/km^2", 1:n_ws_tbx) #row headings
 write.table(etohproddensws_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 
@@ -216,3 +239,4 @@ write.table(etohproddensws_key, file = write_name, sep = " ", row.names = FALSE,
 # Woodbury, P. B., Kemanian, A. R., Jacobson, M., & Langholtz, M. (2018). Improving water quality in the Chesapeake Bay using payments for ecosystem services for perennial biomass for bioenergy and biofuel production. Biomass and Bioenergy, 114, 132–142. https://doi.org/10.1016/j.biombioe.2017.01.024
 # C.R. Stoof, B.K. Richards, P.B. Woodbury, et al., Untapped potential: opportunities and challenges for sustainable bioenergy production from marginal lands in the Northeast USA, Bioenergy Res. 8 (2015) 482e501.
 # Brown, D., Shi, J., & Li, Y. (2012). Comparison of solid-state to liquid anaerobic digestion of lignocellulosic feedstocks for biogas production. Bioresource Technology, 124, 379–386. https://doi.org/10.1016/j.biortech.2012.08.051
+# https://fyi.extension.wisc.edu/forage/files/2014/01/RyeForage-FOF.pdf

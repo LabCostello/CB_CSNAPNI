@@ -19,8 +19,8 @@ data_range2 = data2[2:17,4:8] #exclude some cells
 Nfert_lbsperacre=Nfert_lbsperacre1=data_range1[1:length(data_range1[,1]),]
 Pfert_lbsperacre=Pfert_lbsperacre1=data_range2[1:length(data_range2[,1]),]
 
-if (fertassump==2) { # NASS Survey values
-  Nfert_lbsperacre2=data_range1[1:length(data_range1[,1]),]
+if (fertassump==2 & exists("fertilizer_nass")==FALSE) { # NASS Survey values
+  Nfert_lbsperacre2=cbind(data_range1[1:length(data_range1[,1]),],rep(0,16))
   
   library(rnassqs)
   library(dbplyr)
@@ -43,11 +43,12 @@ if (fertassump==2) { # NASS Survey values
                                                       mean(corn_fert_nass[14:17,4]), #2002
                                                       mean(corn_fert_nass[18:19,4]), #2007
                                                       mean(corn_fert_nass[20:22,4]), #2012
-                                                      mean(corn_fert_nass[25:28,4])) #2017
+                                                      mean(corn_fert_nass[25:28,4]), #2017
+                                                      mean(corn_fert_nass[29:30,4])) #2022
   
   # Wheat
   wheat_fert_nass <- (fertilizer_nass[fertilizer_nass$commodity_desc=="WHEAT"&fertilizer_nass$unit_desc=="LB / ACRE / YEAR, AVG",] %>% arrange(year))[,c(10,30,31,38)]
-  Nfert_lbsperacre2[3,] <- rep(wheat_fert_nass[,4],5)
+  Nfert_lbsperacre2[3,] <- rep(wheat_fert_nass[,4],6)
   
   # Oats
   oats_fert_nass <- (fertilizer_nass[fertilizer_nass$commodity_desc=="OATS"&fertilizer_nass$unit_desc=="LB / ACRE / YEAR, AVG",] %>% arrange(year))[,c(10,30,31,38)]
@@ -55,7 +56,8 @@ if (fertassump==2) { # NASS Survey values
                              mean(oats_fert_nass[1:2,4]), #2002
                              mean(oats_fert_nass[1:2,4]), #2007
                              mean(oats_fert_nass[3:4,4]), #2012
-                             mean(oats_fert_nass[3:4,4]))  #2017
+                             mean(oats_fert_nass[3:4,4]), #2017
+                             mean(oats_fert_nass[5:6,4])) #2022
   
   # Barley
   barley_fert_nass <- (fertilizer_nass[fertilizer_nass$commodity_desc=="BARLEY"&fertilizer_nass$unit_desc=="LB / ACRE / YEAR, AVG",] %>% arrange(year))[,c(10,30,31,38)]
@@ -63,27 +65,35 @@ if (fertassump==2) { # NASS Survey values
                              barley_fert_nass[1,4],         #2002
                              barley_fert_nass[1,4],         #2007
                              mean(barley_fert_nass[2:3,4]), #2012
-                             mean(barley_fert_nass[4:5,4])) #2017
+                             mean(barley_fert_nass[4:5,4]), #2017
+                             mean(barley_fert_nass[6:7,4])) #2022
   
   # Soybeans
   soybeans_fert_nass <- (fertilizer_nass[fertilizer_nass$commodity_desc=="SOYBEANS"&fertilizer_nass$unit_desc=="LB / ACRE / YEAR, AVG",] %>% arrange(year))[,c(10,30,31,38)]
   Nfert_lbsperacre2[12,] <- c(mean(soybeans_fert_nass[6:7,4]),  #1997
                              mean(soybeans_fert_nass[9:10,4]),  #2002
                              soybeans_fert_nass[11,4],          #2007
-                             mean(soybeans_fert_nass[12:13,4]), #2012
-                             soybeans_fert_nass[14,4])          #2017
+                             mean(soybeans_fert_nass[12,4]), #2012
+                             soybeans_fert_nass[14,4],          #2017
+                             mean(soybeans_fert_nass[15,4])) #2022
   
   # Potatoes
   potatoes_fert_nass <- (fertilizer_nass[fertilizer_nass$commodity_desc=="POTATOES"&fertilizer_nass$unit_desc=="LB / ACRE / YEAR, AVG",] %>% arrange(year))[,c(10,30,31,38)]
   Nfert_lbsperacre2[8,] <- c(mean(potatoes_fert_nass[13:14,4]), #1997
-                             mean(potatoes_fert_nass[15,4]),    #2002
-                             mean(potatoes_fert_nass[15,4]),    #2007
-                             mean(potatoes_fert_nass[15,4]),    #2012
-                             mean(potatoes_fert_nass[15,4]))    #2017
+                             potatoes_fert_nass[15,4],    #2002
+                             potatoes_fert_nass[15,4],    #2007
+                             potatoes_fert_nass[15,4],    #2012
+                             potatoes_fert_nass[15,4],    #2017
+                             potatoes_fert_nass[15,4])    #2022
   
   # Consolidating results
   Nfert_lbsperacre=Nfert_lbsperacre2
   Pfert_lbsperacre=Pfert_lbsperacre2=data_range2[1:length(data_range2[,1]),]
+  Nfert_lbsperacre[c(6,7,9,10,11,15,16),6] <- Nfert_lbsperacre[c(6,7,9,10,11,15,16),5]
+}
+if (fertassump==2) {
+Nfert_lbsperacre=Nfert_lbsperacre2
+Nfert_lbsperacre[c(6,7,9,10,11,15,16),6] <- Nfert_lbsperacre[c(6,7,9,10,11,15,16),5]
 }
 if (fertassump==3) {
   # Yield for the following crops: corn grain, silage, wheat, oats, barley, sorghum grain and silage, rye, alfalfa, other hay
@@ -177,21 +187,37 @@ if (fertassump==3) {
   Pfert_lbsperacre3 <- Pfert_lbsperacre
 }
 
-# It was changed the amount of fertilizer per crop for some of the crops
-Nfert=as.numeric(Nfert_lbsperacre) / array(lbsperkg,c(16,length(import_yrs6))) / array(km2peracre,c(16,length(import_yrs6))) #kg/km2
 
-Pfert=as.numeric(Pfert_lbsperacre)/array(lbsperkg,c(16,length(import_yrs6)))/array(km2peracre,c(16,length(import_yrs6))) #kg/km2
+Pfert_lbsperacre <- cbind(Pfert_lbsperacre,rep(0,16)) # Fix in the future
+
+# It was changed the amount of fertilizer per crop for some of the crops
+Nfert=as.numeric(Nfert_lbsperacre) / array(lbsperkg,c(16,length(year_labels))) / array(km2peracre,c(16,length(year_labels))) #kg/km2
+
+Pfert=as.numeric(Pfert_lbsperacre)/array(lbsperkg,c(16,length(year_labels)))/array(km2peracre,c(16,length(year_labels))) #kg/km2
 
 # Grass scenario
-Nfert_lbsperacre <- rbind(Nfert_lbsperacre, c(0,0,0,0,0))
-Nfert <- rbind(Nfert, c(0,0,0,0,0))
-Pfert_lbsperacre <- rbind(Pfert_lbsperacre, c(0,0,0,0,0))
-Pfert <- rbind(Pfert,  c(0,0,0,0,0))
+Nfert_lbsperacre <- rbind(Nfert_lbsperacre, c(0,0,0,0,0,0))
+Nfert <- rbind(Nfert, c(0,0,0,0,0,0))
+Pfert_lbsperacre <- rbind(Pfert_lbsperacre, c(0,0,0,0,0,0))
+Pfert <- rbind(Pfert,  c(0,0,0,0,0,0))
 if(grass_fert_scenario==1){
-  Nfert_lbsperacre[17] <- rbind(Nfert_lbsperacre, c(0,0,0,0,0))
+  Nfert_lbsperacre <- rbind(Nfert_lbsperacre, c(0,0,0,0,0,0))
   Nfert <- rbind(Nfert, c(11200,11200,11200,11200,11200))
-  Pfert_lbsperacre[17] <- rbind(Pfert_lbsperacre, c(0,0,0,0,0))
+  Pfert_lbsperacre <- rbind(Pfert_lbsperacre, c(0,0,0,0,0,0))
   Pfert <- rbind(Pfert, c(5860,5860,5860,5860,5860))
+}
+
+# Winter Rye scenario
+if(wr_use==2 & wr_scenario){
+  Nfert_lbsperacre <- rbind(Nfert_lbsperacre, rep(40.0326300,6))
+  Nfert <- rbind(Nfert, rep(4483.584,6))
+  Pfert_lbsperacre <- rbind(Pfert_lbsperacre, rep(8.7273547,6))
+  Pfert <- rbind(Pfert, rep(977.4484,6))
+}else{
+  Nfert_lbsperacre <- rbind(Nfert_lbsperacre, c(0,0,0,0,0,0))
+  Nfert <- rbind(Nfert, c(0,0,0,0,0,0))
+  Pfert_lbsperacre <- rbind(Pfert_lbsperacre, c(0,0,0,0,0,0))
+  Pfert <- rbind(Pfert,  c(0,0,0,0,0,0))
 }
 
 #write files
@@ -209,3 +235,4 @@ write_name2 = paste("InputFileKeys/Pfert_key.txt")
 Pfert_key = array(" ", c(16+1,length(import_yrs6)+1))
 Pfert_key = c("kgP2O5/km2", import_yrs6) #row headings
 write.table(Pfert_key, file = write_name2, sep = " ", row.names = FALSE, col.names = FALSE)
+

@@ -84,6 +84,18 @@ Psupp_perprot = array(0,c(n_meats,nyrs))
 
 Psupp4anim = Psupp_animtotals
 
+#new (05/27/24)
+fertNpermeatold = array(0,c(n_meats,n_crops,nyrs)) # kg fert (applied to crops) per kg of edible animal product (based on amount of crop assumed to be consumed per animal)
+feedN4meatimp <- array(0,c(n_meats,n_crops,nyrs))
+feedN4meatdom <- array(0,c(n_meats,n_crops,nyrs))
+CNprodremaining <- array(0,c(n_crops,nyrs))
+feedNpermeatdom <- array(0,c(n_meats,n_crops,nyrs))
+feedNpermeatimp <- array(0,c(n_meats,n_crops,nyrs))
+feedpermeatdom <- array(0,c(n_meats,n_crops,nyrs)) # kg crop per kg of edible animal product, before ADJUSTMENT (if the adjustment is done)
+feedpermeatimp <- array(0,c(n_meats,n_crops,nyrs)) # kg crop per kg of edible animal product, before ADJUSTMENT (if the adjustment is done)
+unitfertNCnational <- as.matrix(read.csv("RawData/unitfertNCnational.csv"))
+unitfertNCnational <- cbind(unitfertNCnational,unitfertNCnational[,5])
+
 # impact re-allocation to account for dairy industry beef production (not yet used for anything)
 dairycont = 0.2 # proportion of beef that comes from the dairy industry in the US
 meatprottot = meatprod*meatdata[,8]
@@ -166,11 +178,33 @@ for(n in 1:nyrs){
   Psupp4meat[7,n] = Psupp4anim[7,n] + Psupp4anim[8,n]
   Psupp4meat[8,n] = Psupp4anim[6,n] + Psupp4anim[9,n]
   Psupp4meat[9,n] = Psupp4anim[19,n] #goats
+  #
+  # for dairy production - we consider that dairy will be the only animals that will be feed exclusively with food from the region
+  feedN4meatimp[2,,n] <- pmax(feedN4meat[2,,n]-colSums(CNprod[,,n]),0) # imported is only the ones that the cow consume more than it is produced in the region
+  feedN4meatdom[2,,n] <- feedN4meat[2,,n] - feedN4meatimp[2,,n]
   
+  # for the rest of the animals
+  CNprodremaining[,n] <- colSums(CNprod[,,n])-feedN4meatdom[2,,n]
+  
+  ratio <- sweep(feedN4meat[-2,,n], 2, colSums(feedN4meat[-2,,n]), FUN = "/") 
+  ratio[!is.finite(ratio)] <- NA
+  ratio[is.na(ratio)] <- 0
+  
+  extrafeeddom <- CNprodremaining[,n]-colSums(feedN4meat[-2,,n])
+  extrafeeddom[extrafeeddom<0] <- 0
+  
+  feedN4meatdom[-2,,n] <- sweep(ratio, 2, CNprodremaining[,n]-extrafeeddom, FUN = "*")
+  feedN4meatimp[-2,,n] <- feedN4meat[-2,,n] - feedN4meatdom[-2,,n]
+  
+  feedN4meatdom[,,n][feedN4meatdom[,,n] < 1] <- 0
+  feedN4meatimp[,,n][feedN4meatimp[,,n] < 1] <- 0
+  #
   for(i in 1:n_meats){
     if(totmeat[n,i]>0){
       feedNpermeat[i,,n] = feedN4meat[i,,n] / totmeat[n,i] # normalized by meat production
       animNreqpermeat[i,n] = animNreqmeat[i,n] / totmeat[n,i] # kg anim req / kg meat
+      feedNpermeatdom[i,,n] <- feedN4meatdom[i,,n] / totmeat[n,i] # normalized by meat production
+      feedNpermeatimp[i,,n] <- feedN4meatimp[i,,n] / totmeat[n,i] # normalized by meat production
       feedPpermeat[i,,n] = feedP4meat[i,,n] / totmeat[n,i] # normalized by meat production
       animPreqpermeat[i,n] = animPreqmeat[i,n] / totmeat[n,i] # kg anim req / kg meat
     }else{ # avoid Inf and NaN results
@@ -186,6 +220,8 @@ for(n in 1:nyrs){
   
   for(i in 1:n_crops){
     feedpermeat[,i,n] = feedNpermeat[,i,n] / NperC[i] # feed per kg meat
+    feedpermeatdom[,i,n] = feedNpermeatdom[,i,n] / NperC[i] # feed per kg meat
+    feedpermeatimp[,i,n] = feedNpermeatimp[,i,n] / NperC[i] # feed per kg meat
     #feedpermeat[,i,n] = feedPpermeat[,i,n] / PperC[i] # feed per kg meat ->>Check?
   }
   
@@ -224,7 +260,8 @@ for(n in 1:nyrs){
   }
   
   for(i in 1:n_crops){
-    fertNpermeat[,i,n] = feedpermeat[,i,n] * unitfertNC[i,n]
+    fertNpermeatold[,i,n] = feedpermeat[,i,n] * unitfertNC[i,n]
+    fertNpermeat[,i,n] <- (feedpermeatdom[,i,n] * unitfertNC[i,n]) + (feedpermeatimp[,i,n] * unitfertNCnational[i,n])
     fertNperanim[,i,n] = feedperanim[,i,n] * unitfertNC[i,n]
     fertNanimtot[,i,n] = feed4anim[,i,n] * unitfertNC[i,n]
     fertPpermeat[,i,n] = feedpermeat[,i,n] * unitfertPC[i,n]
@@ -253,9 +290,9 @@ for(n in 1:nyrs){
   
   for(i in 1:length(totmeat[n,])){
     if(totmeat[n,i]>0){
-      NH3permeat[n,] = sum(NH3meat[i,,n]) / totmeat[n,i] # kg N from NH3 emissions per kg of meat by animal
+      NH3permeat[n,i] = sum(NH3meat[,i,n]) / totmeat[n,i] # kg N from NH3 emissions per kg of meat by animal
     }else{ # avoid inf
-      NH3permeat[n,] = 0
+      NH3permeat[n,i] = 0
     }
   }
   NH3permeat[n,5] = 0
@@ -329,3 +366,4 @@ for(n in 1:nyrs){
   manurePperkcal[5,n] = 0 #horses
   manurePperprot[5,n] = 0 #horses
 }
+
