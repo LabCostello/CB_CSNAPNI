@@ -11,5 +11,5 @@ areakm2_cnty = as.numeric(data[1:n_cnty,2]) # 197 counties within CBW
 
 areakm2_cnty_orig <- data.frame(FIPS=lrs_shp$FIPS, Area = lrs_shp$Acres*0.0040468564224)
 areakm2_cnty_orig <- aggregate(areakm2_cnty_orig$Area, by=list(areakm2_cnty_orig$FIPS),FUN = sum)
-areakm2_cnty_orig <- areakm2_cnty_orig[areakm2_cnty_orig$Group.1 %in% list,]
+areakm2_cnty_orig2 <- areakm2_cnty_orig[areakm2_cnty_orig$Group.1 %in% FIPS,]
 

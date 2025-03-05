@@ -14,6 +14,7 @@ n_crops = 21 #number of crops tracked (includes etoh coproducts)
 n_anims = 19 #number of animal types tracked
 n_meats = 9 #number of meat products tracked
 data_yrs = 6 #number of years of data
+n_years = 6 #number of years of data
 year_labels = c(1997,2002,2007,2012,2017,2022)
 
 cnty_ws = t(array(0, c(n_ws_tbx,n_cnty)))

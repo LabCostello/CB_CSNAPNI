@@ -16,11 +16,17 @@ biogasinfo = as.matrix(biogasdata[2:27,2:11])
 manureperanimyr <- animdatadyn[,10]/as.numeric(c(biogasinfo[5,4],biogasinfo[1,4],biogasinfo[11,4],biogasinfo[11,4],biogasinfo[15,4],
               biogasinfo[16,4],biogasinfo[15,4],biogasinfo[14,4],biogasinfo[15,4],biogasinfo[5,4],
               biogasinfo[2,4],biogasinfo[2,4],biogasinfo[3,4],biogasinfo[3,4],biogasinfo[3,4],
-              biogasinfo[3,4],biogasinfo[19,4],biogasinfo[21,4],biogasinfo[19,4]))
+              biogasinfo[3,4],biogasinfo[19,4],biogasinfo[21,4],biogasinfo[19,4])) # This one is dividing the kg N that is from CSNAPNI
 
+
+#au <- c(1.02,0.73,2.27,6.7,293,50,350,382,59,1,4,4,1.14,1.04,1.73,1.73,8,0.9,8) # animal units from kellogs et al 2014
+#manureperanimyrau <- c(11.7,20.34,5.38,12.2,11.39,7.47,8.21,15.97,6.83,18.72,14.94,14.91,18.72,10.02,18.72,18.75,7.2,9.25,7.2)*1000*0.907185 # Converting from US tons to kg
+#manureperanimyr <- manureperanimyrau/au
+  
 manurecty <- array(0, c(197,19,length(year_labels)))
 manurews <- array(0, c(1925,19,length(year_labels)))
-a <- array(0,dim = c(1925,19))
+manurectyrec <- array(0, c(197,19,length(year_labels)))
+manurewsrec <- array(0, c(1925,19,length(year_labels)))
 
 for (n in 1:data_yrs) {
   for (i in 1:19) {manurecty[,i,n] <- animpopcnty[,i,n]*manureperanimyr[i]} 
@@ -30,24 +36,50 @@ for (n in 1:data_yrs) {
   for (i in 1:19) {manurews[,i,n] <- animpopws[,i,n]*manureperanimyr[i]} 
 }
 
-for(i in 1:n_ws_tbx){
-  if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 10){ # Delaware
-    a[i,] = manurefactor[8,] # kg manure N rec for 1902 DA
+for (n in 1:data_yrs){
+  for(i in 1:n_cnty){
+    if(as.numeric(substr(as.character(FIPS[i]), 1, 2)) == 10){ # Delaware
+      manurectyrec[i,,n] = manurecty[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPS[i]), 1, 2)) == 24){ # Maryland
+      manurectyrec[i,,n] = manurecty[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPS[i]), 1, 2)) == 36){ # New York
+      manurectyrec[i,,n] = manurecty[i,,n]*t(manurefactor2[,n]) # kg manure N rec  for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPS[i]), 1, 2)) == 42){ # Pennsylvania
+      manurectyrec[i,,n] = manurecty[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPS[i]), 1, 2)) == 51){ # Virginia
+      manurectyrec[i,,n] = manurecty[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPS[i]), 1, 2)) == 54){ # West Virginia
+      manurectyrec[i,,n] = manurecty[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
   }
-  else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 24){ # Maryland
-    a[i,] = manurefactor[20,] # kg manure N rec for 1902 DA
-  }
-  else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 36){ # New York
-    a[i,] = manurefactor[32,] # kg manure N rec  for 1902 DA
-  }
-  else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 42){ # Pennsylvania
-    a[i,] = manurefactor[38,] # kg manure N rec for 1902 DA
-  }
-  else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 51){ # Virginia
-    a[i,] = manurefactor[46,] # kg manure N rec for 1902 DA
-  }
-  else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 54){ # West Virginia
-    a[i,] = manurefactor[48,] # kg manure N rec for 1902 DA
+}
+
+
+for (n in 1:data_yrs){
+  for(i in 1:n_ws_tbx){
+    if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 10){ # Delaware
+      manurewsrec[i,,n] = manurews[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 24){ # Maryland
+      manurewsrec[i,,n] = manurews[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 36){ # New York
+      manurewsrec[i,,n] = manurews[i,,n]*t(manurefactor2[,n]) # kg manure N rec  for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 42){ # Pennsylvania
+      manurewsrec[i,,n] = manurews[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 51){ # Virginia
+      manurewsrec[i,,n] = manurews[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
+    else if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 54){ # West Virginia
+      manurewsrec[i,,n] = manurews[i,,n]*t(manurefactor2[,n]) # kg manure N rec for 1902 DA
+    }
   }
 }
 
@@ -70,20 +102,20 @@ VSperanim <- as.numeric(c(biogasinfo[5,3],biogasinfo[1,3],biogasinfo[11,3],bioga
                               biogasinfo[2,3],biogasinfo[2,3],biogasinfo[3,3],biogasinfo[3,3],biogasinfo[3,3],
                               biogasinfo[3,3],biogasinfo[19,3],biogasinfo[21,3],biogasinfo[19,3]))
 
-CH4perTSanim <- as.numeric(c(biogasinfo[5,8],biogasinfo[1,8],biogasinfo[11,8],biogasinfo[11,8],biogasinfo[15,8],
+CH4perVSanim <- as.numeric(c(biogasinfo[5,8],biogasinfo[1,8],biogasinfo[11,8],biogasinfo[11,8],biogasinfo[15,8],
                           biogasinfo[16,8],biogasinfo[15,8],biogasinfo[14,8],biogasinfo[15,8],biogasinfo[5,8],
                           biogasinfo[2,8],biogasinfo[2,8],biogasinfo[3,8],biogasinfo[3,8],biogasinfo[3,8],
                           biogasinfo[3,8],biogasinfo[19,8],biogasinfo[21,8],biogasinfo[19,8]))
 
-CH4peranim <- TSperanim*CH4perTSanim/1000
+CH4peranim <- VSperanim*CH4perVSanim/1000
 
 # Manure biogas
 manurebiogascty <- array(0, c(197,19,length(year_labels)))
 manurebiogasws <- array(0, c(1925,19,length(year_labels)))
 
 for (i in 1:19) {
-  for (n in 1:data_yrs) {manurebiogascty[,i,n] <- manurecty[,i,n]*CH4peranim[i]}
-    for (n in 1:data_yrs) {manurebiogasws[,i,n] <- manurews[,i,n]*CH4peranim[i]}
+  for (n in 1:data_yrs) {manurebiogascty[,i,n] <- manurectyrec[,i,n]*CH4peranim[i]}
+    for (n in 1:data_yrs) {manurebiogasws[,i,n] <- manurewsrec[,i,n]*CH4peranim[i]}
 }
 # Grass biogas
 grassbiogascty <- array(0, c(197,length(year_labels)))
@@ -148,6 +180,6 @@ sum(grassbiogascty[,length(year_labels)]*10)
 #   (-0.00088888888888884 * GM_Ratio * OL) + (-0.00126342857142857 * HRT * OL)
 # 
 # # % of starting nitrogen going to solid digestate:
-percent_Nsoliddigestate <- (-0.793140885613505) + (0.263667901234568 * GM_Ratio) + (0.0104860657596372 * HRT + 0.271661428571429 * OL) +
-   (-0.0611358024691358 * GM_Ratio^2) + (-0.0000226122448979593 * HRT^2) + (-0.016752 * OL^2) + (-0.00350222222222222 * GM_Ratio * HRT) +
-   (0.02296 * GM_Ratio * OL) + (-0.00142342857142857 * HRT * OL)
+#percent_Nsoliddigestate <- (-0.793140885613505) + (0.263667901234568 * GM_Ratio) + (0.0104860657596372 * HRT + 0.271661428571429 * OL) +
+#   (-0.0611358024691358 * GM_Ratio^2) + (-0.0000226122448979593 * HRT^2) + (-0.016752 * OL^2) + (-0.00350222222222222 * GM_Ratio * HRT) +
+#   (0.02296 * GM_Ratio * OL) + (-0.00142342857142857 * HRT * OL)

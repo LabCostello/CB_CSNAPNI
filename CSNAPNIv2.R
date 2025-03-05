@@ -21,7 +21,8 @@ if (get_new_data == 1){
 source("ModelSubs/LoadData_CBW.R")
   
 ##Calculate recoverable manure for NANI/NAPI Toolbox Watersheds
-source("ModelSubs/manure_CBW.R")
+if (rec_manure == 1){source("ModelSubs/manure_CBW.R")
+  } else if (rec_manure == 2) {source("ModelSubs/manure_CBWv2.R")}
 
 ##Sort crop, animal, and manure production, NANI and NAPI data, human populations, and areas into NEEA watersheds
 source("ModelSubs/NEEAshedsdyn.R")
@@ -58,10 +59,7 @@ source("ModelSubs/biogas.R")
 source("ModelSubs/NPinputs_aggregate.R")
 
 ## WRITE OUTPUT DATA TO TEXT FILES
- if(filter_region == 1){
-   source("ModelSubs/write_outputs_CBW.R")
-   }else if(filter_region == 0){
-   source("ModelSubs/write_outputs.R")}
+source("ModelSubs/write_outputs_CBW.R")
 
 ## TOTAL NITROGEN CALCULATION
 source("ModelSubs/TN.R")

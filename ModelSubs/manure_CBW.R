@@ -20,6 +20,8 @@ kgmanurePrec = array(0,c(n_cnty,n_anims,nyrs))
 kgmanurePrec450 = array(0,c(n_ws_tbx,n_anims,nyrs))
 kgmanureNcnty = array(0,c(n_cnty,n_anims,nyrs))  
 kgmanurePcnty = array(0,c(n_cnty,n_anims,nyrs))  
+kgmanureNlrs = array(0,c(n_ws_tbx,n_anims,nyrs))  
+kgmanurePlrs = array(0,c(n_ws_tbx,n_anims,nyrs))  
 
 for(n in 1:nyrs){
   for(i in 1:n_cnty){
@@ -175,6 +177,8 @@ for(n in 1:nyrs){
 # Calculating recoverable N&P in manure per land river segment
 for(n in 1:nyrs){
   for(i in 1:n_ws_tbx){
+    kgmanureNlrs[i,,n] = (noanimdyn[i,,n] * t(animdatadyn[,10]))
+    kgmanurePlrs[i,,n] = (noanimdyn[i,,n] * t(animdatadyn[,11]))
     if(as.numeric(substr(as.character(FIPSws[i]), 1, 2)) == 10){ # Delaware
       kgmanureNrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,10])*manurefactor[8,] # kg manure N rec for 1902 DA
       kgmanurePrec450[i,,n] = noanimdyn[i,,n]*t(animdatadyn[,11])*manurefactor[8,] # kg manure P rec for 1902 DA

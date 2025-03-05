@@ -54,10 +54,10 @@ for(n in 1:length(year_labels)){
                        "Noncropland pasture" = dummy$Grass.Pasture*dummy$`noncropland pasture`,
                        "Rice" = 0,
                        "Peanuts" = dummy$Peanuts*dummy$grass,
-                       "Grass" = ((0.5*dummy$Corn*dummy$`corn for grain`)+(0.5*dummy$Corn*dummy$`corn for silage`)+(0*dummy$Soybeans*dummy$soybeans))*land_use_grass, # CG-CG-S-CS-CS rotation
+                       "Grass" = ((1*dummy$Corn*dummy$`corn for grain`)+(1*dummy$Corn*dummy$`corn for silage`)+(0*dummy$Soybeans*dummy$soybeans))*land_use_grass, # CG-CG-S-CS-CS rotation
 #                       "Grass" = ((dummy[,Crotation[1]]*dummy[,Crotation[2]])+(dummy[,Crotation[3]]*dummy[,Crotation[4]])+(dummy[,Crotation[5]]*dummy[,Crotation[6]])+(dummy[,Crotation[7]]*dummy[,Crotation[8]])+(dummy[,Crotation[9]]*dummy[,Crotation[10]]))*0.2*land_use_grass, # CG-CG-S-CS-CS rotation
 #                       "Grass" = 
-                       "WinterRye" = ((dummy$Corn*dummy$`corn for grain`*(1-(land_use_grass*0.4))+dummy$Corn*dummy$`corn for silage`*(1-(land_use_grass*0.4)))*wr_adoption_corn)+((dummy$Soybeans*dummy$soybeans*(1-(land_use_grass*0.2)))*wr_adoption_soybean),
+                       "WinterRye" = ((dummy$Corn*dummy$`corn for grain`*(1-(land_use_grass))+dummy$Corn*dummy$`corn for silage`*(1-(land_use_grass)))*wr_adoption_corn),
                        "CGM" = dummy$Corn*dummy$CGF,
                        "CGF" = dummy$Corn*dummy$CGM,
                        "DGS" = dummy$Corn*dummy$DGS)
@@ -149,7 +149,7 @@ for(n in 1:(length(year_labels))){
                        "Rye" = dummy$Rye*dummy$V10,
                        "Alfalfa" = dummy$Alfalfa*dummy$V11,
                        "Other Hay/Non Alfalfa" = dummy$Other.Hay.Non.Alfalfa*dummy$V12,
-                       "Soybeans" = dummy$Soybeans*dummy$V13*(1-(land_use_grass*0.2)),
+                       "Soybeans" = dummy$Soybeans*dummy$V13*(1-(land_use_grass*0.4)),
                        "Cropland pasture" = dummy$Grass.Pasture*dummy$V14,
                        "Noncropland pasture" = dummy$Grass.Pasture*dummy$V15,
                        "Rice" = 0,

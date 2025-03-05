@@ -20,11 +20,11 @@ data = data[data[,32] %in% list,] #filtering
 census_pop <- read.csv("RawData/new_pop.csv") # Data estimates from: https://www2.census.gov/programs-surveys/popest/datasets/
 census_pop <- census_pop[census_pop$FIPS %in% list,]
 
-new_pop <- merge(data.frame(FIPS=FIPS, Area = areakm2_cnty_orig$x), census_pop, by = "FIPS")
+new_pop <- merge(data.frame(FIPS=areakm2_cnty_orig$Group.1, Area = areakm2_cnty_orig$x), census_pop, by = "FIPS")
 new_pop$density22 <- new_pop$POPESTIMATE2022/new_pop$Area 
 new_pop$density17 <- new_pop$POPESTIMATE2017/new_pop$Area 
 new_pop$density12 <- new_pop$POPESTIMATE2012/new_pop$Area 
-new_pop$realdens12 <- as.numeric(populationdenscty[,1])
+#new_pop$realdens12 <- as.numeric(populationdenscty[,1])
 
 
 #need columns 33 (2012 & 2017), 34 (2007), 35 (2002), 36 (1997)

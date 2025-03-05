@@ -184,13 +184,13 @@ for(n in 1:nyrs){
   feedN4meatdom[2,,n] <- feedN4meat[2,,n] - feedN4meatimp[2,,n]
   
   # for the rest of the animals
-  CNprodremaining[,n] <- colSums(CNprod[,,n])-feedN4meatdom[2,,n]
+  CNprodremaining[,n] <- colSums(CNprod[,,n])-feedN4meatdom[2,,n] #nitrogen from each crop remaining after the dairy cows have been fed, for year n.
   
   ratio <- sweep(feedN4meat[-2,,n], 2, colSums(feedN4meat[-2,,n]), FUN = "/") 
   ratio[!is.finite(ratio)] <- NA
   ratio[is.na(ratio)] <- 0
   
-  extrafeeddom <- CNprodremaining[,n]-colSums(feedN4meat[-2,,n])
+  extrafeeddom <- CNprodremaining[,n]-colSums(feedN4meat[-2,,n]) # extra feed needed for the rest of the animals
   extrafeeddom[extrafeeddom<0] <- 0
   
   feedN4meatdom[-2,,n] <- sweep(ratio, 2, CNprodremaining[,n]-extrafeeddom, FUN = "*")

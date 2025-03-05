@@ -95,7 +95,7 @@ total_meat_manureN = colSums(manureNmeat)/(10^3) #thousand kg N
 total_meat_manureP = colSums(manurePmeat)/(10^3) #thousand kg P
 
 ## Field loss proportions
-Nincrop=cropdata[,1]*cropdata[,2]
+Nincrop=Nincrop
 NinperkgC=NinputtoC/drop(colSums(CkgwswE))
 NoutperkgC=Nincrop
 CNproplost=(NinperkgC-NoutperkgC)/NinperkgC
@@ -224,7 +224,11 @@ for(n in 1:nyrs){
   #recoverable manure N by county
   write_name = paste("OutputFiles_CBW/kgmanureNreccnty",run_yrs[n],".txt",sep = "")
   write.table(kgmanureNrec[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
-  
+
+  #recoverable manure N by LRS
+  write_name = paste("OutputFiles_CBW/kgmanureNreclrs",run_yrs[n],".txt",sep = "")
+  write.table(kgmanureNrecws[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
+    
   #recoverable manure P by county
   write_name = paste("OutputFiles_CBW/kgmanurePreccnty",run_yrs[n],".txt",sep = "")
   write.table(kgmanurePrec[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
@@ -241,10 +245,10 @@ for(n in 1:nyrs){
     kgfertPcnty[,k,n]=cropprodcnty[,k,n]*unitfertPC[k,n]
     
     # N in crop by county
-    kgcropNcnty[,k,n]=cropprodcnty[,k,n]*cropdata[k,1]*cropdata[k,2] #cropdata[,1] * cropdata[,2] = (% DM) * (% N in DM)
+    kgcropNcnty[,k,n]=cropprodcnty[,k,n]*Nincrop[k] #cropdata[,1] * cropdata[,2] = (% DM) * (% N in DM)
     
     # P in crop by county
-    kgcropPcnty[,k,n]=cropprodcnty[,k,n]*cropdata[k,1]*cropdata[k,3] #cropdata[,1] * cropdata[,3] = (% DM) * (% P in DM)
+    kgcropPcnty[,k,n]=cropprodcnty[,k,n]*Nincrop[k] #cropdata[,1] * cropdata[,3] = (% DM) * (% P in DM)
   }
   
   #fertilizer N by county

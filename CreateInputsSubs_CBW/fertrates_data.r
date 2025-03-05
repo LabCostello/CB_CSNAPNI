@@ -209,10 +209,10 @@ if(grass_fert_scenario==1){
 
 # Winter Rye scenario
 if(wr_use==2 & wr_scenario){
-  Nfert_lbsperacre <- rbind(Nfert_lbsperacre, rep(40.0326300,6))
-  Nfert <- rbind(Nfert, rep(4483.584,6))
-  Pfert_lbsperacre <- rbind(Pfert_lbsperacre, rep(8.7273547,6))
-  Pfert <- rbind(Pfert, rep(977.4484,6))
+  Nfert_lbsperacre <- rbind(Nfert_lbsperacre, c(0,0,0,0,0,0))
+  Nfert <- rbind(Nfert, c(0,0,0,0,0,0))
+  Pfert_lbsperacre <- rbind(Pfert_lbsperacre, c(0,0,0,0,0,0))
+  Pfert <- rbind(Pfert, c(0,0,0,0,0,0))
 }else{
   Nfert_lbsperacre <- rbind(Nfert_lbsperacre, c(0,0,0,0,0,0))
   Nfert <- rbind(Nfert, c(0,0,0,0,0,0))

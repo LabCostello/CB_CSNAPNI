@@ -8,21 +8,22 @@ if(print_tags == 1){
 }
 
 #Loading all the packages used in the toolbox ####
-packagesused <- c('data.table','dplyr','EnvStats','fitdistrplus','knitr','ggplot2','patchwork','plotly','readxl','rnassqs','sf','stringr','tidyverse')
-if (length(packagesused[!(packagesused %in% installed.packages()[,"Package"])]) != 0 ){
-  library(pacman)
-  p_install(data.table,dplyr,EnvStats,fitdistrplus,knitr,ggplot2,plotly,readxl,rnassqs,stringr,tidyverse)
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
 }
+library(pacman)
+packagesused <- c('data.table','dplyr','EnvStats','fitdistrplus','knitr','ggplot2','patchwork','plotly','readxl','rnassqs','sf','stringr','tidyverse')
+pacman::p_load(char = packagesused)
 
 #Regenerate input files? 0=no, 1=yes ####
 get_new_data=1
 print(paste("Input files regenerated (0=no, 1=yes): ", get_new_data),quote=FALSE)
 
 ##input file creation settings
-  ##allocation method
-  alloc_methods = c("output masses", "energy content", "market value", "input mass (i.e., corn starch content)", "no allocation to ethanol","no allocation to feed coproducts")
-  alloc_method = 4
-  print(paste("Ethanol and coproduct allocation method: ", alloc_methods[alloc_method]),quote=FALSE)
+##allocation method
+alloc_methods = c("output masses", "energy content", "market value", "input mass (i.e., corn starch content)", "no allocation to ethanol","no allocation to feed coproducts")
+alloc_method = 4
+print(paste("Ethanol and coproduct allocation method: ", alloc_methods[alloc_method]),quote=FALSE)
 
 #protein assumptions
 protassump=1
@@ -61,6 +62,9 @@ if(fertassump==1){
   print(paste("Using PSU Agronomy Guide approach."),quote=FALSE)
 }
 
+# Manure management scenarios
+rec_manure = 2 # 1 is cs-nani style, 2 is new style where it not only considers recoverable manure nutrient calculation according to Kellog 2014 
+
 # Grass scenario ####
 # Conditions for this scenario 
 grass_scenario <-  0 # (Y = 1, N = 0)
@@ -75,14 +79,14 @@ grass_fert_scenario <- 0 # (Y = 1, N = 0)
 #Crotation <- c(crot1[1],crot2[1],crot1[2],crot2[2],crot1[3],crot2[3],crot1[4],crot2[4],crot1[5],crot2[5]) # Don't change this one (updated automatically)
 # Constants and Variables
 land_use_grass <- 0.10 # Reference: Zhou et al.(2014)
-grass_yield_no_fert <- 9.9 # Reference: Woodbury et al.(2018) Unit: Mg/ha (DM)
+grass_yield_no_fert <- 5 # Reference: Woodbury et al.(2018) Unit: Mg/ha (DM)
 # grass_yield_fert <- 19.7 # Reference: Kering et al.(2012) Unit: Mg/ha
 
 # Winter crop scenario ####
 wr_scenario <- 0 # (Y = 1, N = 0)
-wr_use <- 1 # (Cover crop = 1, Double Crop = 2)
-wr_adoption_corn <- 0.2 # Percentage of corn land adopting cover crop
-wr_adoption_soybean <- 0 # Percentage of corn land adopting cover crop
-wr_yield_cc <- 5.856 # ton DM/ha (eqv 2.37 ton DM/acre)
-wr_yield_dc <- 9.588 # ton DM/ha (eqv 3.88 ton DM/acre)
+wr_use <- 2 # (Cover crop = 1, Double Crop = 2)
+wr_adoption_corn <- 0.3 # Percentage of corn land adopting cover crop
+wr_adoption_soybean <- 0.3 # Percentage of corn land adopting cover crop
+wr_yield_cc <- 5 # ton DM/ha (eqv 2.37 ton DM/acre) Reference
+wr_yield_dc <- 5 # ton DM/ha (eqv 3.88 ton DM/acre) # Reference ???
 wr_biogas <- 1 # (Y = 1, N = 0)

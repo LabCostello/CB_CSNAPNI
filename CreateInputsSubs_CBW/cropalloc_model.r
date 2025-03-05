@@ -32,8 +32,9 @@ animdata_alloc = t(array(scan("InputFiles_CBW/animfeedallocdataSF_CBW.txt"), c(6
 #Read DGS consumption estimations
 #data comes from RFA sources (cited in DGSalloc_master.xlsx)
 #key in DGSalloc_key.txt
-DGSalloc = t(array(scan("InputFiles_CBW/DGSalloc.txt"), c(6,19)))
-
+DGSalloc = t(array(scan("InputFiles_CBW/DGSalloc.txt"), c(5,19)))
+DGSalloc <- cbind(DGSalloc,DGSalloc[,5])
+  
 #CROPS
 dmprop=cropdata[,1]
 Nperdm=cropdata[,2]
@@ -41,7 +42,7 @@ Pperdm=cropdata[,3]
 prop_to_humans=cropdata[,4]
 crop_type=cropdata[,10] #0=forage, 1=grain, 2=other
 
-crop_type[2] = 0
+crop_type[c(2,7)] = 0
 
 Nincrop=dmprop*Nperdm #N/mass crop
 Pincrop=dmprop*Pperdm #P/mass crop
