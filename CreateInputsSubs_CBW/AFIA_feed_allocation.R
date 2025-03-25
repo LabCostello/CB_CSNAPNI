@@ -108,7 +108,9 @@ AFIA_df <- AFIA_df_sum
 for (i in 1:24) {
   AFIA_df[,i+1] <- AFIA_df[,i+1]*c_dm[i]*c_ncindm[i]}
 
-AFIA_df_percent <- AFIA_df[,2:25]/rowSums(AFIA_df[,2:25])
+#AFIA_df_percent <- AFIA_df[,2:25]/rowSums(AFIA_df[,2:25])
+AFIA_df_percent <- AFIA_df[,-c(1,4,7,9,16,17,18,19,20)]/rowSums(AFIA_df[,-c(1,4,7,9,16,17,18,19,20)])
+
 
 animNreq_AFIA <- c(animNreq[1],animNreq[8],animNreq[2],animNreq[4],animNreq[18],animNreq[5],animNreq[17],animNreq[9])
 diet <- AFIA_df_percent
@@ -132,7 +134,8 @@ diet_crops_model$'sorghum for silage' <- 0
 diet_crops_model$wr <- 0
 
 
-diet_crops_model <- diet_crops_model[,c(1,20,4,5,27,34,35,30,29,21,22,26,32,31,11,33,28,36,24,23,2)]
+#diet_crops_model <- diet_crops_model[,c(1,20,4,5,27,34,35,30,29,21,22,26,32,31,11,33,28,36,24,23,2)]
+diet_crops_model <- diet_crops_model[,c(1,12,3,4,19,26,27,22,21,13,14,18,24,23,9,25,20,28,16,15,2)]
 colnames(diet_crops_model) <- c('corn.grain','corn.silage','wheat','oats','barley','sorghum for grain','sorghum for silage','potatoes','rye','alfalfa hay','other hay','soybeans','cropland pasture','noncropland pasture','rice','peanuts','grass','winter rye','CGF','CGM','DGS')
 # Feeding winter rye silage just to dairy and beef
 if (wr_use == 2 & wr_scenario==1) {
@@ -143,7 +146,7 @@ if (wr_use == 2 & wr_scenario==1) {
 # I antecipate a problem here in the case we have low amount of adoption of winter rye, so we would have less than we can offer for the animals. Idk the effects to the model. Maybe will be solved in Mprodimpacts...
 diet_crops_model <- as.matrix(diet_crops_model)
 
-diet_animal_byproducts <- diet[,c(3,15,16,17,18)]
-diet_plant_byproducts <- diet[,c(6,8,9)]
+#diet_animal_byproducts <- diet[,c(3,15,16,17,18)]
+#diet_plant_byproducts <- diet[,c(6,8,9)]
 
 

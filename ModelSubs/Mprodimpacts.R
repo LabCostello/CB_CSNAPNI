@@ -98,7 +98,7 @@ unitfertNCnational <- cbind(unitfertNCnational,unitfertNCnational[,5])
 
 # impact re-allocation to account for dairy industry beef production (not yet used for anything)
 dairycont = 0.2 # proportion of beef that comes from the dairy industry in the US
-meatprottot = meatprod*meatdata[,8]
+meatprottot = meatprod*meatdata[,8] # in grams
 dairyindprot = meatprottot[1,]*dairycont+meatprottot[2,]
 dairybeef_factor = meatprottot[1,]*dairycont/dairyindprot
 dairymilk_factor = meatprottot[2,]/dairyindprot
@@ -307,14 +307,14 @@ for(n in 1:nyrs){
   NH3perMkcal[5,n] = 0 #horses
   NH3perMprot[5,n] = 0 #horses
   
-  manureNmeat[,1,n] = (((kgmanureN[,1,n] + kgmanureN[,10,n]) + kgmanureN[,11,n]) + kgmanureN[,13,n]) + kgmanureN[,15,n]
-  manureNmeat[,2,n] = ((kgmanureN[,2,n] + kgmanureN[,12,n]) + kgmanureN[,14,n]) + kgmanureN[,16,n]
-  manureNmeat[,3,n] = kgmanureN[,3,n] + kgmanureN[,4,n]
+  manureNmeat[,1,n] = (((kgmanureN[,1,n] + kgmanureN[,10,n]) + kgmanureN[,11,n]) + kgmanureN[,13,n]) + kgmanureN[,15,n] - rowSums(kgmanureNrec450[,c(1,10,11,13,15),n]) 
+  manureNmeat[,2,n] = ((kgmanureN[,2,n] + kgmanureN[,12,n]) + kgmanureN[,14,n]) + kgmanureN[,16,n] - rowSums(kgmanureNrec450[,c(2,12,14,16),n])
+  manureNmeat[,3,n] = kgmanureN[,3,n] + kgmanureN[,4,n] - rowSums(kgmanureNrec450[,c(3,4),n])
   manureNmeat[,4,n] = 0
   manureNmeat[,5,n] = 0
-  manureNmeat[,6,n] = kgmanureN[,5,n]
-  manureNmeat[,7,n] = kgmanureN[,7,n] + kgmanureN[,8,n]
-  manureNmeat[,8,n] = kgmanureN[,6,n] + kgmanureN[,9,n]
+  manureNmeat[,6,n] = kgmanureN[,5,n] - kgmanureNrec450[,5,n]
+  manureNmeat[,7,n] = kgmanureN[,7,n] + kgmanureN[,8,n] - rowSums(kgmanureNrec450[,c(7,8),n])
+  manureNmeat[,8,n] = kgmanureN[,6,n] + kgmanureN[,9,n] - rowSums(kgmanureNrec450[,c(6,9),n])
   manureNmeat[,9,n] = 0
   manureNmeattot[n,] = colSums(manureNmeat[,,n])
   

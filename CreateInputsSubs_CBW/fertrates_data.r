@@ -187,6 +187,16 @@ if (fertassump==3) {
   Pfert_lbsperacre3 <- Pfert_lbsperacre
 }
 
+if (fertassump==4) {
+  Nfert_lbsperacre <- c(150,160,60,60,60,60,160,203,60,0,20,0, 0, 0, 0, 162) 
+  Nfert_lbsperacre <- array(Nfert_lbsperacre,c(16,6)) 
+  
+  # corn, wheat, oats, barley, sorghum,rye (https://agsci.psu.edu/aasl/soil-testing/fertility/handbooks/agronomic/forms/st2-fertilizer-recommendations-lime-conversions)
+  # grass hay/other hay (page 32 and 175 is the yields)
+  # CSNAPNI: potatoes, pasture, noncropland pasture, rice and peanuts (Assuming pasture and nocropland pasture receive non-recoverable manure)
+  # Considering that pasture and noncropland pasture, even though receive no inorganic fertilizer, probably receives manure. But how much manure? So what I am planning to do is that for those two categories, I will consider that the amount of manure added to them will be the enough to fulfill their N removal. The manure that is applied has to have more N than the CN, because part is volatalized)
+  # Pasture and noncropland (1400 and 560) are based on the nitrogen embodied in the plant/removed by the plant. Assumption that its met by non-recoverable manure
+}
 
 Pfert_lbsperacre <- cbind(Pfert_lbsperacre,rep(0,16)) # Fix in the future
 

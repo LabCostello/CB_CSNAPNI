@@ -181,29 +181,44 @@ for(n in 1:data_yrs){
   #cropNtoanim[2,,n] <- c(diet[3,1],diet[3,20],0,0,0,0,0,0,0,diet[3,21],diet[3,22],(diet[3,7]+diet[3,12]+diet[3,14]),0,0,0,0,0,diet[3,24],diet[3,23],diet[3,2])
   
   #dairy
-  cropNtoanim[2,,n] <- unlist(as.matrix(diet_crops_model)[3,])
-  cropNtoanimtotal[2,,n] <- cropNtoanim[2,,n]*animpoptotal[2,n]
-  cropkgtoanimtotal_N[2,,n] <- unlist(as.matrix(diet_crops_model)[3,])*animpoptotal[2,n]/Nincrop
-  
+  for (i in c(2,12,14,16)) {
+    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[3,])
+    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
+    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[3,])*animpoptotal[i,n]/Nincrop
+  }
+
   #beef
-  cropNtoanim[1,,n] <- unlist(as.matrix(diet_crops_model)[1,])
-  cropNtoanimtotal[1,,n] <- cropNtoanim[1,,n]*animpoptotal[1,n]
-  cropkgtoanimtotal_N[1,,n] <- unlist(as.matrix(diet_crops_model)[1,])*animpoptotal[1,n]/Nincrop
+  for (i in c(1,10,11,13,15)) {
+    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[1,])
+    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
+    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[1,])*animpoptotal[i,n]/Nincrop
+  }
   
   #broilers
-  if (n>=1) {
-    cropNtoanim[8,,n] <- unlist(as.matrix(diet_crops_model)[2,])
-    cropNtoanimtotal[8,,n] <- cropNtoanim[8,,n]*animpoptotal[8,n]
-    cropkgtoanimtotal_N[8,,n] <- unlist(as.matrix(diet_crops_model)[2,])*animpoptotal[8,n]/Nincrop
+  for (i in c(7,8)) {
+    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[2,])
+    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
+    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[2,])*animpoptotal[i,n]/Nincrop
   }
   
   #hogs
-  if (n>=1) {
-    cropNtoanim[4,,n] <- unlist(as.matrix(diet_crops_model)[4,])
-    cropNtoanimtotal[4,,n] <- cropNtoanim[4,,n]*animpoptotal[4,n]
-    cropkgtoanimtotal_N[4,,n] <- unlist(as.matrix(diet_crops_model)[4,])*animpoptotal[4,n]/Nincrop
+  for (i in c(3,4)) {
+    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[4,])
+    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
+    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[4,])*animpoptotal[i,n]/Nincrop
   }
   
+  #layers
+  cropNtoanim[5,,n] <- unlist(as.matrix(diet_crops_model)[6,])
+  cropNtoanimtotal[5,,n] <- cropNtoanim[5,,n]*animpoptotal[5,n]
+  cropkgtoanimtotal_N[5,,n] <- unlist(as.matrix(diet_crops_model)[6,])*animpoptotal[5,n]/Nincrop
+  
+  #turkey
+  for (i in c(6,9)) {
+    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[8,])
+    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
+    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[8,])*animpoptotal[i,n]/Nincrop
+  }
   
   #since the N-based allocation model is to be used, need to use cropkgtoanimtotal_N to re-calculate cropPtoanimtotal
   #crop P to anim = total kg of crop allocated * P content of the crop

@@ -13,11 +13,11 @@ source("Config/Settings.R")
 
 # CSNAPNI for Chesapeake Bay
 print("CSNAPNI for CB is running")
-   #pull data from raw data files
-if (get_new_data == 1){
-  source("ModelSubs/CreateInputs_CBW.R")
-}
 
+#pull data from raw data files
+source("ModelSubs/CreateInputs_CBW.R")
+
+##Load data
 source("ModelSubs/LoadData_CBW.R")
   
 ##Calculate recoverable manure for NANI/NAPI Toolbox Watersheds

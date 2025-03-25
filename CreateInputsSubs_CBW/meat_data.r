@@ -45,7 +45,13 @@ for(n in 1:length(import_yrs)){
 }
 
 #### PLUGGED #####
-meatprodnew[2,] <- 10068.67*animpoptotal[2,]
+#meatprodnew[1,] <-  animpoptotal[1,]*animdatadyn[1,14]*animdatadyn[1,15]
+#meatprodnew[2,] <-  animpoptotal[2,]*animdatadyn[2,14]*animdatadyn[2,15]
+#meatprodnew[3,] <-  animpoptotal[4,]*animdatadyn[4,14]*animdatadyn[4,15]
+#meatprodnew[6,] <-  animpoptotal[5,]*animdatadyn[5,14]*animdatadyn[5,15]
+#meatprodnew[7,] <-  animpoptotal[8,]*animdatadyn[8,14]*animdatadyn[8,15]
+#meatprodnew[8,] <-  animpoptotal[9,]*animdatadyn[9,14]*animdatadyn[9,15]
+
 ##################
 
 #meat emissions

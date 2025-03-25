@@ -62,6 +62,15 @@ PinputtoC = array(0,c(n_crops,nyrs))
 grainNperNinput = array(0,c(n_crops,nyrs))
 grainPperPinput = array(0,c(n_crops,nyrs))
 
+# Allocate space for matrices related to manure allocation
+CfertNtotlrsratio <- array(0,c(1925,n_crops,nyrs))
+CfertNtotlrs <- array(0,c(1925,n_crops,nyrs))
+kgNmanuretoeachcrop <- array(0,c(1925,21,6))
+CfertNinorgtotlrs <- array(0,c(1925,21,6))
+CfertNinorgtot <- array(0,c(21,6))
+unitmanNc <- array(0,c(21,6))
+unitfertinNC <- array(0,c(n_crops,nyrs))
+
 
 #fertilizer per crop
 for(n in 1:nyrs){
@@ -101,9 +110,39 @@ for(n in 1:nyrs){
   unitfertNetoh[1:3] <- c(0,0,0)
   unitfertPetoh[1:3] <- c(0,0,0)
   
+  #START OF MANURE ALLOCATION CODE FOR YEAR n
+  # Calculate needed crop
+  for (i in 1:1925) {
+    CfertNtotlrs[i,1:(n_crops-3),n] <- cropareaws[i,1:(n_crops-3),n]*Nfert[,n]
+    
+    for (j in (n_crops-2):n_crops) {
+      CfertNtotlrs[i,j,n] <- cropareaws[i,j,n]*Nfert[1,n]
+    }
+    ifelse(sum(CfertNtotlrs[i,,n]) > 0, CfertNtotlrsratio[i,,n] <- CfertNtotlrs[i,,n]/sum(CfertNtotlrs[i,,n]), CfertNtotlrsratio[i,,n] <- 0)
+    kgNmanuretoeachcrop[i,,n] <- CfertNtotlrsratio[i,,n]*kgmanureNlrsavailableplantavailable[i,n] #allocate manure to the crops based on the allocation matrix
+  }
+  
+  CfertNinorgtotlrs[,,n] <- pmax(0,CfertNtotlrs[,,n]-kgNmanuretoeachcrop[,,n]) # inorganic N in manure
+  CfertNinorgtot[,n] <- colSums(CfertNinorgtotlrs[,,n])
+  Cfertmantot[,n] <- colSums(kgNmanuretoeachcrop[,,n])
+  
+  # Next step to change the results is to change this following matrix (unitfertNC)
+  for(i in 1:n_crops){
+    if(CfertNinorgtot[i,n] > 0){
+      unitfertinNC[i,n] = CfertNinorgtot[i,n] / (sum(CkgwE[,i,n])) # kg fert / kg crop. based on production without subtracting "loss/waste"
+    } else{
+      unitfertinNC[i,n] = 0 }
+  }
+  
+  for(i in 1:n_crops){
+    if(Cfertmantot[i,n] > 0){
+      unitmanNc[i,n] = Cfertmantot[i,n] / (sum(CkgwE[,i,n])) # kg manure / kg crop. based on production without subtracting "loss/waste"
+    } else{
+      unitmanNc[i,n] = 0 }
+  }
+  
   # check # N in:N in crop
   # total fertilizer per crop per watershed
-  
   for(i in 1:n_crops){
     CfertNwswE[,i,n] = CkgwswE_orig[,i,n] * unitfertNC[i,n] # 4.23.13, pre-loss production values
     CfertPwswE[,i,n] = CkgwswE_orig[,i,n] * unitfertPC[i,n]

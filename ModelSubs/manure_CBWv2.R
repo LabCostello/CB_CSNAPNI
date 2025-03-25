@@ -53,7 +53,7 @@ for(n in 1:nyrs){
   for(i in 1:n_cnty){
     kgmanureNcnty[i,,n] = (noanimdyncty[i,,n] * t(animdatadyn[,10]))
     kgmanurePcnty[i,,n] = (noanimdyncty[i,,n] * t(animdatadyn[,11]))
-
+    
     kgmanureNrec[i,,n] = (noanimdyncty[i,,n] * t(animdatadyn[,10])) * manurefactor2[,n] * Nrecfactor
     kgmanurePrec[i,,n] = (noanimdyncty[i,,n] * t(animdatadyn[,11])) * manurefactor2[,n] * Precfactor
   }
@@ -70,4 +70,68 @@ for(n in 1:nyrs){
   }
 }
 
-# References: Kellogs (2014)
+# Calculating recoverable N available as fertilizer
+
+# Manure is probably broadcasted, which means not all the N available will get to the plant. If we apply a coefficient that considers the new N available, how much different it will be?
+# Considering that we have broadcasting in two times of the year Spring (April) and Fall (October) we will have different availability factors
+# Manure is composed of inorganic and organic fractions, and it is just the inorganic fraction that will be volatilized, but is also not 100% of the organic fraction that will be available for the plant
+# Considering this
+# Inorganic fraction # https://blog-crop-news.extension.umn.edu/2024/09/nitrogen-availability-of-different.html (For now)
+
+kgmanureNrec450inorganic <- array(0,c(1925,19,6))
+
+for (n in 1:6) {
+  for (i in 1:1925) {
+    kgmanureNrec450inorganic[i,,n] <- kgmanureNrec450[i,,n]*c(0.52,0.57,0.75,0.75,0.26,0.26,0.26,0.26,0.26,0.52,0.52,0.57,0.52,0.57,0.52,0.57,0,0,0)
+  }
+}
+
+# Organic fraction of manure
+kgmanureNrec450organic <- array(0,c(1925,19,6))
+
+for (n in 1:6) {
+  for (i in 1:1925) {
+    kgmanureNrec450organic[i,,n] <- kgmanureNrec450[i,,n]*(1-c(0.52,0.57,0.75,0.75,0.26,0.26,0.26,0.26,0.26,0.52,0.52,0.57,0.52,0.57,0.52,0.57,0,0,0))
+  }
+}
+
+# Some manure is moving in between LRS.
+
+# Dividing over the year
+kgmanureNrec450springorg <- kgmanureNrec450organic/2
+kgmanureNrec450springinorg <- kgmanureNrec450inorganic/2
+
+kgmanureNrec450fallorg <- kgmanureNrec450organic/2
+kgmanureNrec450fallinorg <- kgmanureNrec450inorganic/2
+
+# Part of inorganic will be available
+kgmanureNrec450fallinorgplantavailable  <- array(0,c(1925,19,6)) # Agronomy guide says that if you don't have cover crop assume that it won't be available
+kgmanureNrec450springinorgplantavailable <- array(0,c(1925,19,6))
+
+for (n in 1:6) {
+  for (i in 1:1925) {
+    kgmanureNrec450springinorgplantavailable[i,,n] <- kgmanureNrec450springinorg[i,,n]*c(0.1,0.1,0.1,0.1,0.2,0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1)
+  }
+}
+
+kgmanureNrec450fallorgplantavailable <- array(0,c(1925,19,6))
+kgmanureNrec450springorgplantavailable <-array(0,c(1925,19,6))
+
+for (n in 1:6) {
+  for (i in 1:1925) {
+    kgmanureNrec450fallorgplantavailable[i,,n] <- kgmanureNrec450fallorg[i,,n]*0.57
+    kgmanureNrec450springorgplantavailable[i,,n] <- kgmanureNrec450springorg[i,,n]*0.57
+  }
+}
+
+# Summing inorganic and organic fractions available for plants
+kgmanureNrecplantLRS <- array(0,c(1925,19,6))
+
+for (n in 1:6) {
+  kgmanureNrecplantLRS[,,n] <- kgmanureNrec450springorgplantavailable[,,n]+kgmanureNrec450fallorgplantavailable[,,n]+kgmanureNrec450springinorgplantavailable[,,n]
+}
+
+# Total manure available per LRS over the 6 years
+kgmanureNlrsavailableplantavailable <- apply(kgmanureNrecplantLRS[,c(1:5,7,8,10:16),],c(1,3),sum)
+
+# References: Kellogs (2014) and Agronomy Guide (2019)

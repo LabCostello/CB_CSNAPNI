@@ -53,14 +53,16 @@ ws <- 919:933 ## Lancaster LRS
 
 
 # Fertilizer assumptions
-fertassump=2
+fertassump=4
 if(fertassump==1){
   print(paste("Using national CSNAPNI fertilizer values."),quote=FALSE)
 }else if(fertassump==2){
   print(paste("Using NASS Survey fertilizer data."),quote=FALSE)
 }else if(fertassump==3){
   print(paste("Using PSU Agronomy Guide approach."),quote=FALSE)
-}
+}else if(fertassump==4){
+  print(paste("Using Inorganic Fertilizer+Manure approach."),quote=FALSE)}
+
 
 # Manure management scenarios
 rec_manure = 2 # 1 is cs-nani style, 2 is new style where it not only considers recoverable manure nutrient calculation according to Kellog 2014 
@@ -89,4 +91,4 @@ wr_adoption_corn <- 0.3 # Percentage of corn land adopting cover crop
 wr_adoption_soybean <- 0.3 # Percentage of corn land adopting cover crop
 wr_yield_cc <- 5 # ton DM/ha (eqv 2.37 ton DM/acre) Reference
 wr_yield_dc <- 5 # ton DM/ha (eqv 3.88 ton DM/acre) # Reference ???
-wr_biogas <- 1 # (Y = 1, N = 0)
+wr_biogas <- 0 # (Y = 1, N = 0)

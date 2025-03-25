@@ -299,3 +299,197 @@ etohfert_key[1,] = c(" ", run_yrs) #column headings
 etohfert_key[,1]=c("kg N or P") #row headings
 write.table(etohfert_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 
+### PRODUCING PICTURES FOR THE RESULTS
+# Graph for paper commodity specific results ####
+fertNpermeatdom <- fertNpermeatnat <- fertNperMprotdom <- fertNperMprotnat <- array(0,c(9,21,6))
+fixNpermeatdom <- fixNpermeatnat <- fixNperMprotdom <- fixNperMprotnat <-  array(0,c(9,21,6))
+
+for(n in 1:nyrs){
+  for(i in 1:21){
+    fertNpermeatdom[,i,n] <- (feedpermeatdom[,i,n] * unitfertNC[i,n]) 
+    fertNpermeatnat[,i,n] <- (feedpermeatimp[,i,n] * unitfertNCnational[i,n])
+    fixNpermeatdom[,i,n] <- (feedpermeatdom[,i,n] * unitfixNC[i,n]) 
+    fixNpermeatnat[,i,n] <- (feedpermeatimp[,i,n] * unitfixNC[i,n])}}
+
+for(n in 1:nyrs){
+  for(i in 1:n_meats){
+    fertNperMprotdom[i,,n] = (fertNpermeatdom[i,,n] / (meatdata[i,z] / 1000))
+    fertNperMprotnat[i,,n] = (fertNpermeatnat[i,,n] / (meatdata[i,z] / 1000))# kg N fert / kg protein in 1 kg meat
+    fixNperMprotdom[i,,n] = (fixNpermeatdom[i,,n] / (meatdata[i,z] / 1000))
+    fixNperMprotnat[i,,n] = (fixNpermeatnat[i,,n] / (meatdata[i,z] / 1000))
+  }}
+library(readxl)
+cmdtcsnapninat<- read_excel(adjust_file_path("C:/Users/lds5498/OneDrive - The Pennsylvania State University/Desktop/Code/important_excel/cmdtcsnapni3nat.xlsx"))
+
+cmdtcsnapni3a <- data.frame("year"=rep(rep(year_labels[1:5],each = 9),2), 
+                            "Nsource" = rep(c("Fertilizer", "Fixation"),each=45),
+                            "model"=rep("cbw-csnani",90),
+                            "animal"=rep(meat_labels,10),
+                            "origin"=rep("national",90),
+                            "values" = c(rowSums(fertNperMprotnat[,,1]),rowSums(fertNperMprotnat[,,2]),rowSums(fertNperMprotnat[,,3]),
+                                         rowSums(fertNperMprotnat[,,4]),rowSums(fertNperMprotnat[,,5]),
+                                         rowSums(fixNperMprotnat[,,1]),rowSums(fixNperMprotnat[,,2]),rowSums(fixNperMprotnat[,,3]),
+                                         rowSums(fixNperMprotnat[,,4]),rowSums(fixNperMprotnat[,,5])))
+
+cmdtcsnapni3a <- rbind(cmdtcsnapninat,cmdtcsnapni3a)
+
+cmdtcsnapni3b <- data.frame("year" = rep(rep(year_labels[1:5],each = 9),2), 
+                            "Nsource" = rep(c("Fertilizer", "Fixation"),each=45),
+                            "model"=rep("cbw-csnani",90),
+                            "animal"=rep(meat_labels,10),
+                            "origin"=rep("cbw",90),
+                            "values" = c(rowSums(fertNperMprotdom[,,1]),rowSums(fertNperMprotdom[,,2]),rowSums(fertNperMprotdom[,,3]),
+                                         rowSums(fertNperMprotdom[,,4]),rowSums(fertNperMprotdom[,,5]),rowSums(fixNperMprotdom[,,1]),rowSums(fixNperMprotdom[,,2]),rowSums(fixNperMprotdom[,,3]),
+                                         rowSums(fixNperMprotdom[,,4]),rowSums(fixNperMprotdom[,,5])))
+
+cmdtcsnapni3 <- rbind(cmdtcsnapni3a,cmdtcsnapni3b)
+cmdtcsnapni3 <- cmdtcsnapni3[cmdtcsnapni3$animal %in% meat_labels[c(1,2,3,6,7,8)],]
+
+cmdtcsnapni3 <- cmdtcsnapni3[cmdtcsnapni3$year %in% year_labels[2:6],]
+
+cmdtcsnapni3$Nsources <- sprintf("%s (%s)", cmdtcsnapni3$Nsource, cmdtcsnapni3$origin)
+
+library(ggplot2)
+library(ggpubr)
+library(ggpattern)
+
+cmdtcsnapni3$model[cmdtcsnapni3$model == "csnapni"] <- "national"
+cmdtcsnapni3$model[cmdtcsnapni3$model == "cbw-csnani"] <- "CBW"
+
+# Beef
+data2<-with(cmdtcsnapni3, cmdtcsnapni3[order(year, Nsources, model),])
+beefcomp <- ggplot(data=data2[data2$animal == meat_labels[1],], aes(x=model, y=values)) + 
+  geom_bar_pattern(
+    aes(pattern = Nsources, fill = Nsources),
+    stat = "identity",
+    color = "black",  # Add black outline to bars
+    pattern_fill = "black",
+    pattern_density = 0.2,
+    pattern_spacing = 0.037
+  ) +
+  scale_pattern_manual(values = c("none", "none", "circle", "stripe")) +
+  scale_fill_manual(values = c("white", "black", "white", "white")) +
+  facet_grid(~year) +
+  labs(title = "Beef",
+       x = "",
+       y = "kg N input/kg protein") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16,hjust = 0.5),legend.title = element_text(color = "black", size = 16, face = "bold"),  # Adjust title appearance
+        legend.text = element_text(color = "black", size = 14),axis.text = element_text(size = 14),
+        axis.title.y = element_text(size = 16),strip.text.x = element_text(size = 12))
+
+# Dairy
+data2<-with(cmdtcsnapni3, cmdtcsnapni3[order(year, Nsources, model),])
+dairycomp <- ggplot(data=data2[data2$animal == meat_labels[2],], aes(x=model, y=values)) + 
+  geom_bar_pattern(
+    aes(pattern = Nsources, fill = Nsources),
+    stat = "identity",
+    color = "black",  # Add black outline to bars
+    pattern_fill = "black",
+    pattern_density = 0.2,
+    pattern_spacing = 0.037
+  ) +
+  scale_pattern_manual(values = c("none", "none", "circle", "stripe")) +
+  scale_fill_manual(values = c("white", "black", "white", "white")) +
+  facet_grid(~year) +
+  labs(title = "Milk",
+       x = "",
+       y = "kg N input/kg protein") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16,hjust = 0.5),legend.title = element_text(color = "black", size = 16, face = "bold"),  # Adjust title appearance
+        legend.text = element_text(color = "black", size = 14),axis.text = element_text(size = 14),
+        axis.title.y = element_text(size = 16),strip.text.x = element_text(size = 12))
+
+# Pork
+data2<-with(cmdtcsnapni3, cmdtcsnapni3[order(year, Nsources, model),])
+porkcomp <- ggplot(data=data2[data2$animal == meat_labels[3],], aes(x=model, y=values)) + 
+  geom_bar_pattern(
+    aes(pattern = Nsources, fill = Nsources),
+    stat = "identity",
+    color = "black",  # Add black outline to bars
+    pattern_fill = "black",
+    pattern_density = 0.2,
+    pattern_spacing = 0.037
+  ) +
+  scale_pattern_manual(values = c("none", "none", "circle", "stripe")) +
+  scale_fill_manual(values = c("white", "black", "white", "white")) +
+  facet_grid(~year) +
+  labs(title = "Pork",
+       x = "",
+       y = "kg N input/kg protein") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16,hjust = 0.5),legend.title = element_text(color = "black", size = 16, face = "bold"),  # Adjust title appearance
+        legend.text = element_text(color = "black", size = 14),axis.text = element_text(size = 14),
+        axis.title.y = element_text(size = 16),strip.text.x = element_text(size = 12))
+
+# Layers
+data2<-with(cmdtcsnapni3, cmdtcsnapni3[order(year, Nsources, model),])
+layerscomp <- ggplot(data=data2[data2$animal == meat_labels[6],], aes(x=model, y=values)) + 
+  geom_bar_pattern(
+    aes(pattern = Nsources, fill = Nsources),
+    stat = "identity",
+    color = "black",  # Add black outline to bars
+    pattern_fill = "black",
+    pattern_density = 0.2,
+    pattern_spacing = 0.037
+  ) +
+  scale_pattern_manual(values = c("none", "none", "circle", "stripe")) +
+  scale_fill_manual(values = c("white", "black", "white", "white")) +
+  facet_grid(~year) +
+  labs(title = "Eggs",
+       x = "",
+       y = "kg N input/kg protein") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16,hjust = 0.5),legend.title = element_text(color = "black", size = 16, face = "bold"),  # Adjust title appearance
+        legend.text = element_text(color = "black", size = 14),axis.text = element_text(size = 14),
+        axis.title.y = element_text(size = 16),strip.text.x = element_text(size = 12))
+
+# Chicken
+data2<-with(cmdtcsnapni3, cmdtcsnapni3[order(year, Nsources, model),])
+broilcomp <- ggplot(data=data2[data2$animal == meat_labels[7],], aes(x=model, y=values)) + 
+  geom_bar_pattern(
+    aes(pattern = Nsources, fill = Nsources),
+    stat = "identity",
+    color = "black",  # Add black outline to bars
+    pattern_fill = "black",
+    pattern_density = 0.2,
+    pattern_spacing = 0.037
+  ) +
+  scale_pattern_manual(values = c("none", "none", "circle", "stripe")) +
+  scale_fill_manual(values = c("white", "black", "white", "white")) +
+  facet_grid(~year) +
+  labs(title = "Chicken",
+       x = "",
+       y = "kg N input/kg protein") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16,hjust = 0.5),legend.title = element_text(color = "black", size = 16, face = "bold"),  # Adjust title appearance
+        legend.text = element_text(color = "black", size = 14),axis.text = element_text(size = 14),
+        axis.title.y = element_text(size = 16),strip.text.x = element_text(size = 12))
+
+# Turkey
+data2<-with(cmdtcsnapni3, cmdtcsnapni3[order(year, Nsources, model),])
+turkcomp <- ggplot(data=data2[data2$animal == meat_labels[8],], aes(x=model, y=values)) + 
+  geom_bar_pattern(
+    aes(pattern = Nsources, fill = Nsources),
+    stat = "identity",
+    color = "black",  # Add black outline to bars
+    pattern_fill = "black",
+    pattern_density = 0.2,
+    pattern_spacing = 0.037
+  ) +
+  scale_pattern_manual(values = c("none", "none", "circle", "stripe")) +
+  scale_fill_manual(values = c("white", "black", "white", "white")) +
+  facet_grid(~year) +
+  labs(title = "Turkey",
+       x = "",
+       y = "kg N input/kg protein") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16,hjust = 0.5),legend.title = element_text(color = "black", size = 16, face = "bold"),  # Adjust title appearance
+        legend.text = element_text(color = "black", size = 14),axis.text = element_text(size = 14),
+        axis.title.y = element_text(size = 16),strip.text.x = element_text(size = 12))
+
+library(ggpubr)
+
+figureR1 <- ggarrange(beefcomp,dairycomp,porkcomp,layerscomp, broilcomp,turkcomp,ncol=2, nrow=3, common.legend = TRUE, legend="bottom")
+
+

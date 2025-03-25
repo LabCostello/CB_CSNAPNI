@@ -1,6 +1,6 @@
 #fig_setup.R
 source("FigureSubs/commodity_colorbank.r")
-year_labels = c(1997,2002,2007,2012,2017)
+year_labels = c(1997,2002,2007,2012,2017,2022)
 crop_labels = c("corn grain","corn silage","wheat","oats","barley","sorghum grain","sorghum silage",
                 "potatoes","rye","alfalfa hay","other hay","soybeans","cropland pasture","noncropland pasture",
                 "rice","peanuts","grass","winter rye","CGF","CGM","DGS")
