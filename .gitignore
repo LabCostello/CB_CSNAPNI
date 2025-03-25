@@ -2,9 +2,11 @@
 *.RData
 *.Rhistory
 *.xlsm
+*.RDataTmp7
 
 #Generated files
 CreateInputsSubs/NASSpull/RawNASSData/*
+Draft/*
 OutputFileKeys/*.txt
 OutputFiles/*.txt
 .Rproj.user
