@@ -17,8 +17,19 @@ old = 2 #two columns to use from the old file
 meatprodnew = array(0,c(n_meats,length(import_yrs)))
 kgmeatperanim = array(0,c(n_meats,old))
 kgmeatperanim_avg = array(0,c(n_meats,1))
-animpoptotal_sort = array(0,c(n_meats,length(import_yrs)))
+animpoptotal_sort= array(0,c(n_meats,length(import_yrs)))
+animpoptotal_sort_state = array(0,c(n_meats,length(import_yrs)))
 for(n in 1:length(import_yrs)){
+  animpoptotal_sort_state[1,n]=animpoptotal_old[1,n]+animpoptotal_old[10,n]+animpoptotal_old[11,n]+animpoptotal_old[13,n]+animpoptotal_old[15,n] #beef
+  animpoptotal_sort_state[2,n]=animpoptotal_old[2,n]+animpoptotal_old[12,n]+animpoptotal_old[14,n]+animpoptotal_old[16,n] #dairy
+  animpoptotal_sort_state[3,n]=animpoptotal_old[3,n]+animpoptotal_old[4,n] #pigs/hogs
+  animpoptotal_sort_state[4,n]=animpoptotal_old[17,n] #sheep
+  animpoptotal_sort_state[5,n]=animpoptotal_old[18,n] #horse
+  animpoptotal_sort_state[6,n]=animpoptotal_old[5,n] #layers
+  animpoptotal_sort_state[7,n]=animpoptotal_old[7,n]+animpoptotal_old[8,n] #broilers
+  animpoptotal_sort_state[8,n]=animpoptotal_old[6,n]+animpoptotal_old[9,n] #turkey
+  animpoptotal_sort_state[9,n]=animpoptotal_old[19,n] #goats
+  
   animpoptotal_sort[1,n]=animpoptotal[1,n]+animpoptotal[10,n]+animpoptotal[11,n]+animpoptotal[13,n]+animpoptotal[15,n] #beef
   animpoptotal_sort[2,n]=animpoptotal[2,n]+animpoptotal[12,n]+animpoptotal[14,n]+animpoptotal[16,n] #dairy
   animpoptotal_sort[3,n]=animpoptotal[3,n]+animpoptotal[4,n] #pigs/hogs

@@ -21,6 +21,9 @@ feed4anim = array(0,c(n_anims,n_crops,nyrs)) # total kg crop for all animals of 
 feed4animP = array(0,c(n_anims,n_crops,nyrs)) # total kg crop for all animals of each type by crop, using P as check
 feedperanim = array(0,c(n_anims,n_crops,nyrs)) # kg crop per animal
 feedNpermeat = array(0,c(n_meats,n_crops,nyrs)) # kg N in crops per kg of edible animal product
+fertNmeattot = array(0,c(n_meats,n_crops,nyrs)) # kg fert (applied to crops)
+fertdomNmeattot = array(0,c(n_meats,n_crops,nyrs)) # kg fert (applied to crops produced in the CBW)
+fertimpNmeattot = array(0,c(n_meats,n_crops,nyrs)) # kg fert (applied to crops imported to the CBW)
 feedPpermeat = array(0,c(n_meats,n_crops,nyrs)) # kg P in crops per kg of edible animal product
 feedpermeat = array(0,c(n_meats,n_crops,nyrs)) # kg crop per kg of edible animal product, before ADJUSTMENT (if the adjustment is done)
 # assumption is that breeding stock feed is allocated to meat production
@@ -41,6 +44,8 @@ animPreqmeat = array(0,c(n_meats,nyrs))
 animNreqpermeat = array(0,c(n_meats,nyrs)) # total animal N requirements for each meat category divided by all meat produced in the same year
 animPreqpermeat = array(0,c(n_meats,nyrs)) # total animal P requirements for each meat category divided by all meat produced in the same year
 totfeed4meat = array(0,c(n_meats,n_crops,nyrs))
+totfeeddom4meat = array(0,c(n_meats,n_crops,nyrs))
+totfeedimp4meat = array(0,c(n_meats,n_crops,nyrs))
 totfeed4anim = array(0,c(n_meats,n_crops,nyrs))
 chngC4animN = array(0,c(n_crops,nyrs))
 chngC4animP = array(0,c(n_crops,nyrs))
@@ -54,6 +59,8 @@ fertNanimtot = array(0,c(n_anims,n_crops,nyrs))
 fertPanimtot = array(0,c(n_anims,n_crops,nyrs))
 fixNanimtot = array(0,c(n_anims,n_crops,nyrs))
 fixNmeattot = array(0,c(n_meats,n_crops,nyrs))
+fixdomNmeattot = array(0,c(n_meats,n_crops,nyrs))
+fiximpNmeattot = array(0,c(n_meats,n_crops,nyrs))
 fixNpermeat = array(0,c(n_meats,n_crops,nyrs))
 N2O100permeat = array(0,c(n_meats,n_crops,nyrs)) # 100 GWP value from Shindell
 CH4100permeat = array(0,c(n_meats,n_crops,nyrs)) # 100 GWP value from Shindell
@@ -180,20 +187,23 @@ for(n in 1:nyrs){
   Psupp4meat[9,n] = Psupp4anim[19,n] #goats
   #
   # for dairy production - we consider that dairy will be the only animals that will be feed exclusively with food from the region
-  feedN4meatimp[2,,n] <- pmax(feedN4meat[2,,n]-colSums(CNprod[,,n]),0) # imported is only the ones that the cow consume more than it is produced in the region
+  feedN4meatimp[2,,n] <- pmax(feedN4meat[2,,n]-colSums(C4animN[,,n]),0) # imported is only the ones that the cow consume more than it is produced in the region
   feedN4meatdom[2,,n] <- feedN4meat[2,,n] - feedN4meatimp[2,,n]
   
   # for the rest of the animals
-  CNprodremaining[,n] <- colSums(CNprod[,,n])-feedN4meatdom[2,,n] #nitrogen from each crop remaining after the dairy cows have been fed, for year n.
+  CNprodremaining[,n] <- colSums(C4animN[,,n])-feedN4meatdom[2,,n] #nitrogen from each crop remaining after the dairy cows have been fed, for year n.
   
   ratio <- sweep(feedN4meat[-2,,n], 2, colSums(feedN4meat[-2,,n]), FUN = "/") 
   ratio[!is.finite(ratio)] <- NA
   ratio[is.na(ratio)] <- 0
   
-  extrafeeddom <- CNprodremaining[,n]-colSums(feedN4meat[-2,,n]) # extra feed needed for the rest of the animals
-  extrafeeddom[extrafeeddom<0] <- 0
+  # Calculate available feed (the minimum of what's available and what's needed)
+  availableFeed <- pmin(CNprodremaining[,n], colSums(feedN4meat[-2,,n]))
   
-  feedN4meatdom[-2,,n] <- sweep(ratio, 2, CNprodremaining[,n]-extrafeeddom, FUN = "*")
+  # Distribute the available feed proportionally according to the ratio
+  feedN4meatdom[-2,,n] <- sweep(ratio, 2, availableFeed, FUN = "*")
+  
+  # Calculate imports as the difference between total needs and domestic supply
   feedN4meatimp[-2,,n] <- feedN4meat[-2,,n] - feedN4meatdom[-2,,n]
   
   feedN4meatdom[,,n][feedN4meatdom[,,n] < 1] <- 0
@@ -232,12 +242,14 @@ for(n in 1:nyrs){
   for(i in 1:n_meats){
     # kg crop for feed to produce all meat of each type
     totfeed4meat[i,,n] = feedpermeat[i,,n] * totmeat[n,i]
+    totfeeddom4meat[i,,n] = feedpermeatdom[i,,n] * totmeat[n,i]
+    totfeedimp4meat[i,,n] = feedpermeatimp[i,,n] * totmeat[n,i]
   }
   
   #zero for sheep, horses, and goats
-  totfeed4meat[4,,n]=0
-  totfeed4meat[5,,n]=0 # redundant?
-  totfeed4meat[9,,n]=0
+  totfeed4meat[4,,n]=totfeeddom4meat[4,,n]=totfeedimp4meat[4,,n]=0
+  totfeed4meat[5,,n]=totfeeddom4meat[5,,n]=totfeedimp4meat[5,,n]=0 # redundant?
+  totfeed4meat[9,,n]=totfeeddom4meat[9,,n]=totfeedimp4meat[9,,n]=0
   
   #(4.15.13) adjust the C4animN using the calculated feed N for animals in
   #order to balance animal N requirements with feed intake
@@ -261,9 +273,12 @@ for(n in 1:nyrs){
   
   for(i in 1:n_crops){
     fertNpermeatold[,i,n] = feedpermeat[,i,n] * unitfertNC[i,n]
-    fertNpermeat[,i,n] <- (feedpermeatdom[,i,n] * unitfertNC[i,n]) + (feedpermeatimp[,i,n] * unitfertNCnational[i,n])
+    fertNpermeat[,i,n] <- (feedpermeatdom[,i,n] * (unitfertinNC[i,n]+unitfertmanNC[i,n])) + (feedpermeatimp[,i,n] * unitfertNCnational[i,n])
     fertNperanim[,i,n] = feedperanim[,i,n] * unitfertNC[i,n]
     fertNanimtot[,i,n] = feed4anim[,i,n] * unitfertNC[i,n]
+    fertNmeattot[,i,n] = (totfeeddom4meat[,i,n] * (unitfertinNC[i,n]+unitfertmanNC[i,n])) + (totfeedimp4meat[,i,n] * unitfertNCnational[i,n])
+    fertdomNmeattot[,i,n] = (totfeeddom4meat[,i,n] * (unitfertinNC[i,n]+unitfertmanNC[i,n]))
+    fertimpNmeattot[,i,n] = (totfeedimp4meat[,i,n] * unitfertNCnational[i,n])
     fertPpermeat[,i,n] = feedpermeat[,i,n] * unitfertPC[i,n]
     fertPperanim[,i,n] = feedperanim[,i,n] * unitfertPC[i,n]
     fertPanimtot[,i,n] = feed4anim[,i,n] * unitfertPC[i,n]
@@ -274,6 +289,8 @@ for(n in 1:nyrs){
     LUforfeedpermeat[,i,n] = feedpermeat[,i,n] * cropdata[i,16] #check these cropdata numbers
     fixNanimtot[,i,n] = feed4anim[,i,n] * unitfixNC[i,n]
     fixNmeattot[,i,n] = totfeed4meat[,i,n] * unitfixNC[i,n]
+    fixdomNmeattot[,i,n] = totfeeddom4meat[,i,n] * unitfixNC[i,n]
+    fiximpNmeattot[,i,n] = totfeedimp4meat[,i,n] * unitfixNC[i,n]
     fixNpermeat[,i,n] = feedpermeat[,i,n] * unitfixNC[i,n]
   }
   

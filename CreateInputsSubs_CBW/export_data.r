@@ -216,7 +216,7 @@ if(print_tags == 1){
 # cropname[19] = 'DGS'
 
 
-exports=array(0,c(n_export_crops,length(import_yrs1)))
+exports=array(0,c(n_export_crops,length(year_labels)))
 
 for (i in 1:length(import_yrs1)) {
   exports[1,i] <- cropprodtotal[1,i]*0.7389 # Corn Grain

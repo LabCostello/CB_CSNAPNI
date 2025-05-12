@@ -28,7 +28,7 @@ source("CreateInputsSubs_CBW/cornuse_data.r")
 
 #####################################################################################
 ##County population data (from NANI Accounting Tool V3.1.0, original source: US Census)
-source("CreateInputsSubs_CBW/population_data.r") # *using 2012 for 2017 currently
+source("CreateInputsSubs_CBW/population_data.r") # 
 
 #####################################################################################
 ##Census of agriculture data (crop harvested areas and production, animal average populations) 

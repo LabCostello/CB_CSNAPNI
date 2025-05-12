@@ -92,3 +92,4 @@ animpopcnty_key[1,]=c(" ", animtyp) #column headings
 animpopcnty_key[,1]=c("ws_num", 1:n_cnty) #row headings
 write.table(animpopcnty_key, file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 animpoptotal = drop(colSums(animpopcnty)) #total animal populations in each year
+animpoptotal_old = drop(colSums(animpopcnty_old)) #total animal populations in each year

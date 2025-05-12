@@ -39,9 +39,11 @@ fertexpNAPI = array(0,c(n_ws_NEEA,nyrs))
 fertNdiff = array(0,c(n_ws_NEEA,nyrs))
 fertPdiff = array(0,c(n_ws_NEEA,nyrs))
 sum_commod_spec_fertN = array(0,c(n_ws_NEEA,nyrs))
+sum_commod_spec_fertNsynth = array(0,c(n_ws_NEEA,nyrs))
 sum_commod_spec_fertP = array(0,c(n_ws_NEEA,nyrs))
 #4.3.15 added 3 columns to all below to account for etoh feeds
 CfertNwswE = array(0,c(n_ws_NEEA,n_crops,nyrs))
+CfertNwswEsynth = array(0,c(n_ws_NEEA,n_crops,nyrs))
 CfertPwswE = array(0,c(n_ws_NEEA,n_crops,nyrs))
 etohfertNws = array(0,c(n_ws_NEEA,nyrs))
 etohfertPws = array(0,c(n_ws_NEEA,nyrs))
@@ -66,9 +68,10 @@ grainPperPinput = array(0,c(n_crops,nyrs))
 CfertNtotlrsratio <- array(0,c(1925,n_crops,nyrs))
 CfertNtotlrs <- array(0,c(1925,n_crops,nyrs))
 kgNmanuretoeachcrop <- array(0,c(1925,21,6))
+kgmanurenotavailabletoeachcrop <- array(0,c(1925,21,6))
 CfertNinorgtotlrs <- array(0,c(1925,21,6))
 CfertNinorgtot <- array(0,c(21,6))
-unitmanNc <- array(0,c(21,6))
+unitfertmanNC <- array(0,c(21,6))
 unitfertinNC <- array(0,c(n_crops,nyrs))
 
 
@@ -120,11 +123,12 @@ for(n in 1:nyrs){
     }
     ifelse(sum(CfertNtotlrs[i,,n]) > 0, CfertNtotlrsratio[i,,n] <- CfertNtotlrs[i,,n]/sum(CfertNtotlrs[i,,n]), CfertNtotlrsratio[i,,n] <- 0)
     kgNmanuretoeachcrop[i,,n] <- CfertNtotlrsratio[i,,n]*kgmanureNlrsavailableplantavailable[i,n] #allocate manure to the crops based on the allocation matrix
+    kgmanurenotavailabletoeachcrop[i,,n] <- CfertNtotlrsratio[i,,n]*kgmanureNlrsrecovnonavailableplant[i,n] #allocate manure non available N to the crops based on the allocation matrix
   }
   
   CfertNinorgtotlrs[,,n] <- pmax(0,CfertNtotlrs[,,n]-kgNmanuretoeachcrop[,,n]) # inorganic N in manure
   CfertNinorgtot[,n] <- colSums(CfertNinorgtotlrs[,,n])
-  Cfertmantot[,n] <- colSums(kgNmanuretoeachcrop[,,n])
+  Cfertmantot[,n] <- colSums(kgNmanuretoeachcrop[,,n])+colSums(kgmanurenotavailabletoeachcrop[,,n]) # total manure N (available and not available)
   
   # Next step to change the results is to change this following matrix (unitfertNC)
   for(i in 1:n_crops){
@@ -136,15 +140,16 @@ for(n in 1:nyrs){
   
   for(i in 1:n_crops){
     if(Cfertmantot[i,n] > 0){
-      unitmanNc[i,n] = Cfertmantot[i,n] / (sum(CkgwE[,i,n])) # kg manure / kg crop. based on production without subtracting "loss/waste"
+      unitfertmanNC[i,n] = Cfertmantot[i,n] / (sum(CkgwE[,i,n])) # kg manure / kg crop. based on production without subtracting "loss/waste"
     } else{
-      unitmanNc[i,n] = 0 }
+      unitfertmanNC[i,n] = 0 }
   }
   
   # check # N in:N in crop
   # total fertilizer per crop per watershed
   for(i in 1:n_crops){
     CfertNwswE[,i,n] = CkgwswE_orig[,i,n] * unitfertNC[i,n] # 4.23.13, pre-loss production values
+    CfertNwswEsynth[,i,n] = CkgwswE_orig[,i,n] * unitfertinNC[i,n] # 4.23.13, pre-loss production values
     CfertPwswE[,i,n] = CkgwswE_orig[,i,n] * unitfertPC[i,n]
     CfertNwE[,i,n] = CkgwE[,i,n] * unitfertNC[i,n] # for tile drainage calcs, 450 watersheds instead of n_ws_NEEA to convert to county level
     CfertPwE[,i,n] = CkgwE[,i,n] * unitfertPC[i,n]
@@ -176,6 +181,7 @@ for(n in 1:nyrs){
   # accounting for crop-specific estimates. this is agricultural fertilzer,
   # not residential
   sum_commod_spec_fertN[,n]=rowSums(CfertNwswE[,,n]) + etohfertNws[,n]
+  sum_commod_spec_fertNsynth[,n]=rowSums(CfertNwswEsynth[,,n]) + etohfertNws[,n]
   sum_commod_spec_fertP[,n]=rowSums(CfertPwswE[,,n]) + etohfertPws[,n]
   fertNresidual[,n] = NEEAws_NANI[,3,n] - sum_commod_spec_fertN[,n] # tot kg in orig NANI calc - sum of kg N fert calculations
   # for crops and FCs - etohfert estimate

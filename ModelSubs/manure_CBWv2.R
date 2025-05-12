@@ -133,5 +133,5 @@ for (n in 1:6) {
 
 # Total manure available per LRS over the 6 years
 kgmanureNlrsavailableplantavailable <- apply(kgmanureNrecplantLRS[,c(1:5,7,8,10:16),],c(1,3),sum)
-
+kgmanureNlrsrecovnonavailableplant <- apply(kgmanureNrec450[,c(1:5,7,8,10:16),]-kgmanureNrecplantLRS[,c(1:5,7,8,10:16),],c(1,3),sum)
 # References: Kellogs (2014) and Agronomy Guide (2019)

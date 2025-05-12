@@ -390,6 +390,80 @@ box()
 
 ```
 <br>
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(reshape2)
+
+# Parameters
+year_range <- 2:6
+year_vals <- year_labels[year_range]
+meat_types <- c(beef = 1, pork = 3, milk = 2, eggs = 6, chicken = 7, turkey = 8)
+major_feeds <- c(10:11,13:14,12,1:2,19)
+minor_feeds <- c(3:9,15:18)
+meat_names <- names(meat_types)
+
+# Initialize empty list to gather all data
+plot_data_list <- list()
+
+# Loop over each meat type
+for (meat in meat_names) {
+  meat_idx <- meat_types[meat]
+  
+  # Compute N inputs
+  N_major <- fertNperMprot[meat_idx, major_feeds, year_range] +
+             fixNperMprot[meat_idx, major_feeds, year_range]
+  N_minor <- colSums(fertNperMprot[meat_idx, minor_feeds, year_range]) +
+             colSums(fixNperMprot[meat_idx, minor_feeds, year_range])
+  
+  # Convert to data frame
+  df_major <- as.data.frame(t(N_major))
+  colnames(df_major) <- crop_labels[major_feeds]
+  df_major$Year <- year_vals
+  df_major$Meat <- meat
+  df_major$Other_grains <- N_minor
+  
+  plot_data_list[[meat]] <- df_major
+}
+
+# Combine all meat types
+plot_data <- bind_rows(plot_data_list)
+
+# Reshape to long format for ggplot
+plot_data_long <- pivot_longer(plot_data,
+                                cols = -c(Year, Meat),
+                                names_to = "Feed",
+                                values_to = "N_input")
+
+# Set factor levels for Feed to match order
+feed_order <- c(crop_labels[major_feeds], "Other_grains")
+plot_data_long$Feed <- factor(plot_data_long$Feed, levels = feed_order)
+
+# Create color vector
+feed_colors <- c(setNames(crop_colors[major_feeds], crop_labels[major_feeds]), Other_grains = "grey")
+
+# Plot
+ggplot(plot_data_long, aes(x = Year, y = N_input, fill = Feed)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ Meat, ncol = 2, scales = "free_y") +
+  scale_fill_manual(values = feed_colors) +
+  labs(
+    y = "kg N input / kg protein",
+    fill = "Feed"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    strip.text = element_text(size = 16)
+  )
+```
+<br>
+
+<br>
 ```{r meatNperprot_plot,echo=FALSE,fig.width=20,fig.height=15,fig.cap="\\label{fig:Rn`}**Figure 1.5: Fertilizer and Fixation N inputs to animal feeds per kg protein in animal food products from 1997-2012.** Other grains are CGF, CGM, wheat, barley, sorghum, and rye. CGF, CGM, and DGS stand for corn gluten feed, corn gluten meal, and distiller’s grains and solubles, respectively."}
 
 year_range = 2:6
@@ -1135,50 +1209,9 @@ fig
 ```{r}
 library(plotly)
 
-# Your R data converted to Plotly format
-links <- data.frame(
-  source = c(rep(0, 7), rep(8, 7), rep(9, 7), rep(1:6, 7), rep(7, 7), 1:7, 10:16,10:16,10:16),
-  target = c(1:7, 1:7, 1:7, rep(10:16, each = 6), 10:16, rep(17, 7), rep(18, 7), rep(17,7),rep(19,7)),
-  value = c(
-    as.integer(CfertNtot[majorgrains, 5]),
-    sum(as.integer(CfertNtot[othercrops, 5])),
-    colSums(CfixNwswE[, , 5])[majorgrains],
-    sum(CfixNwswE[, othercrops, 5]),
-    cropsimported[majorgrains],
-    sum(cropsimported[othercrops]),
-    unlist(meatfeedMG),
-    unlist(meatfeedOC),
-    colSums(C4humanN[, , 5])[majorgrains],
-    sum(C4humanN[, othercrops, 5]),
-    sum(kgmanureNrec450[, c(1, 10, 11, 13, 15), 5]),
-    sum(kgmanureNrec450[, c(2, 12, 14, 16), 5]),
-    sum(kgmanureNrec450[, c(3, 4), 5]),
-    sum(kgmanureNrec450[, 5, 5]),
-    sum(kgmanureNrec450[, c(7, 8), 5]),
-    sum(kgmanureNrec450[, c(6, 9), 5]),
-    sum(kgmanureNrec450[, c(17, 18, 19), 5]),
-    #sum(kgmanureNrec450[,,5]),
-    sum(animN[,c(1, 10, 11, 13, 15),5]),
-    sum(animN[,c(2, 12, 14, 16),5]),
-    sum(animN[,c(3,4),5]),
-    sum(animN[,5,5]),
-    sum(animN[,c(7, 8),5]),
-    sum(animN[,c(6, 9),5]),
-    sum(animN[,c(17, 18, 19),5]),
-    sum(kgNH3[,c(1, 10, 11, 13, 15),5]),
-    sum(kgNH3[,c(2, 12, 14, 16),5]),
-    sum(kgNH3[,c(3,4),5]),
-    sum(kgNH3[,5,5]),
-    sum(kgNH3[,c(7,8),5]),
-    sum(kgNH3[,c(6,9),5]),
-    sum(kgNH3[,c(17,18,19),5])
-  )
-)
-
-links <- links[links$value > 0, ]
-
+# Define node names
 nodes <- data.frame(name = c(
-  "Nitrogen Fertilizer",
+  "Synthetic Fertilizer",
   cropareaharvested_key[majorgrains + 1, 1],
   "other crops",
   "Nitrogen Fixation",
@@ -1192,13 +1225,80 @@ nodes <- data.frame(name = c(
   "Other anim",
   "Food",
   "Manure",
-  "NH3"
+  "Non-recoverable manure",
+  "Manure Fertilizer"
 ))
 
-# Assign colors to links
+# Create source-target patterns more systematically
+source_patterns <- c(
+  rep(0, 7),            # Synthetic Fertilizer to various targets
+  rep(8, 7),            # Layers to various targets
+  rep(9, 7),            # Broilers to various targets
+  rep(1:6, 7),          # Major crops to various targets
+  rep(7, 7),            # Swine to various targets
+  1:7,                  # Various sources to a target
+  10:16,                # Turkey through Other anim to targets
+  10:16,                # Turkey through Other anim to more targets
+  18, 18,               # Specific connections
+  rep(20, 7)            # Manure Fertilizer to various targets
+)
 
+target_patterns <- c(
+  1:7,                  # Various targets from Synthetic Fertilizer
+  1:7,                  # Various targets from Layers
+  1:7,                  # Various targets from Broilers
+  rep(10:16, each = 6), # Various targets from major crops
+  10:16,                # Various targets from Swine
+  rep(17, 7),           # Food as target
+  rep(18, 7),           # Manure as target
+  rep(17, 7),           # Food as target again
+  19, 20,               # Specific targets
+  1:7                   # Various targets from Manure Fertilizer
+)
 
-# Create Sankey diagram using plotly with colored links
+# Calculate values more systematically
+values <- c(
+  as.integer(CfertNinorgtot[majorgrains, 5]),
+  sum(as.integer(CfertNinorgtot[othercrops, 5])),
+  colSums(CfixNwswE[, , 5])[majorgrains],
+  sum(CfixNwswE[, othercrops, 5]),
+  cropsimported[majorgrains],
+  sum(cropsimported[othercrops]),
+  unlist(meatfeedMG),
+  unlist(meatfeedOC),
+  colSums(C4humanN[, , 5])[majorgrains],
+  sum(C4humanN[, othercrops, 5]),
+  sum(kgmanureNlrs[, c(1, 10, 11, 13, 15), 5]),
+  sum(kgmanureNlrs[, c(2, 12, 14, 16), 5]),
+  sum(kgmanureNlrs[, c(3, 4), 5]),
+  sum(kgmanureNlrs[, 5, 5]),
+  sum(kgmanureNlrs[, c(7, 8), 5]),
+  sum(kgmanureNlrs[, c(6, 9), 5]),
+  sum(kgmanureNlrs[, c(17, 18, 19), 5]),
+  sum(animN[,c(1, 10, 11, 13, 15),5]),
+  sum(animN[,c(2, 12, 14, 16),5]),
+  sum(animN[,c(3,4),5]),
+  sum(animN[,5,5]),
+  sum(animN[,c(7, 8),5]),
+  sum(animN[,c(6, 9),5]),
+  sum(animN[,c(17, 18, 19),5]),
+  sum(kgmanureNlrs[,,5]-kgmanureNrec450[,,5]),
+  sum(kgmanureNrec450[,,5]),
+  as.integer(Cfertmantot[majorgrains, 5]),
+  sum(as.integer(Cfertmantot[othercrops, 5]))
+)
+
+# Create links data frame in one step
+links <- data.frame(
+  source = source_patterns,
+  target = target_patterns,
+  value = values
+)
+
+# Filter out zero values
+links <- links[links$value > 0, ]
+
+# Create Sankey diagram
 fig <- plot_ly(
   type = "sankey",
   orientation = "h",
@@ -1213,17 +1313,135 @@ fig <- plot_ly(
     target = links$target,
     value = links$value
   )
-)
+) %>% 
+  layout(
+    title = "Sankey Diagram",
+    font = list(size = 12)
+  ) %>%
+  config(displayModeBar = FALSE)
 
-fig <- fig %>% layout(
-  title = "Sankey Diagram",
-  font = list(size = 12)
-)
-
-config(fig,displayModeBar = FALSE)
-
+# Display the plot
+fig
 ```
 
+<br>
+```{r}
+library(plotly)
+
+# Define node names
+nodes <- data.frame(name = c(
+  "Synthetic Fertilizer",
+  cropareaharvested_key[majorgrains + 1, 1],
+  "other crops",
+  "Nitrogen Fixation",
+  "Imported Feed/Food",
+  "Beef",
+  "Dairy",
+  "Swine",
+  "Layers",
+  "Broilers",
+  "Turkey",
+  "Other anim",
+  "Food",
+  "Manure",
+  "Non-recoverable manure",
+  "Manure Fertilizer"
+))
+
+# Create source-target patterns more systematically
+source_patterns <- c(
+  rep(0, 7),            # Synthetic Fertilizer to various targets
+  rep(8, 7),            # Layers to various targets
+  rep(9, 7),            # Broilers to various targets
+  rep(1:6, 7),          # Major crops to various targets
+  rep(7, 7),            # Swine to various targets
+  1:7,                  # Various sources to a target
+  10:16,                # Turkey through Other anim to targets
+  10:16,                # Turkey through Other anim to more targets
+  18, 18,               # Specific connections
+  rep(20, 7)            # Manure Fertilizer to various targets
+)
+
+target_patterns <- c(
+  1:7,                  # Various targets from Synthetic Fertilizer
+  1:7,                  # Various targets from Layers
+  1:7,                  # Various targets from Broilers
+  rep(10:16, each = 6), # Various targets from major crops
+  10:16,                # Various targets from Swine
+  rep(17, 7),           # Food as target
+  rep(18, 7),           # Manure as target
+  rep(17, 7),           # Food as target again
+  19, 20,               # Specific targets
+  1:7                   # Various targets from Manure Fertilizer
+)
+
+# Calculate values more systematically
+values <- c(
+  as.integer(CfertNinorgtot[majorgrains, 5]),
+  sum(as.integer(CfertNinorgtot[othercrops, 5])),
+  colSums(CfixNwswE[, , 5])[majorgrains],
+  sum(CfixNwswE[, othercrops, 5]),
+  cropsimported[majorgrains],
+  sum(cropsimported[othercrops]),
+  unlist(meatfeedMG),
+  unlist(meatfeedOC),
+  colSums(C4humanN[, , 5])[majorgrains],
+  sum(C4humanN[, othercrops, 5]),
+  sum(kgmanureNlrs[, c(1, 10, 11, 13, 15), 5]),
+  sum(kgmanureNlrs[, c(2, 12, 14, 16), 5]),
+  sum(kgmanureNlrs[, c(3, 4), 5]),
+  sum(kgmanureNlrs[, 5, 5]),
+  sum(kgmanureNlrs[, c(7, 8), 5]),
+  sum(kgmanureNlrs[, c(6, 9), 5]),
+  sum(kgmanureNlrs[, c(17, 18, 19), 5]),
+  sum(animN[,c(1, 10, 11, 13, 15),5]),
+  sum(animN[,c(2, 12, 14, 16),5]),
+  sum(animN[,c(3,4),5]),
+  sum(animN[,5,5]),
+  sum(animN[,c(7, 8),5]),
+  sum(animN[,c(6, 9),5]),
+  sum(animN[,c(17, 18, 19),5]),
+  sum(kgmanureNlrs[,1:16,5]-kgmanureNrec450[,1:16,5]),
+  sum(kgmanureNrec450[,2,5]),
+  as.integer(Cfertmantot[majorgrains, 5]),
+  sum(as.integer(Cfertmantot[othercrops, 5]))
+)
+
+# Create links data frame in one step
+links <- data.frame(
+  source = source_patterns,
+  target = target_patterns,
+  value = values
+)
+
+# Filter out zero values
+links <- links[links$value > 0, ]
+
+# Create Sankey diagram
+fig <- plot_ly(
+  type = "sankey",
+  orientation = "h",
+  node = list(
+    pad = 15,
+    thickness = 20,
+    line = list(color = "grey", width = 0.5),
+    label = nodes$name
+  ),
+  link = list(
+    source = links$source,
+    target = links$target,
+    value = links$value
+  )
+) %>% 
+  layout(
+    title = "Sankey Diagram",
+    font = list(size = 12)
+  ) %>%
+  config(displayModeBar = FALSE)
+
+# Display the plot
+fig
+```
 <br>
 ```{r}
 library(plotly)

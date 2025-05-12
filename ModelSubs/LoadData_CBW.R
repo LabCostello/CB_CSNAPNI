@@ -19,6 +19,12 @@ CBW_lrs_shp <- lrs_shp[lrs_shp$Region=="Chesapeake Bay Watershed",] # Filtering 
 CBW_lrs_shp <- CBW_lrs_shp[order(CBW_lrs_shp$FIPS),] # Ascending order for FIPS
 CBW_lrs_shp <- CBW_lrs_shp %>% arrange(FIPS,LndRvrSeg)
 
+dim_cropnames <- list(
+  rows = CBW_lrs_shp$LndRvrSeg,
+  columns = crop_labels,
+  slices = year_labels
+)
+
 area <- as.matrix(unlist(CBW_lrs_shp$Acres*0.0040468564224, use.names = FALSE)) # Convert from acres to km2
 
 #wsNum = t(array(scan('InputFiles_CBW/wsNum.txt'), c(2,n_ws_tbx))) #key for 450 watersheds-->NEEA watersheds, region codes also included
@@ -46,6 +52,15 @@ for(n in 1:length(run_yrs)){
   file_name = paste("InputFiles_CBW/cropprodcnty",run_yrs[n],".txt",sep = "")
   cropprodcnty[,,n]=t(array(scan(file_name), c(n_crops,n_cnty)))
 }
+
+dimnames(cropprod) <- dim_cropnames
+dimnames(cropprodcnty) <- list(
+  rows = FIPS,
+  columns = crop_labels,
+  slices = year_labels
+)
+
+
 #key is in cornprodnoetoh_key.txt
 cornprodnoetoh = t(array(scan("InputFiles_CBW/cornprodnoetoh.txt"), c(nyrs,n_cnty)))
 #key is in etohproddensws_key.txt
@@ -130,6 +145,13 @@ for(n in 1:length(run_yrs)){
   file_name = paste("InputFiles_CBW/cropareaharvestedcnty",run_yrs[n],".txt",sep = "")
   cropareacnty[,,n]=t(array(scan(file_name), c(n_crops,n_cnty)))
 }
+
+dimnames(cropareacnty) <- list(
+  rows = FIPS,
+  columns = crop_labels,
+  slices = year_labels
+)
+
 #ethanol's virtual land use in each year
 etoh_landuse = t(array(scan("InputFiles_CBW/etoh_landuse_harvestedarea.txt")))
 

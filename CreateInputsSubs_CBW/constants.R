@@ -27,6 +27,7 @@ CBW_lrs_shp <- CBW_lrs_shp %>% arrange(FIPS,LndRvrSeg)
 
 # Area of each Land River Segment based in the Acreage information available in the shapefile table provided from CAST
 area <- as.matrix(unlist(CBW_lrs_shp$Acres*0.0040468564224, use.names = FALSE)) # Convert from acres to km2
+rownames(area) <- CBW_lrs_shp$LndRvrSeg # Assign the names of the LRS to the area matrix
 
 # FIPS filtered considering only the LRS that are inside of the CBW
 FIPS <- unique(CBW_lrs_shp$FIPS)
@@ -83,6 +84,7 @@ to_FC_wetmill[5] = 1
 #6=no allocation to ethanol coproducts
 to_FC_drymill[6] = 0
 to_FC_wetmill[6] = 0
+
 
 #allocation proportions between the wetmilled coproducts
 wetmill_CGF = CGF_from_corn/(CGF_from_corn+CGM_from_corn)

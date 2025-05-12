@@ -41,6 +41,7 @@ animdatadyn = t(array(scan("InputFiles_CBW/animdatadyn_max_updated.txt"), c(23,1
 
 #data years to load
 run_yrs = c("97","02","07","12","17","22") #last two digits of data years to import
+year_labels = c(1997,2002,2007,2012,2017,2022)
 nyrs = length(run_yrs)
 print(paste("Running for the following year(s): "), quote=FALSE)
 print(paste(run_yrs), quote=FALSE)
