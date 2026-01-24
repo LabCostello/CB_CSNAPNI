@@ -8,7 +8,7 @@ if(print_tags == 1){
 read_file = 'RawData/NANI_Accounting_Tool_V3.1.0_People_Areas.xlsx'
 import_yrs = c(1997,2002,2007,2012,2017)  #data years to import
 read_sheet = 'People'
-data = as.matrix(read_excel(read_file, sheet = read_sheet))
+data = as.matrix(read_excel(read_file, sheet = read_sheet, .name_repair = "unique_quiet"))
 
 # Processing variable data to get only CBW
 data[,32]= gsub("W","",as.character((data[,32]))) #taking out the W from the FIPS
@@ -85,6 +85,7 @@ dummy <- merge(cbind(FIPS,populationcty),percent_developed_in_cbw,by="FIPS")
 dummy <- dummy[,2:7]*c(dummy$percentage2007,dummy$percentage2007,dummy$percentage2007,dummy$percentage2012,dummy$percentage2017,dummy$percentage2022)
 colnames(dummy) <- c("V1","V2","V3","V4","V5","V6")
 populationws <- as.matrix(dummy)
+
 for (i in 1:length(import_yrs)) {populationdensws[,i] <- populationws[,i]/area}
 populationdensws <- cbind(populationdensws,populationws[,6]/area)
 

@@ -29,9 +29,9 @@ year <- c(1997,2002,2007,2012,2017,2022) #removed 1987 and 1992 because only sur
                                     #and only for some commodities
 n_years = length(year)
 
-source("CreateInputsSubs_CBW/NASSpull/crop_query_data.r")
-source("CreateInputsSubs_CBW/NASSpull/anim_query_data.r")
-source("CreateInputsSubs_CBW/NASSpull/gap_filling_data.r")
+source("CreateInputsSubs_CBW/NASSpull/crop_query_data.R")
+source("CreateInputsSubs_CBW/NASSpull/anim_query_data.R")
+source("CreateInputsSubs_CBW/NASSpull/gap_filling_data.R")
 
 query_desc = c(crop_desc,anim_desc,var_desc)
 default_data_source = "CENSUS"
@@ -43,8 +43,8 @@ source("CreateInputsSubs_CBW/NASSpull/NASS_counties.R") #pulls the county level 
 #Adjust potatoes and hogs for breeding data for 2022
 
 #use NASS data to calculate NANI/NAPI commodity categories
-source('CreateInputsSubs_CBW/NASSpull/crop_calcs.r')
-source('CreateInputsSubs_CBW/NASSpull/anim_calcs.r')
+source('CreateInputsSubs_CBW/NASSpull/crop_calcs.R')
+source('CreateInputsSubs_CBW/NASSpull/anim_calcs.R')
 
 #print("Outputs (NASS_crop_area, NASS_crop_prod, NASS_anim) saved to 'InputFiles' folder.")
 

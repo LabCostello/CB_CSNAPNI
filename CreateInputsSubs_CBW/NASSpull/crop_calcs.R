@@ -52,7 +52,7 @@ for(i in 1:length(corn_silage_area_list)){
 corn_silage_prod_list = grep("CORN_SILAGE_P", county_commodities_list, value = TRUE)
 corn_silage_prod = array(0,c(length(NASS_County[,1]),length(corn_silage_prod_list)))
 for(i in 1:length(corn_silage_prod_list)){
-  corn_silage_prod[,i] = as.numeric(NASS_County[, corn_silage_prod_list[i]])*1000
+  corn_silage_prod[,i] = as.numeric(NASS_County[, corn_silage_prod_list[i]])*907.185
 }
 
 # (3) wheat, (need 'WHEAT - ACRES HARVESTED', 'WHEAT - PRODUCTION, MEASURED IN BU')
@@ -112,7 +112,7 @@ for(i in 1:length(sorghum_silage_area_list)){
 sorghum_silage_prod_list = grep("SORGHUM_SILAGE_P", county_commodities_list, value = TRUE)
 sorghum_silage_prod = array(0,c(length(NASS_County[,1]),length(sorghum_silage_prod_list)))
 for(i in 1:length(sorghum_silage_prod_list)){
-  sorghum_silage_prod[,i] = as.numeric(NASS_County[, sorghum_silage_prod_list[i]])*1000
+  sorghum_silage_prod[,i] = as.numeric(NASS_County[, sorghum_silage_prod_list[i]])*907.185
 }
 
 # (8) potatoes, (need 'POTATOES - ACRES HARVESTED', 'POTATOES - PRODUCTION, MEASURED IN CWT')
@@ -148,7 +148,7 @@ for(i in 1:length(alfalfa_hay_area_list)){
 alfalfa_hay_prod_list = grep("HAY_ALFALFA_P", county_commodities_list, value = TRUE)
 alfalfa_hay_prod = array(0,c(length(NASS_County[,1]),length(alfalfa_hay_prod_list)))
 for(i in 1:length(alfalfa_hay_prod_list)){
-  alfalfa_hay_prod[,i] = as.numeric(NASS_County[, alfalfa_hay_prod_list[i]])*1000
+  alfalfa_hay_prod[,i] = as.numeric(NASS_County[, alfalfa_hay_prod_list[i]])*907.185
 }
 
 # (11) other hay, ('HAY - ACRES HARVESTED','HAY - PRODUCTION, MEASURED IN TONS')
@@ -160,7 +160,7 @@ for(i in 1:length(hay_area_list)){
 hay_prod_list = grep("HAY_P", county_commodities_list, value = TRUE)
 other_hay_prod = array(0,c(length(NASS_County[,1]),length(hay_prod_list)))
 for(i in 1:length(hay_prod_list)){
-  other_hay_prod[,i] = (as.numeric(NASS_County[, hay_prod_list[i]])-as.numeric(NASS_County[, alfalfa_hay_prod_list[i]]))*1000
+  other_hay_prod[,i] = (as.numeric(NASS_County[, hay_prod_list[i]])-as.numeric(NASS_County[, alfalfa_hay_prod_list[i]]))*907.185
 }
 
 other_hay_areas[other_hay_areas<0] <- 0

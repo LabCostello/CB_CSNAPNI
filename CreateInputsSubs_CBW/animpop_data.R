@@ -35,12 +35,16 @@ animtyp[19] = 'goats'
 animpopcnty_old <- array(0,c(n_cnty,length(animtyp),length(year_labels)))
 animpopcnty = array(0,c(n_cnty,length(animtyp),length(year_labels)))
 animpopcnty = anim_avg_inv_array
+animpopsoldcnty = array(anim_sales_inv_array,c(n_cnty,6,length(year_labels)))
+animpopsoldcty = array(0,c(n_cnty,6,length(year_labels)))
 animpopws = array(0,c(n_ws_tbx,length(animtyp),length(year_labels)))
+animpopsoldws = array(0,c(n_ws_tbx,6,length(year_labels)))
+
 for(n in 1:length(year_labels)){
   # watershed crop production
   animpopws[,,n] = t(cnty_ws)%*%animpopcnty[,,n]
   
-  dummy <- merge(cbind(percent_crop_in_cbw[1:3],percent_crop_in_cbw[3+n],percent_corn_in_cbw[3+n]),cbind(FIPS,animpopcnty[,,n]))
+  dummy <- merge(cbind(percent_crop_in_cbw[1:3],percent_crop_in_cbw[3+n],percent_corn_alfalfa_in_cbw[3+n]),cbind(FIPS,animpopcnty[,,n]))
   animws <- data.frame("FIPS"=dummy$FIPS,
                        "LNDRVRSEG"=dummy$LNDRVRSEG,
                        "OBJECTID"=dummy$OBJECTID,
@@ -55,22 +59,36 @@ for(n in 1:length(year_labels)){
                        "slaughter turkeys"=dummy[,4]*dummy$V10,
                        "beef breeding herd"=dummy[,4]*dummy$V11,
                        "beef calves"=dummy[,4]*dummy$V12,
-                       "dairy calves"=dummy[,4]*dummy$V13,
+                       "dairy calves"=dummy[,5]*dummy$V13,
                        "beef heifers"=dummy[,4]*dummy$V14,
-                       "dairy heifers"=dummy[,4]*dummy$V15,
+                       "dairy heifers"=dummy[,5]*dummy$V15,
                        "beef stockers"=dummy[,4]*dummy$V16,
-                       "dairy stockers"=dummy[,4]*dummy$V17,
+                       "dairy stockers"=dummy[,5]*dummy$V17,
                        "sheep"=dummy[,4]*dummy$V18,
                        "horses"=dummy[,4]*dummy$V19,
                        "goats"=dummy[,4]*dummy$V20)
   
+  dummytwo <- merge(cbind(percent_crop_in_cbw[1:3],percent_crop_in_cbw[3+n],percent_corn_alfalfa_in_cbw[3+n]),cbind(FIPS,animpopsoldcnty[,,n]))
+  animwstwo <- data.frame("FIPS"=dummytwo$FIPS,
+                       "LNDRVRSEG"=dummytwo$LNDRVRSEG,
+                       "OBJECTID"=dummytwo$OBJECTID,
+                       "fattened cattle sold"=dummytwo[,4]*dummytwo$V2,
+                       "milk cows"=dummytwo[,5]*dummytwo$V3,
+                       "hogs for slaughter"=dummytwo[,4]*dummytwo$V4,
+                       "chicken layers"=dummytwo[,4]*dummytwo$V5,
+                       "chicken broilers"=dummytwo[,4]*dummytwo$V6,
+                       "slaughter turkeys"=dummytwo[,4]*dummytwo$V7)
+
   animws <- animws %>% arrange(FIPS,LNDRVRSEG)
-  
+  animwstwo <- animwstwo %>% arrange(FIPS,LNDRVRSEG)
+
   animpopcnty_old[,,n] <- animpopcnty[,,n]
   
   animpopcnty[,,n] <- as.matrix(subset(aggregate(animws[,4:22], by=list(animws$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
+  animpopsoldcty[,,n] <- as.matrix(subset(aggregate(animwstwo[,4:9], by=list(animwstwo$FIPS), FUN = sum),select=-1)) # Readjusting county information to only info inside CBW
   
   animpopws[,,n] <- as.matrix(subset(animws,select=-c(1:3)))
+  animpopsoldws[,,n] <- as.matrix(subset(animwstwo,select=-c(1:3)))
   
   #write data files
   ##animal population
@@ -78,6 +96,10 @@ for(n in 1:length(year_labels)){
   write.table(animpopws[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
   write_name = paste("InputFiles_CBW/noanimdyncty",run_yrs[n],".txt",sep = "")
   write.table(animpopcnty[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
+  write_name = paste("InputFiles_CBW/noanimdynsold",run_yrs[n],".txt",sep = "")
+  write.table(animpopsoldws[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
+  write_name = paste("InputFiles_CBW/noanimdynsoldcty",run_yrs[n],".txt",sep = "")
+  write.table(animpopsoldcty[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 }
 #write key
 ##animal population

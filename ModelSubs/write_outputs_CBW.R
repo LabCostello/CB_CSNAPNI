@@ -303,6 +303,46 @@ write.table(etohfert_key, file = write_name, sep = " ", row.names = FALSE, col.n
 # Graph for paper commodity specific results ####
 fertNpermeatdom <- fertNpermeatnat <- fertNperMprotdom <- fertmanNpermeatdom <- fertmanNperMprotdom <- fertinNperMprotdom <- fertinNpermeatdom <- fertNperMprotnat <- array(0,c(9,21,6))
 fixNpermeatdom <- fixNpermeatnat <- fixNperMprotdom <- fixNperMprotnat <-  array(0,c(9,21,6))
+byprodpermeatprot <- array(0,c(n_meats,9,6))
+dimnames(byprodpermeatprot) <- list(meat_labels,byproductnames,year_labels)
+
+for(n in 1:nyrs){
+  for(i in 1:n_meats){byprodpermeatprot[i,,n] = (byprodNpermeat[i,,n] / (meatdata[i,z]*c_dm[c(3,6,8,9,11,15,16,17,18)]*c_ncindm[c(3,6,8,9,11,15,16,17,18)] / 1000))}} #kg byprod/kg meat protein
+
+beefnatfertN <- c(0.635,0.623,0.592,0.651,0.537,0.537)
+beefnatfixN <- c(1.15,1.18,1.02,0.882,0.909,0.909)
+beefnatmanN <- c(1.64,1.63,1.61,1.60,1.60,1.60)
+
+broilernatfertN <- c(0.296,0.269,0.283,0.289,0.213,0.21)
+broilernatfixN <- c(0.232,0.251,0.207,0.240,0.233,0.23)
+broilernatmanN <- c(0.364,0.365,0.365,0.364,0.363,0.363)
+
+fertNbyproductN <- fixNbyproductN <- manureNbyproductN <- array(0,c(9,nyrs))
+
+byprod_beefalloc <- 0
+byprod_broileralloc <- 0
+ricealloc <- 0
+hfalloc <- 0.35
+canolaalloc <- 0.6 # based on literature (3 sources)
+cottonseedalloc <- 0.56 # based on literature (1 sources)
+cottonseedmealalloc <- cottonseedalloc*0.89 # based on literature (1 sources)
+
+for(n in 1:nyrs){
+  fertNbyproductN[,n] <-c(hfalloc*unitfertNC[1,n],cottonseedalloc*0.1,canolaalloc*0.07,cottonseedmealalloc*0.1,unitfertNC[15,n],beefnatfertN[n]*byprod_beefalloc,broilernatfertN[n]*byprod_broileralloc,beefnatfertN[n]*byprod_beefalloc,beefnatfertN[n]*byprod_beefalloc) # Update cotton and canola calculation
+  fixNbyproductN[,n] <- c(0,0,0,0,0,beefnatfixN[n]*byprod_beefalloc,broilernatfixN[n]*byprod_broileralloc,beefnatfixN[n]*byprod_beefalloc,beefnatfixN[n]*byprod_beefalloc)
+  manureNbyproductN[,n] <- c(0,0,0,0,0,beefnatmanN[n]*byprod_beefalloc,broilernatmanN[n]*byprod_broileralloc,beefnatmanN[n]*byprod_beefalloc,beefnatmanN[n]*byprod_beefalloc)}
+
+fertNperbyprod <- fixNperbyprod <- manureNperbyprod <-  array(0,c(9,9,6))
+
+for(n in 1:nyrs){
+  for(j in 1:9){
+    fertNperbyprod[,j,n] <- byprodpermeatprot[,j,n]*fertNbyproductN[j,n]
+    fixNperbyprod[,j,n] <- byprodpermeatprot[,j,n]*fixNbyproductN[j,n]
+    manureNperbyprod[,j,n] <- byprodpermeatprot[,j,n]*manureNbyproductN[j,n]
+  }}
+
+dimnames(fertNperbyprod) <- dimnames(fixNperbyprod) <- dimnames(manureNperbyprod) <- list(meat_labels,byproductnames,year_labels)
+
 
 for(n in 1:nyrs){
   for(i in 1:21){
@@ -321,8 +361,7 @@ for(n in 1:nyrs){
     fertmanNperMprotdom[i,,n] = (fertmanNpermeatdom[i,,n] / (meatdata[i,z] / 1000))
     fertNperMprotnat[i,,n] = (fertNpermeatnat[i,,n] / (meatdata[i,z] / 1000))# kg N fert / kg protein in 1 kg meat
     fixNperMprotdom[i,,n] = (fixNpermeatdom[i,,n] / (meatdata[i,z] / 1000))
-    fixNperMprotnat[i,,n] = (fixNpermeatnat[i,,n] / (meatdata[i,z] / 1000))
-  }}
+    fixNperMprotnat[i,,n] = (fixNpermeatnat[i,,n] / (meatdata[i,z] / 1000))}}
 
 library(readxl)
 cmdtcsnapninat<- read_excel(adjust_file_path("C:/Users/lds5498/OneDrive - The Pennsylvania State University/Desktop/Code/important_excel/cmdtcsnapni3nat2.xlsx"))
@@ -367,71 +406,47 @@ library(ggpattern)
 cmdtcsnapni3$model[cmdtcsnapni3$model == "csnapni"] <- "national"
 cmdtcsnapni3$model[cmdtcsnapni3$model == "cbw-csnani"] <- "CBW"
 
-create_animal_plot <- function(data, animal_label, title) {
-  # Order data consistently
-  data_ordered <- with(data, data[order(year, Nsources, model),])
-  
-  # Create plot for the specified animal
-  ggplot(data=data_ordered[data_ordered$animal == animal_label,], aes(x=model, y=values)) + 
-    geom_bar_pattern(
-      aes(pattern = Nsources, fill = Nsources),
-      stat = "identity",
-      color = "black",  # Add black outline to bars
-      pattern_fill = "black",
-      pattern_density = 0.2,
-      pattern_spacing = 0.037
-    ) +
-    scale_pattern_manual(values = c("stripe","circle", "circle", "none", "none")) +
-    scale_fill_manual(values = c("white", "grey", "white", "black", "white")) +
-    facet_grid(~year) +
-    labs(title = title,
-         x = "",
-         y = "kg N input/kg protein") +
-    theme_minimal() +
-    theme(plot.title = element_text(size = 16, hjust = 0.5),
-          legend.title = element_text(color = "black", size = 16, face = "bold"),
-          legend.text = element_text(color = "black", size = 14),
-          axis.text = element_text(size = 14),
-          axis.title.y = element_text(size = 16),
-          strip.text.x = element_text(size = 12))
-}
 
-
-
-# Usage:
-beefcomp <- create_animal_plot(cmdtcsnapni3, meat_labels[1], "Beef")
-dairycomp <- create_animal_plot(cmdtcsnapni3, meat_labels[2], "Milk")
-porkcomp <- create_animal_plot(cmdtcsnapni3, meat_labels[3], "Pork")
-layerscomp <- create_animal_plot(cmdtcsnapni3, meat_labels[6], "Eggs")
-broilcomp <- create_animal_plot(cmdtcsnapni3, meat_labels[7], "Chicken")
-turkcomp <- create_animal_plot(cmdtcsnapni3, meat_labels[8], "Turkey")
-
-library(ggpubr)
-
-figureR1 <- ggarrange(beefcomp,dairycomp,porkcomp,layerscomp, broilcomp,turkcomp,ncol=2, nrow=3, common.legend = TRUE, legend="bottom")
-figureR1
 #####
 
+zz <- data.frame(beef=colSums(colSums(kgmanureNrecplantLRS[,animal_manure,])[c(1,11,13,15),]),
+                 dairy=colSums(colSums(kgmanureNrecplantLRS[,animal_manure,])[c(2,12,14,16),]),
+                 swine=colSums(colSums(kgmanureNrecplantLRS[,animal_manure,])[c(3,4),]),
+                 broilers=colSums(colSums(kgmanureNrecplantLRS[,animal_manure,])[c(8,7),]),
+                 eggs=colSums(kgmanureNrecplantLRS[,animal_manure,])[5,],
+                 turkey=colSums(colSums(kgmanureNrecplantLRS[,animal_manure,])[c(6,9),])
+)
+
+zzz <- data.frame(beef=colSums((colSums(kgmanureNrec450[,animal_manure,]-kgmanureNrecplantLRS[,animal_manure,]))[c(1,11,13,15),]),
+                  dairy=colSums((colSums(kgmanureNrec450[,animal_manure,]-kgmanureNrecplantLRS[,animal_manure,]))[c(2,12,14,16),]),
+                  swine=colSums((colSums(kgmanureNrec450[,animal_manure,]-kgmanureNrecplantLRS[,animal_manure,]))[c(3,4),]),
+                  broilers=colSums((colSums(kgmanureNrec450[,animal_manure,]-kgmanureNrecplantLRS[,animal_manure,]))[c(8,7),]),
+                  layers=colSums(kgmanureNrec450[,animal_manure,]-kgmanureNrecplantLRS[,animal_manure,])[5,],
+                  turkey=colSums((colSums(kgmanureNrec450[,animal_manure,]-kgmanureNrecplantLRS[,animal_manure,]))[c(6,9),])
+)
+
+
 cmdtcsnapni4 <- data.frame(
-  "year" = c(rep(rep(year_labels, each = 9), 2),  # From cmdtcsnapni4
+  "year" = c(rep(rep(year_labels, each = 9), 3),  # From cmdtcsnapni4
              rep(rep(year_labels, each = 9), 4)),  # From original cmdtcsnapni3b
   
-  "Nsource" = c(rep(c("Fertilizer (national)", "N Fixation (national)"), each = 54),  # From cmdtcsnapni4
-                rep(c("Inorganic Fertilizer (cbw)", "Manure Fertilizer (cbw)", "N Fixation (cbw)", "Non-recoverable Manure"), each = 54)),  # From original cmdtcsnapni3b
+  "Nsource" = c(rep(c("Fertilizer (national)", "N Fixation (national)", "Non-recoverable Manure (national)"), each = 54),  # From cmdtcsnapni4
+                rep(c("Inorganic Fertilizer (cbw)", "Manure Fertilizer (cbw)", "N Fixation (cbw)", "Non-recoverable Manure (cbw)"), each = 54)),  # From original cmdtcsnapni3b
   
-  "animal" = c(rep(meat_labels, 12),  # From cmdtcsnapni4
+  "animal" = c(rep(meat_labels, 18),  # From cmdtcsnapni4
                rep(meat_labels, 24)),  # From original cmdtcsnapni3b
   
-  "origin" = c(rep("national", 108),  # From cmdtcsnapni4
+  "origin" = c(rep("national", 162),  # From cmdtcsnapni4
                rep("cbw", 216)),  # From original cmdtcsnapni3b
   
   "values" = c(
     # Values from cmdtcsnapni4 (national)
-    rowSums(fertNperMprotnat[,,1]), rowSums(fertNperMprotnat[,,2]), rowSums(fertNperMprotnat[,,3]),
-    rowSums(fertNperMprotnat[,,4]), rowSums(fertNperMprotnat[,,5]), rowSums(fertNperMprotnat[,,6]),
-    rowSums(fixNperMprotnat[,,1]), rowSums(fixNperMprotnat[,,2]), rowSums(fixNperMprotnat[,,3]),
-    rowSums(fixNperMprotnat[,,4]), rowSums(fixNperMprotnat[,,5]), rowSums(fixNperMprotnat[,,6]),
-    
+    rowSums(fertNperMprotnat[,,1])+rowSums(fertNperbyprod[,,1]), rowSums(fertNperMprotnat[,,2])+rowSums(fertNperbyprod[,,2]), rowSums(fertNperMprotnat[,,3])+rowSums(fertNperbyprod[,,3]),
+    rowSums(fertNperMprotnat[,,4])+rowSums(fertNperbyprod[,,4]), rowSums(fertNperMprotnat[,,5])+rowSums(fertNperbyprod[,,5]), rowSums(fertNperMprotnat[,,6])+rowSums(fertNperbyprod[,,6]),
+    rowSums(fixNperMprotnat[,,1])+rowSums(fixNperbyprod[,,1]), rowSums(fixNperMprotnat[,,2])+rowSums(fixNperbyprod[,,2]), rowSums(fixNperMprotnat[,,3])+rowSums(fixNperbyprod[,,3]),
+    rowSums(fixNperMprotnat[,,4])+rowSums(fixNperbyprod[,,4]), rowSums(fixNperMprotnat[,,5])+rowSums(fixNperbyprod[,,5]), rowSums(fixNperMprotnat[,,6])+rowSums(fixNperbyprod[,,6]),
+    rowSums(manureNperbyprod[,,1]),rowSums(manureNperbyprod[,,2]),rowSums(manureNperbyprod[,,3]),rowSums(manureNperbyprod[,,4]),rowSums(manureNperbyprod[,,5]),rowSums(manureNperbyprod[,,6]),
+
     # Values from original cmdtcsnapni3b (cbw)
     rowSums(fertinNperMprotdom[,,1]), rowSums(fertinNperMprotdom[,,2]), rowSums(fertinNperMprotdom[,,3]),
     rowSums(fertinNperMprotdom[,,4]), rowSums(fertinNperMprotdom[,,5]), rowSums(fertinNperMprotdom[,,6]),
@@ -447,464 +462,129 @@ cmdtcsnapni4 <- cmdtcsnapni4[cmdtcsnapni4$animal %in% meat_labels[c(1,2,3,6,7,8)
 
 cmdtcsnapni4 <- cmdtcsnapni4[cmdtcsnapni4$year %in% year_labels[2:6],]
 
+cmdtcsnapni4 <- cmdtcsnapni4[cmdtcsnapni4$Nsource != "Non-recoverable Manure (national)",] # Remove non-recoverable manure for the next plots
+#cmdtcsnapni4[cmdtcsnapni4$Nsource == "Non-recoverable Manure (cbw)",2] <- "Manure Management"
+# First, create the proportion dataframes
+# zz/(zz+zzz) = proportion available (to plant)
+# zzz/(zz+zzz) = proportion non-available
+
+prop_available <- zz / (zz + zzz)
+prop_nonavailable <- zzz / (zz + zzz)
+
+
+
+# Extract the manure fertilizer rows
+manure_fert_rows <- cmdtcsnapni4[cmdtcsnapni4$Nsource == "Manure Fertilizer (cbw)", ]
+
+# Create available rows
+manure_available <- manure_fert_rows
+manure_available$Nsource <- "Manure Fertilizer Available (cbw)"
+manure_available$values <- manure_available$values * rep(c(0.25,0.18,0.17,0.35,0.35,0.26),5)
+
+# Create non-available rows
+manure_nonavailable <- manure_fert_rows
+manure_nonavailable$Nsource <- "Manure Fertilizer Non-available (cbw)"
+manure_nonavailable$values <- manure_nonavailable$values * rep(1-c(0.25,0.18,0.17,0.35,0.35,0.26),5)
+
+# Remove original manure fertilizer rows and add the new split rows
+cmdtcsnapni4 <- cmdtcsnapni4[cmdtcsnapni4$Nsource != "Manure Fertilizer (cbw)", ]
+cmdtcsnapni4 <- rbind(cmdtcsnapni4, manure_available, manure_nonavailable)
+
+
 #cmdtcsnapni4$Nsources <- sprintf("%s (%s)", cmdtcsnapni4$Nsource, cmdtcsnapni4$origin)
 
 #convert 'position' to factor and specify level order
-cmdtcsnapni4$Nsource <- factor(cmdtcsnapni4$Nsource, levels=c("Non-recoverable Manure", "N Fixation (national)", "N Fixation (cbw)", "Fertilizer (national)", "Manure Fertilizer (cbw)", "Inorganic Fertilizer (cbw)"))
+#cmdtcsnapni4$Nsource <- factor(cmdtcsnapni4$Nsource, levels=c("Manure Management", "N Fixation (national)", "N Fixation (cbw)", "Fertilizer (national)", "Manure Fertilizer (cbw)", "Inorganic Fertilizer (cbw)"))
+#cmdtcsnapni4$Nsource <- factor(cmdtcsnapni4$Nsource, levels=c("Non-recoverable Manure (cbw)", "N Fixation (national)", "N Fixation (cbw)", "Fertilizer (national)", "Manure Fertilizer (cbw)", "Inorganic Fertilizer (cbw)"))
+cmdtcsnapni4$Nsource <- factor(cmdtcsnapni4$Nsource, levels=c("Non-recoverable Manure (cbw)", "N Fixation (national)", "N Fixation (cbw)", "Fertilizer (national)", "Manure Fertilizer Available (cbw)","Manure Fertilizer Non-available (cbw)", "Inorganic Fertilizer (cbw)"))
 
-  create_animal_plot2 <- function(data, animal_label, title) {
-    # Order data consistently
-    data_ordered <- with(data, data[order(year, Nsource),])
-    
-    # Create plot for the specified animal
-    ggplot(data=data_ordered[data_ordered$animal == animal_label,], aes(x=animal,y=values)) + 
-      geom_bar_pattern(
-        aes(pattern = Nsource, fill = Nsource),
-        stat = "identity",
-        color = "black",  # Add black outline to bars
-        pattern_fill = "black",
-        pattern_density = 0.2,
-        pattern_spacing = 0.037
-      ) +
-      scale_x_discrete(labels = NULL) + 
-      scale_pattern_manual(values = c("stripe","circle", "circle", "none", "none", "none")) +
-      scale_fill_manual(values = c("white", "grey", "white", "black", "grey", "white")) +
-      facet_grid(~year) +
-      labs(title = title,
-           x = "",
-           y = "kg N input/kg protein") +
-      theme_minimal() +
-      theme(plot.title = element_text(size = 16, hjust = 0.5),
-            legend.title = element_text(color = "black", size = 16, face = "bold"),
-            legend.text = element_text(color = "black", size = 14),
-            axis.text = element_text(size = 14),
-            axis.title.y = element_text(size = 16),
-            strip.text.x = element_text(size = 12))
-  }
-
-
-
-# Usage:
-beefcomp2 <- create_animal_plot2(cmdtcsnapni4, meat_labels[1], "Beef")
-dairycomp2 <- create_animal_plot2(cmdtcsnapni4, meat_labels[2], "Milk")
-porkcomp2 <- create_animal_plot2(cmdtcsnapni4, meat_labels[3], "Pork")
-layerscomp2 <- create_animal_plot2(cmdtcsnapni4, meat_labels[6], "Eggs")
-broilcomp2 <- create_animal_plot2(cmdtcsnapni4, meat_labels[7], "Chicken")
-turkcomp2 <- create_animal_plot2(cmdtcsnapni4, meat_labels[8], "Turkey")
-
-figureR2 <- ggarrange(beefcomp2,dairycomp2,porkcomp2,layerscomp2, broilcomp2,turkcomp2,ncol=2, nrow=3, common.legend = TRUE, legend="bottom")
-figureR2
-
-
-create_animal_plot3 <- function(data, animal_label, title) {
-  # Order data consistently
-  data_ordered <- with(data, data[order(year, Nsource),])
-  
-  # Create plot for the specified animal
-  ggplot(data=data_ordered[data_ordered$animal == animal_label,], aes(x=animal, y=values)) + 
-    geom_bar(
-      aes(fill = Nsource),
-      stat = "identity",
-      color = "black",  # Add black outline to bars
-      position = "stack"
-    ) +
-    scale_x_discrete(labels = NULL) + 
-    scale_fill_manual(values = c(
-      "Fertilizer (national)" = "#780000",       # Dark blue
-      "Fertilizer Inorganic (cbw)" = "#C1121F",  # Light blue
-      "Fertilizer Manure (cbw)" = "#CD3E43",     # Medium blue
-      "Fixation (national)" = "#003049",         # Deep purple
-      "Fixation (cbw)" = "#669BBC",              # Light purple
-      "Non-recoverable Manure" = "#FDF0D5"            # Tiffany blue
-    )) +
-    facet_grid(~year) +
-    labs(title = title,
-         x = "",
-         y = "kg N input/kg protein") +
-    theme_minimal() +
-    theme(plot.title = element_text(size = 16, hjust = 0.5),
-          legend.title = element_text(color = "black", size = 16, face = "bold"),
-          legend.text = element_text(color = "black", size = 14),
-          axis.text = element_text(size = 14),
-          axis.title.y = element_text(size = 16),
-          strip.text.x = element_text(size = 12))
-}
-
-create_animal_plot3 <- function(data, animal_label, title) {
-  # Order data consistently
-  data_ordered <- with(data, data[order(year, Nsource),])
-  
-  # Filter data for the specified animal
-  animal_data <- data_ordered[data_ordered$animal == animal_label,]
-  
-  # Calculate totals for each year
-  totals <- aggregate(values ~ year, data = animal_data, FUN = sum)
-  
-  # Create plot for the specified animal
-  ggplot(data=animal_data, aes(x=animal, y=values)) + 
-    geom_bar(
-      aes(fill = Nsource),
-      stat = "identity",
-      color = "black",  # Add black outline to bars
-      position = "stack",
-      width = 0.7      # Slightly narrower bars for better appearance
-    ) +
-    # Add total values as text on top of each bar
-    geom_text(
-      data = totals,
-      aes(x = 1, y = values, label = format(values, digits = 3)),
-      position = position_stack(vjust = 1.05),
-      size = 4.5,
-      fontface = "bold"  # Make totals bold for better visibility
-    ) +
-    scale_y_continuous(labels = scales::number_format(accuracy = 0.1), expand = expansion(mult = c(0, 0.15))) +  # Add more space at top for labels
-    scale_x_discrete(labels = NULL) + 
-    scale_fill_manual(values = c(
-      "Fertilizer (national)" = "#780000",
-      "Inorganic Fertilizer (cbw)" = "#C1121F",
-      "Manure Fertilizer (cbw)" = "#CD3E43",
-      "N Fixation (national)" = "#003049",
-      "N Fixation (cbw)" = "#669BBC",
-      "Non-recoverable Manure" = "#FDF0D5"
-    )) +
-    facet_grid(~year) +
-    labs(title = title,
-         x = "",
-         y = "kg N input/kg protein") +
-    theme_minimal() +
-    theme(
-      plot.title = element_text(size = 22, hjust = 0.5, face = "bold", margin = margin(b = 12)),
-      plot.background = element_rect(fill = "white", color = NA),
-      legend.title = element_text(color = "black", size = 18, face = "bold"),
-      legend.text = element_text(color = "black", size = 16),
-      axis.text = element_text(size = 16),
-      axis.title.y = element_text(size = 18, face = "bold", margin = margin(r = 12)),
-      strip.text.x = element_text(size = 16, face = "bold"),
-      strip.background = element_rect(fill = "gray95", color = "gray80"),
-      panel.grid.major = element_line(color = "gray90"),
-      panel.grid.minor = element_blank(),  # Remove minor grid lines for cleaner look
-      panel.spacing = unit(1.5, "lines"),  # Add more space between facets
-      plot.margin = margin(t = 10, r = 10, b = 10, l = 10)
-    )
-}
-
-
-beefcomp3 <- create_animal_plot3(cmdtcsnapni4, meat_labels[1], "Beef")
-dairycomp3 <- create_animal_plot3(cmdtcsnapni4, meat_labels[2], "Milk")
-porkcomp3 <- create_animal_plot3(cmdtcsnapni4, meat_labels[3], "Pork")
-layerscomp3 <- create_animal_plot3(cmdtcsnapni4, meat_labels[6], "Eggs")
-broilcomp3 <- create_animal_plot3(cmdtcsnapni4, meat_labels[7], "Chicken")
-turkcomp3 <- create_animal_plot3(cmdtcsnapni4, meat_labels[8], "Turkey")
-
-figureR3 <- ggarrange(beefcomp3,dairycomp3,porkcomp3,layerscomp3, broilcomp3,turkcomp3,ncol=3, nrow=2, common.legend = TRUE, legend="bottom")
-figureR3
-
-# Export for poster
-ggsave("figureR3_poster2.png", figureR3, 
-       width = 41.38, height = 25.86, units = "cm", dpi = 600)
-
-cmdtcsnapni4$yearprotprod <- rep(c(totMprot[c(1,2,3,6,7,8),2:6]),6)
+cmdtcsnapni4$yearprotprod <- rep(c(totMprot[c(1,2,3,6,7,8),2:6]),7)
 cmdtcsnapni4$totprodkgProt <- cmdtcsnapni4$values*cmdtcsnapni4$yearprotprod
 
-create_animal_plot4 <- function(data, animal_label, title) {
-  # Order data consistently
-  data_ordered <- with(data, data[order(year, Nsource),])
+
+# =============================================================================
+# USAGE AT THE END OF YOUR SCENARIO CODE:
+# =============================================================================
+variable_list = list(
+  cmdtcsnapni4 = cmdtcsnapni4,
+  cmdtcsnapni3 = cmdtcsnapni3,
+  CfertNinorgtotlrs = CfertNinorgtotlrs,
+  CfertNinorgtot = CfertNinorgtot,
+  CfixNwswE = CfixNwswE,
+  Cfertmantot = Cfertmantot,
+  Ckgws = Ckgws,
+  CkgwswE = CkgwswE,
+  CNkgwswE = CNkgwswE,
+  byproductimported = byproductimported,
+  feedN4meatdom = feedN4meatdom,
+  totfeeddom4meat = totfeeddom4meat,
+  totfeedimp4meat = totfeedimp4meat,
+  feedN4meatimp = feedN4meatimp,
+  feedN4anim = feedN4anim,
+  C4humanN = C4humanN,
+  kgmanureNlrs = kgmanureNlrs,
+  meatN = meatN,
+  kgmanureNrec450 = kgmanureNrec450,
+  kgmanureNlrsrecovnonavailableplant = kgmanureNlrsrecovnonavailableplant,
+  kgmanureNlrsavailableplantavailable = kgmanureNlrsavailableplantavailable,
+  kgNmanuretoeachcrop = kgNmanuretoeachcrop,
+  kgmanurenotavailabletoeachcrop = kgmanurenotavailabletoeachcrop, 
+  manureNmeattot = manureNmeattot,
+  manurecty = manurecty,
+  manurews = manurews,
+  manurewsrec = manurewsrec,
+  manurectyrec = manurectyrec,
+  NANIBtot = NANIBtot,
+  TN = TN,
+  TNperkm = TNperkm,
+  TNcmdt = TNcmdt,
+  NUE = NUE,
+  unitfertNC = unitfertNC,
+  unitfertinNC = unitfertinNC,
+  unitfertmanNC = unitfertmanNC,
+  cropprodcnty = cropprodcnty,
+  cropareacnty = cropareacnty,
+  cropareaws = cropareaws,
+  cropprodws = cropprodws,
+  Nfert = Nfert,
+  croparea = croparea,
+  grasscty = grasscty,
+  grassws = grassws,
+  wrcty = wrcty,
+  wrws = wrws,
+  manurebiogascty = manurebiogascty,
+  manurebiogasws = manurebiogasws,
+  grassbiogascty = grassbiogascty,
+  wrbiogascty = wrbiogascty,
+  CH4cnty = CH4cnty,
+  CH4ws = CH4ws,
+  kwcnty = kwcnty,
+  kwws = kwws,
+  NANIcropN = NANIcropN,
+  NANIanimN = NANIanimN,
+  hmnNreqs = hmnNreqs,
+  NANIanimreq = NANIanimreq,
+  CNprodremaining = CNprodremaining,
+  cropNtoanim = cropNtoanim,
+  cropNtoanimtotal = cropNtoanimtotal,
+  cropkgtoanimtotal_N = cropkgtoanimtotal_N,
+  NInputs_crops_lrs = NInputs_crops_lrs,
+  NLoads_lrs = NLoads_lrs,
+  NLoads_lrs_sum_kg = NLoads_lrs_sum_kg,
+  NLoads_anim_kgdom = NLoads_anim_kgdom,
+  NLoads_anim_kgimp = NLoads_anim_kgimp,
+  NInputs_mannrcv_kg = NInputs_mannrcv_kg,
+  NLoads_mannrcv_kgpermeat = NLoads_mannrcv_kgpermeat,
+  Nloads_anim_kgpermeatcbw = Nloads_anim_kgpermeatcbw,
+  Nloads_anim_kgperprotcbw = Nloads_anim_kgperprotcbw
   
-  # Filter data for the specified animal
-  animal_data <- data_ordered[data_ordered$animal == animal_label,]
   
-  # Calculate totals for each year
-  totals <- aggregate(totprodkgProt ~ year, data = animal_data, FUN = sum)
-  
-  # Create plot for the specified animal
-  ggplot(data=animal_data, aes(x=animal, y=totprodkgProt)) + 
-    geom_bar(
-      aes(fill = Nsource),
-      stat = "identity",
-      color = "black",  # Add black outline to bars
-      position = "stack",
-      width = 0.7      # Slightly narrower bars for better appearance
-    ) +
-    # Add total values as text on top of each bar
-    geom_text(
-      data = totals,
-      aes(x = 1, y = totprodkgProt, label = format(totprodkgProt, scientific = TRUE, digits = 2)),
-      position = position_stack(vjust = 1.05),
-      size = 3.9,
-      fontface = "bold"  # Make totals bold for better visibility
-    ) +
-    scale_y_continuous(
-      labels = function(x) format(x, scientific = TRUE),
-      expand = expansion(mult = c(0, 0.15))  # Add more space at top for labels
-    ) +
-    scale_x_discrete(labels = NULL) + 
-    scale_fill_manual(values = c(
-      "Fertilizer (national)" = "#780000",
-      "Inorganic Fertilizer (cbw)" = "#C1121F",
-      "Manure Fertilizer (cbw)" = "#CD3E43",
-      "N Fixation (national)" = "#003049",
-      "N Fixation (cbw)" = "#669BBC",
-      "Non-recoverable Manure" = "#FDF0D5"
-    )) +
-    facet_grid(~year) +
-    labs(title = title,
-         x = "",
-         y = "Anthropogenic nitrogen (kg N)") +
-    theme_minimal() +
-    theme(
-      plot.title = element_text(size = 22, hjust = 0.5, face = "bold", margin = margin(b = 12)),
-      plot.background = element_rect(fill = "white", color = NA),
-      legend.title = element_text(color = "black", size = 18, face = "bold"),
-      legend.text = element_text(color = "black", size = 16),
-      axis.text = element_text(size = 16),
-      axis.title.y = element_text(size = 18, face = "bold", margin = margin(r = 12)),
-      strip.text.x = element_text(size = 16, face = "bold"),
-      strip.background = element_rect(fill = "gray95", color = "gray80"),
-      panel.grid.major = element_line(color = "gray90"),
-      panel.grid.minor = element_blank(),  # Remove minor grid lines for cleaner look
-      panel.spacing = unit(1.5, "lines"),  # Add more space between facets
-      plot.margin = margin(t = 10, r = 10, b = 10, l = 10)
-    )
-}
-
-#create_animal_plot4 <- function(data, animal_label, title) {
-  # Order data consistently
-  data_ordered <- with(data, data[order(year, Nsource),])
-  
-  # Filter data for the specified animal
-  animal_data <- data_ordered[data_ordered$animal == animal_label,]
-  
-  # Calculate totals for each year
-  totals <- aggregate(totprodkgProt ~ year, data = animal_data, FUN = sum)
-  
-  # Create plot for the specified animal
-  ggplot(data=animal_data, aes(x=animal, y=totprodkgProt)) + 
-    geom_bar_pattern(
-      aes(pattern = Nsource, fill = Nsource),
-      stat = "identity",
-      color = "black",  # Add black outline to bars
-      pattern_fill = "black",
-      pattern_density = 0.2,
-      pattern_spacing = 0.037,
-      position = "stack",
-      width = 0.7      # Slightly narrower bars for better appearance
-    ) +
-    scale_y_continuous(
-      labels = function(x) format(x, scientific = TRUE),
-      expand = expansion(mult = c(0, 0.15))  # Add more space at top for labels
-    ) +
-    scale_x_discrete(labels = NULL) + 
-    scale_pattern_manual(values = c(
-      "Fertilizer (national)" = "none",
-      "Inorganic Fertilizer (cbw)" = "none",
-      "Manure Fertilizer (cbw)" = "none",
-      "N Fixation (national)" = "circle",
-      "N Fixation (cbw)" = "circle",
-      "Non-recoverable Manure" = "stripe"
-    )) +
-    scale_fill_manual(values = c(
-      "Fertilizer (national)" = "black",
-      "Synthetic Fertilizer (cbw)" = "white",
-      "Manure Fertilizer (cbw)" = "grey",
-      "N Fixation (national)" = "grey",
-      "N Fixation (cbw)" = "white",
-      "Non-recoverable Manure" = "white"
-    )) +
-    facet_grid(~year) +
-    labs(title = title,
-         x = "",
-         y = "kg of N emission") +
-    theme_minimal() +
-    theme(
-      plot.title = element_text(size = 22, hjust = 0.5, face = "bold", margin = margin(b = 12)),
-      plot.background = element_rect(fill = "white", color = NA),
-      legend.title = element_text(color = "black", size = 18, face = "bold"),
-      legend.text = element_text(color = "black", size = 16),
-      axis.text = element_text(size = 16),
-      axis.title.y = element_text(size = 18, face = "bold", margin = margin(r = 12)),
-      strip.text.x = element_text(size = 16, face = "bold"),
-      strip.background = element_rect(fill = "gray95", color = "gray80"),
-      panel.grid.major = element_line(color = "gray90"),
-      panel.grid.minor = element_blank(),  # Remove minor grid lines for cleaner look
-      panel.spacing = unit(1.5, "lines"),  # Add more space between facets
-      plot.margin = margin(t = 10, r = 10, b = 10, l = 10)
-    )
-}
-
-beefcomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[1], "Beef")
-dairycomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[2], "Milk")
-porkcomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[3], "Pork")
-layerscomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[6], "Eggs")
-broilcomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[7], "Chicken")
-turkcomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[8], "Turkey")
-
-figureR4 <- ggarrange(beefcomp4,dairycomp4,porkcomp4,layerscomp4, broilcomp4,turkcomp4,ncol=3, nrow=2, common.legend = TRUE, legend="bottom")
-figureR4
-# For a high-quality PNG
-#ggsave("figureR4_poster.png", figureR4, width = 10, height = 12, units = "in", dpi = 300)
-# Export for poster
-ggsave("figureR4_poster2.png", figureR4, 
-       width = 41.38, height = 25.86, units = "cm", dpi = 600)
-
-create_animal_plot_by_year <- function(data, year_value, title) {
-  # Order data consistently
-  data_ordered <- with(data, data[order(animal, Nsource),])
-  
-  # Filter data for the specified year
-  year_data <- data_ordered[data_ordered$year == year_value,]
-  
-  # Create plot for the specified year with all animals
-  ggplot(data=year_data, aes(x=animal, y=totprodkgProt)) + 
-    geom_bar(
-      aes(fill = Nsource),
-      stat = "identity",
-      color = "black",  # Add black outline to bars
-      position = "stack"
-    ) +
-    scale_y_continuous(labels = function(x) format(x, scientific = TRUE)) +  # Format y-axis labels scientifically
-    scale_fill_manual(values = c(
-      "Fertilizer (national)" = "#780000",       
-      "Fertilizer Inorganic (cbw)" = "#C1121F",  
-      "Fertilizer Manure (cbw)" = "#CD3E43",     
-      "Fixation (national)" = "#003049",         
-      "Fixation (cbw)" = "#669BBC",              
-      "Non-recoverable Manure" = "#FDF0D5"            
-    )) +
-    labs(title = paste(title, year_value),
-         x = "",
-         y = "kg N input") +
-    theme_minimal() +
-    theme(plot.title = element_text(size = 16, hjust = 0.5),
-          legend.title = element_text(color = "black", size = 16, face = "bold"),
-          legend.text = element_text(color = "black", size = 14),
-          axis.text.x = element_text(size = 14, angle = 45, hjust = 1),  # Angled labels for better readability
-          axis.text.y = element_text(size = 14),
-          axis.title.y = element_text(size = 16))
-}
-
-# Get unique years from your dataset
-unique_years <- unique(cmdtcsnapni4$year)
-
-# Create a plot for each year
-year_plot1 <- create_animal_plot_by_year(cmdtcsnapni4, unique_years[1], "Animal Comparison -")
-year_plot2 <- create_animal_plot_by_year(cmdtcsnapni4, unique_years[2], "Animal Comparison -")
-year_plot3 <- create_animal_plot_by_year(cmdtcsnapni4, unique_years[3], "Animal Comparison -")
-year_plot4 <- create_animal_plot_by_year(cmdtcsnapni4, unique_years[4], "Animal Comparison -")
-
-# Arrange all plots in a 2x2 grid with common legend
-figureR4_revised <- ggarrange(year_plot1, year_plot2, year_plot3, year_plot4, 
-                              ncol=2, nrow=2, 
-                              common.legend = TRUE, 
-                              legend="bottom")
-
-# Display the final arrangement
-figureR4_revised
-
-
-create_animal_plot4 <- function(data, animal_label, title, percent_change_data) {
-  # Order data consistently
-  data_ordered <- with(data, data[order(year, Nsource),])
-  
-  # Filter data for the specified animal
-  animal_data <- data_ordered[data_ordered$animal == animal_label,]
-  
-  # Calculate totals for each year
-  totals <- aggregate(totprodkgProt ~ year, data = animal_data, FUN = sum)
-  
-  # Filter percentage change data for the specified animal
-  animal_percent <- percent_change_data[percent_change_data$animal == animal_label,]
-  
-  # Calculate scaling factors for secondary axis
-  max_totprodkgProt <- max(totals$totprodkgProt)
-  max_percent <- max(abs(animal_percent$percent_change)) * 1.2  # Add 20% for padding
-  scaling_factor <- max_totprodkgProt / max_percent
-  
-  # Create plot for the specified animal
-  ggplot(data=animal_data, aes(x=animal, y=totprodkgProt)) + 
-    geom_bar_pattern(
-      aes(pattern = Nsource, fill = Nsource),
-      stat = "identity",
-      color = "black",  # Add black outline to bars
-      pattern_fill = "black",
-      pattern_density = 0.1,
-      pattern_spacing = 0.04,
-      position = "stack",
-      width = 0.7      # Slightly narrower bars for better appearance
-    ) +
-   # Add points to the percentage change line
-    geom_point(
-      data = animal_percent,
-      aes(x = 1, y = percent_change * scaling_factor),
-      color = "red",
-      size = 3,
-      shape = 18
-    ) +
-    # Add percentage values as text
-    geom_text(
-      data = animal_percent,
-      aes(x = 1, y = percent_change * scaling_factor, 
-          label = sprintf("%+.1f%%", percent_change)),
-      color = "red",
-      vjust = -0.8,
-      size = 3.5,
-      fontface = "bold"
-    ) +
-    scale_y_continuous(
-      name = "kg of N emission",
-      labels = function(x) format(x, scientific = TRUE),
-      expand = expansion(mult = c(0, 0.2)),  # Add more space at top for labels
-      sec.axis = sec_axis(
-        ~./scaling_factor, 
-        name = "% Change in Population (Base 2002)",
-        labels = function(x) paste0(x, "%")
-      )
-    ) +
-    scale_x_discrete(labels = NULL) + 
-    scale_pattern_manual(values = c("stripe","circle", "circle", "none", "none", "none")) +
-    scale_fill_manual(values = c("white", "grey", "white", "black", "grey", "white")) +
-    facet_grid(~year) +
-    labs(title = title,
-         x = "") +
-    theme_minimal() +
-    theme(
-      plot.title = element_text(size = 22, hjust = 0.5, face = "bold", margin = margin(b = 12)),
-      plot.background = element_rect(fill = "white", color = NA),
-      legend.title = element_text(color = "black", size = 18, face = "bold"),
-      legend.text = element_text(color = "black", size = 16),
-      axis.text = element_text(size = 16),
-      axis.title.y = element_text(size = 18, face = "bold", color = "black", margin = margin(r = 12)),
-      axis.title.y.right = element_text(size = 18, face = "bold", color = "black", margin = margin(l = 12)),
-      axis.text.y.right = element_text(color = "black"),
-      strip.text.x = element_text(size = 16, face = "bold"),
-      strip.background = element_rect(fill = "gray95", color = "gray80"),
-      panel.grid.major = element_line(color = "gray90"),
-      panel.grid.minor = element_blank(),  # Remove minor grid lines for cleaner look
-      panel.spacing = unit(1.5, "lines"),  # Add more space between facets
-      plot.margin = margin(t = 10, r = 10, b = 10, l = 10)
-    )
-}
-
-# First, calculate the percentage change data using 2002 as baseline
-animpoptotal_percent <- animpoptotal_structured %>%
-  group_by(animal) %>%
-  filter(year>=2002) %>% 
-  mutate(
-    baseline = population[year == 2002],  # Get the 2002 value for each animal
-    percent_change = (population - baseline) / baseline * 100  # Calculate % change
-  ) %>%
-  ungroup()
-
-# Now create your plots with the updated function
-beefcomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[1], "Beef", animpoptotal_percent)
-dairycomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[2], "Milk", animpoptotal_percent)
-porkcomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[3], "Pork", animpoptotal_percent)
-layerscomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[6], "Eggs", animpoptotal_percent)
-broilcomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[7], "Chicken", animpoptotal_percent)
-turkcomp4 <- create_animal_plot4(cmdtcsnapni4, meat_labels[8], "Turkey", animpoptotal_percent)
-
-# Create the combined figure
-figureR4 <- ggarrange(beefcomp4, dairycomp4, porkcomp4, layerscomp4, broilcomp4, turkcomp4, 
-                      ncol=3, nrow=2, common.legend = TRUE, legend="bottom")
-figureR4
-
-
+  # Add more variables as needed:
+  # another_variable = another_variable,
+  # yet_another = yet_another
+)
+# At the end of your scenario runs, save the results:
+save_scenario_results(
+  scenario_name = CURRENT_SCENARIO,
+  variable_list = variable_list
+)

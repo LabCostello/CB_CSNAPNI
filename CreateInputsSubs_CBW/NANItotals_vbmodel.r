@@ -20,11 +20,11 @@ read_sheet3 = 'Ag_N_Fix'
 read_sheet4 = 'Food_Feed_N'
 read_sheet5 = 'Non_Food_Crops'
 
-data1 = as.matrix(read_excel(read_file, sheet = read_sheet1))
-data2 = as.matrix(read_excel(read_file, sheet = read_sheet2))
-data3 = as.matrix(read_excel(read_file, sheet = read_sheet3))
-data4 = as.matrix(read_excel(read_file, sheet = read_sheet4))
-data5 = as.matrix(read_excel(read_file, sheet = read_sheet5))
+data1 = as.matrix(read_excel(read_file, sheet = read_sheet1, .name_repair = "unique_quiet"))
+data2 = as.matrix(read_excel(read_file, sheet = read_sheet2, .name_repair = "unique_quiet"))
+data3 = as.matrix(read_excel(read_file, sheet = read_sheet3, .name_repair = "unique_quiet"))
+data4 = as.matrix(read_excel(read_file, sheet = read_sheet4, .name_repair = "unique_quiet"))
+data5 = as.matrix(read_excel(read_file, sheet = read_sheet5, .name_repair = "unique_quiet"))
 
 data_range1 = data1[,2:5] #exclude some cells
 data_range2 = data2[,2:19] #exclude some cells

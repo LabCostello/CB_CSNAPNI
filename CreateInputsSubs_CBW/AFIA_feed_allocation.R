@@ -14,7 +14,7 @@ read_file = 'RawData/Diet-AFIA.csv'
 #crop forage/grain classifications ([10] grain?)
 #citations in cropdata_master.xlsx
 #key in cropdata_key.txt
-cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,20)))
+cropdata = t(array(scan("InputFiles_CBW/cropdata.txt", quiet = TRUE), c(18,20)))
 
 dmprop=cropdata[,1]
 Nperdm=cropdata[,2]
@@ -108,15 +108,33 @@ AFIA_df <- AFIA_df_sum
 for (i in 1:24) {
   AFIA_df[,i+1] <- AFIA_df[,i+1]*c_dm[i]*c_ncindm[i]}
 
-#AFIA_df_percent <- AFIA_df[,2:25]/rowSums(AFIA_df[,2:25])
-AFIA_df_percent <- AFIA_df[,-c(1,4,7,9,16,17,18,19,20)]/rowSums(AFIA_df[,-c(1,4,7,9,16,17,18,19,20)])
+AFIA_df_percent <- AFIA_df[,2:25]/rowSums(AFIA_df[,2:25])
+#AFIA_df_percent <- AFIA_df[,-c(1,4,7,9,16,17,18,19,20)]/rowSums(AFIA_df[,-c(1,4,7,9,16,17,18,19,20)])
 
 
-animNreq_AFIA <- c(animNreq[1],animNreq[8],animNreq[2],animNreq[4],animNreq[18],animNreq[5],animNreq[17],animNreq[9])
-diet <- AFIA_df_percent
-for (i in 1:8) {diet[i,] <- AFIA_df_percent[i,]*animNreq_AFIA[i]}
+diet <- rbind(AFIA_df_percent[1,], #fattened cattle
+                   AFIA_df_percent[3,], #milk cow
+                   AFIA_df_percent[4,], #hogs for breeding
+                   AFIA_df_percent[4,], #hogs for slaughter
+                   AFIA_df_percent[6,], #chicken layers
+                   AFIA_df_percent[8,], #breeding turkeys
+                   AFIA_df_percent[6,],  #chicken pullets
+                   AFIA_df_percent[2,], #chicken broilers
+                   AFIA_df_percent[8,], #slaughter turkeys
+                   AFIA_df_percent[1,], #beef breeding herd
+                   AFIA_df_percent[1,], #beef calves
+                   AFIA_df_percent[3,], #dairy calves
+                   AFIA_df_percent[1,], #beef heifers
+                   AFIA_df_percent[3,], #dairy heifers
+                   AFIA_df_percent[1,], #beef stockers
+                   AFIA_df_percent[3,], #dairy stockers
+                   AFIA_df_percent[7,], #sheep
+                   AFIA_df_percent[5,], #horses
+                   AFIA_df_percent[7,])
 
-rownames(diet) <- AFIA_df_sum[,1]
+for (i in 1:19) {diet[i,] <- diet[i,]*animNreq[i]}
+
+rownames(diet) <- animalnames
 
 diet_crops_model <- diet
 
@@ -133,16 +151,19 @@ diet_crops_model$'sorghum for grain' <- 0
 diet_crops_model$'sorghum for silage' <- 0
 diet_crops_model$wr <- 0
 
+diet_crops_alternative <- diet_crops_model[,c(3,6,8,9,11,15,16,17,18)]
+diet_crops_model <- diet_crops_model[,c(1,20,4,5,27,34,35,30,29,21,22,26,32,31,11,33,28,36,24,23,2)]
+#diet_crops_model <- diet_crops_model[,c(1,12,3,4,19,26,27,22,21,13,14,18,24,23,9,25,20,28,16,15,2)]
 
-#diet_crops_model <- diet_crops_model[,c(1,20,4,5,27,34,35,30,29,21,22,26,32,31,11,33,28,36,24,23,2)]
-diet_crops_model <- diet_crops_model[,c(1,12,3,4,19,26,27,22,21,13,14,18,24,23,9,25,20,28,16,15,2)]
 colnames(diet_crops_model) <- c('corn.grain','corn.silage','wheat','oats','barley','sorghum for grain','sorghum for silage','potatoes','rye','alfalfa hay','other hay','soybeans','cropland pasture','noncropland pasture','rice','peanuts','grass','winter rye','CGF','CGM','DGS')
 # Feeding winter rye silage just to dairy and beef
 if (wr_use == 2 & wr_scenario==1) {
-  diet_crops_model$`winter rye` <- c((diet_crops_model$`alfalfa hay`[1]+diet_crops_model$corn.silage[1])*0.5,0,(diet_crops_model$`alfalfa hay`[3]+diet_crops_model$corn.silage[3])*0.5,0,0,0,0,0) 
-  diet_crops_model$corn.silage <- diet_crops_model$corn.silage*0.5 
-  diet_crops_model$`alfalfa hay` <-diet_crops_model$`alfalfa hay`*0.5
-  }
+  for (i in 1:19) {
+    diet_crops_model$`winter rye`[i] <- (diet_crops_model$`alfalfa hay`[i]+diet_crops_model$corn.silage[i])*0.5
+    diet_crops_model$corn.silage[i] <- diet_crops_model$corn.silage[i]*0.5 
+    diet_crops_model$`alfalfa hay`[i] <-diet_crops_model$`alfalfa hay`[i]*0.5
+  }}
+
 # I antecipate a problem here in the case we have low amount of adoption of winter rye, so we would have less than we can offer for the animals. Idk the effects to the model. Maybe will be solved in Mprodimpacts...
 diet_crops_model <- as.matrix(diet_crops_model)
 

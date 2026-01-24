@@ -1,0 +1,128 @@
+---
+title: "Results and Discussions"
+author: "Lucas Casseres"
+date: "2025-12-09"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading packages
+```{r load-packages}
+packagesused <- c('data.table','dplyr','EnvStats','fitdistrplus','knitr','ggplot2','patchwork','plotly','readxl','rnassqs','sf','stringr','tidyverse','scales')
+
+pacman::p_load(char = packagesused)
+```
+
+## Setting important parameters
+```{r set-parameters}
+selected_crops <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,16,19,20)
+selected_years <- 4:6
+```
+
+##
+
+## First Result -  Total impact per commodity category graph for CSNANI with colors
+```{r first-result, fig.dim=c(1060, 821)}
+create_animal_plot4 <- function(data, animal_label, title) {
+  # Order data consistently
+  data_ordered <- with(data, data[order(year, Nsource),])
+  
+  # Filter data for the specified animal
+  animal_data <- data_ordered[data_ordered$animal == animal_label,]
+  
+  # Calculate totals for each year
+  totals <- aggregate(totprodkgProt ~ year, data = animal_data, FUN = sum)
+  
+  # Create plot for the specified animal
+  ggplot(data=animal_data, aes(x=animal, y=totprodkgProt)) + 
+    geom_bar(
+      aes(fill = Nsource),
+      stat = "identity",
+      color = "black",  # Add black outline to bars
+      position = "stack",
+      width = 0.7      # Slightly narrower bars for better appearance
+    ) +
+    # Add total values as text on top of each bar
+    geom_text(
+      data = totals,
+      aes(x = 1, y = totprodkgProt, label = format(totprodkgProt, scientific = FALSE, digits = 2)),
+      position = position_stack(vjust = 1.05),
+      size = 3.9,
+      fontface = "bold"  # Make totals bold for better visibility
+    ) +
+    scale_y_continuous(
+      labels = function(x) format(x, scientific = FALSE),
+      expand = expansion(mult = c(0, 0.15))  # Add more space at top for labels
+    ) +
+    scale_x_discrete(labels = NULL) + 
+    scale_fill_manual(values = c(
+      "Fertilizer (national)" = "#780000",
+      "Inorganic Fertilizer (cbw)" = "#C1121F",
+      "Manure Fertilizer (cbw)" = "#CD3E43",
+      "N Fixation (national)" = "#003049",
+      "N Fixation (cbw)" = "#669BBC",
+      "Manure Management" = "#FDF0D5"
+    ), labels = labels) +
+    facet_grid(~year) +
+    labs(title = title,
+         x = "",
+         y= "Total N input (million kg N)")+
+         #y = "Anthropogenic nitrogen (kg N)") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 22, hjust = 0.5, face = "bold", margin = margin(b = 12)),
+      plot.background = element_rect(fill = "white", color = NA),
+      legend.title = element_text(color = "black", size = 18, face = "bold"),
+      legend.text = element_text(color = "black", size = 16),
+      axis.text = element_text(size = 16),
+      axis.title.y = element_text(size = 18, face = "bold", margin = margin(r = 12)),
+      strip.text.x = element_text(size = 16, face = "bold"),
+      strip.background = element_rect(fill = "gray95", color = "gray80"),
+      panel.grid.major = element_line(color = "gray90"),
+      panel.grid.minor = element_blank(),  # Remove minor grid lines for cleaner look
+      panel.spacing = unit(1.5, "lines"),  # Add more space between facets
+      plot.margin = margin(t = 10, r = 10, b = 10, l = 10)
+    )
+}
+
+data <- cmdtcsnapni4[cmdtcsnapni4$year>2007,]
+data$totprodkgProt <- data$totprodkgProt/1000000
+beefcomp4 <- create_animal_plot4(data, meat_labels[1], "Beef")
+dairycomp4 <- create_animal_plot4(data, meat_labels[2], "Milk")
+porkcomp4 <- create_animal_plot4(data, meat_labels[3], "Pork")
+layerscomp4 <- create_animal_plot4(data, meat_labels[6], "Eggs")
+broilcomp4 <- create_animal_plot4(data, meat_labels[7], "Chicken")
+turkcomp4 <- create_animal_plot4(data, meat_labels[8], "Turkey")
+
+figureR4 <- ggarrange(beefcomp4,dairycomp4,porkcomp4,layerscomp4, broilcomp4,turkcomp4,ncol=3, nrow=2, common.legend = TRUE, legend="bottom")
+figureR4
+```
+
+## Second Result -  Total impact per commodity category graph for CSNANI with colors
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

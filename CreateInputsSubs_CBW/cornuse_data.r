@@ -11,9 +11,9 @@ import_yrs = c("1997/98", "2002/03", "2007/08", "2012/13", "2017/18") #data year
 read_sheet1 = 'SuppandDisap' #corn supply and disappearance (million bushels)
 read_sheet2 = 'FoodIndUse' #corn for food, seed, and industrial use (million bushels)
 read_sheet3 = 'DDGS' #Dried distillers grain with solubles: Supply and disappearance (million metric tons)
-data1 = as.matrix(read_excel(read_file, sheet = read_sheet1))
-data2 = as.matrix(read_excel(read_file, sheet = read_sheet2))
-data3 = as.matrix(read_excel(read_file, sheet = read_sheet3))
+data1 = as.matrix(read_excel(read_file, sheet = read_sheet1, .name_repair = "unique_quiet"))
+data2 = as.matrix(read_excel(read_file, sheet = read_sheet2, .name_repair = "unique_quiet"))
+data3 = as.matrix(read_excel(read_file, sheet = read_sheet3, .name_repair = "unique_quiet"))
 year_col = 1
   
 #Specify number and names of corn use categories
@@ -94,6 +94,9 @@ cornusename[6] = "Dry milling ethanol"
 # }
 
 cornuse <- cbind(cornuse,cornuse[,5])
+
+rownames(cornuse) <- cornuse_key[2:12,1]
+colnames(cornuse) <- c("1997/98", "2002/03", "2007/08", "2012/13", "2017/18", "2022/23") #"2017/18" was used for 2022/23
 
 # write text files
 write_name = "InputFiles_CBW/cornuse.txt"

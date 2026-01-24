@@ -21,7 +21,13 @@ kgmanurePrec450 = array(0,c(n_ws_tbx,n_anims,nyrs))
 kgmanureNcnty = array(0,c(n_cnty,n_anims,nyrs))  
 kgmanurePcnty = array(0,c(n_cnty,n_anims,nyrs))  
 kgmanureNlrs = array(0,c(n_ws_tbx,n_anims,nyrs))  
-kgmanurePlrs = array(0,c(n_ws_tbx,n_anims,nyrs))  
+kgmanurePlrs = array(0,c(n_ws_tbx,n_anims,nyrs)) 
+
+# County arrays
+dimnames(kgmanureNrec) <- dimnames(kgmanurePrec) <- dimnames(kgmanureNcnty) <- dimnames(kgmanurePcnty) <- create_cbw_dimnames("counties", "animals", "year")
+
+# LRS arrays
+dimnames(kgmanureNrec450) <- dimnames(kgmanurePrec450) <- dimnames(kgmanureNlrs) <- dimnames(kgmanurePlrs) <- create_cbw_dimnames("lrs", "animals", "year")
 
 manurefactor2 <- array(0,c(n_anims,nyrs)) # Taken from Kellogs 2014. Values for 2022 are values taken from 2017
 manurefactor2[1,] <- c(60,64,68,72,76,76)
@@ -80,9 +86,12 @@ for(n in 1:nyrs){
 
 kgmanureNrec450inorganic <- array(0,c(1925,19,6))
 
+#ammonium_concentration <- c(0.52,0.57,0.75,0.75,0.26,0.26,0.26,0.26,0.26,0.52,0.52,0.57,0.52,0.57,0.52,0.57,0,0,0) # Inorganic fraction # https://blog-crop-news.extension.umn.edu/2024/09/nitrogen-availability-of-different.html (For now)
+ammonium_concentration <- c(0.31,0.5,0.65,0.65,0.16,0.2,0.16,0.15,0.2,0.18,0.18,0.2,0.18,0.2,0.18,0.2,0,0,0) # Processed based on Table 1.2-10 in Agronomy Guide
+
 for (n in 1:6) {
   for (i in 1:1925) {
-    kgmanureNrec450inorganic[i,,n] <- kgmanureNrec450[i,,n]*c(0.52,0.57,0.75,0.75,0.26,0.26,0.26,0.26,0.26,0.52,0.52,0.57,0.52,0.57,0.52,0.57,0,0,0)
+    kgmanureNrec450inorganic[i,,n] <- kgmanureNrec450[i,,n]*ammonium_concentration
   }
 }
 
@@ -91,7 +100,7 @@ kgmanureNrec450organic <- array(0,c(1925,19,6))
 
 for (n in 1:6) {
   for (i in 1:1925) {
-    kgmanureNrec450organic[i,,n] <- kgmanureNrec450[i,,n]*(1-c(0.52,0.57,0.75,0.75,0.26,0.26,0.26,0.26,0.26,0.52,0.52,0.57,0.52,0.57,0.52,0.57,0,0,0))
+    kgmanureNrec450organic[i,,n] <- kgmanureNrec450[i,,n]*(1-ammonium_concentration)
   }
 }
 
@@ -110,7 +119,7 @@ kgmanureNrec450springinorgplantavailable <- array(0,c(1925,19,6))
 
 for (n in 1:6) {
   for (i in 1:1925) {
-    kgmanureNrec450springinorgplantavailable[i,,n] <- kgmanureNrec450springinorg[i,,n]*c(0.1,0.1,0.1,0.1,0.2,0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1)
+    kgmanureNrec450springinorgplantavailable[i,,n] <- kgmanureNrec450springinorg[i,,n]*c(0.1,0.1,0.1,0.1,0.2,0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1) # Table 1.2-12 >7 days to incorporation (no-till)
   }
 }
 
@@ -119,8 +128,8 @@ kgmanureNrec450springorgplantavailable <-array(0,c(1925,19,6))
 
 for (n in 1:6) {
   for (i in 1:1925) {
-    kgmanureNrec450fallorgplantavailable[i,,n] <- kgmanureNrec450fallorg[i,,n]*0.57
-    kgmanureNrec450springorgplantavailable[i,,n] <- kgmanureNrec450springorg[i,,n]*0.57
+    kgmanureNrec450fallorgplantavailable[i,,n] <- kgmanureNrec450fallorg[i,,n]*c(0.25,0.25,0.3,0.3,0.3,0.25,0.3,0.3,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25) # Table 1.2-12.agronomy guide for reference (winter crop)
+    kgmanureNrec450springorgplantavailable[i,,n] <- kgmanureNrec450springorg[i,,n]*c(0.35,0.35,0.5,0.5,0.5,0.35,0.5,0.5,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35) # Table 1.2-12.agronomy guide for reference (summer)
   }
 }
 
@@ -132,6 +141,7 @@ for (n in 1:6) {
 }
 
 # Total manure available per LRS over the 6 years
-kgmanureNlrsavailableplantavailable <- apply(kgmanureNrecplantLRS[,c(1:5,7,8,10:16),],c(1,3),sum)
-kgmanureNlrsrecovnonavailableplant <- apply(kgmanureNrec450[,c(1:5,7,8,10:16),]-kgmanureNrecplantLRS[,c(1:5,7,8,10:16),],c(1,3),sum)
+animal_manure <- 1:16 #c(1:5,7,8,10:16) before
+kgmanureNlrsavailableplantavailable <- apply(kgmanureNrecplantLRS[,animal_manure,],c(1,3),sum)
+kgmanureNlrsrecovnonavailableplant <- apply(kgmanureNrec450[,animal_manure,]-kgmanureNrecplantLRS[,animal_manure,],c(1,3),sum)
 # References: Kellogs (2014) and Agronomy Guide (2019)

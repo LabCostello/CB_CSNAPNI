@@ -19,7 +19,7 @@ cropusedom = cropprodtotal-exports
 #crop forage/grain classifications ([10] grain?)
 #citations in cropdata_master.xlsx
 #key in cropdata_key.txt
-cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,21)))
+cropdata = t(array(scan("InputFiles_CBW/cropdata.txt", quiet = TRUE), c(18,21)))
 
 #Load anim data (calculated for silage as grain) for
 #animal forage/grain ratios ([3] prop N from grain,	[4] prop N from forage,	[5] prop P from grain,	[6] prop P from forage)
@@ -27,12 +27,12 @@ cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,21)))
 #citations in animdata_master.xlsx
 #key in animdata_alloc_key.txt (Report_correction: No such file exists) refers to animfeedallocdata_key.txt
 #animdata_alloc = t(array(scan("InputFiles_CBW/animfeedallocdataSG.txt"), c(6,19)))
-animdata_alloc = t(array(scan("InputFiles_CBW/animfeedallocdataSF_CBW.txt"), c(6,19)))
+animdata_alloc = t(array(scan("InputFiles_CBW/animfeedallocdataSF_CBW.txt", quiet = TRUE), c(6,19)))
 
 #Read DGS consumption estimations
 #data comes from RFA sources (cited in DGSalloc_master.xlsx)
 #key in DGSalloc_key.txt
-DGSalloc = t(array(scan("InputFiles_CBW/DGSalloc.txt"), c(5,19)))
+DGSalloc = t(array(scan("InputFiles_CBW/DGSalloc.txt", quiet = TRUE), c(5,19)))
 DGSalloc <- cbind(DGSalloc,DGSalloc[,5])
   
 #CROPS
@@ -180,46 +180,12 @@ for(n in 1:data_yrs){
   # Plugged
   #cropNtoanim[2,,n] <- c(diet[3,1],diet[3,20],0,0,0,0,0,0,0,diet[3,21],diet[3,22],(diet[3,7]+diet[3,12]+diet[3,14]),0,0,0,0,0,diet[3,24],diet[3,23],diet[3,2])
   
-  #dairy
-  for (i in c(2,12,14,16)) {
-    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[3,])
+  for (i in 1:19) {
+    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[i,])
     cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
-    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[3,])*animpoptotal[i,n]/Nincrop
+    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[i,])*animpoptotal[i,n]/Nincrop
   }
 
-  #beef
-  for (i in c(1,10,11,13,15)) {
-    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[1,])
-    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
-    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[1,])*animpoptotal[i,n]/Nincrop
-  }
-  
-  #broilers
-  for (i in c(7,8)) {
-    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[2,])
-    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
-    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[2,])*animpoptotal[i,n]/Nincrop
-  }
-  
-  #hogs
-  for (i in c(3,4)) {
-    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[4,])
-    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
-    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[4,])*animpoptotal[i,n]/Nincrop
-  }
-  
-  #layers
-  cropNtoanim[5,,n] <- unlist(as.matrix(diet_crops_model)[6,])
-  cropNtoanimtotal[5,,n] <- cropNtoanim[5,,n]*animpoptotal[5,n]
-  cropkgtoanimtotal_N[5,,n] <- unlist(as.matrix(diet_crops_model)[6,])*animpoptotal[5,n]/Nincrop
-  
-  #turkey
-  for (i in c(6,9)) {
-    cropNtoanim[i,,n] <- unlist(as.matrix(diet_crops_model)[8,])
-    cropNtoanimtotal[i,,n] <- cropNtoanim[i,,n]*animpoptotal[i,n]
-    cropkgtoanimtotal_N[i,,n] <- unlist(as.matrix(diet_crops_model)[8,])*animpoptotal[i,n]/Nincrop
-  }
-  
   #since the N-based allocation model is to be used, need to use cropkgtoanimtotal_N to re-calculate cropPtoanimtotal
   #crop P to anim = total kg of crop allocated * P content of the crop
   for(i in 1:length(Pincrop)){

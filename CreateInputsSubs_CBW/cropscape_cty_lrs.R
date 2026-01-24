@@ -21,7 +21,7 @@ read_and_preprocess_cdl <- function(file_path, code_class_cdl, lrs_shp) {
   
   return(list(lrs_cdl,cbw_lrs_cdl))
 }
-#Variables
+#Variables and file paths ####
 code_class_cdl <- read_excel("RawData/code_class_cdl.xlsx")
 table2007 <- "RawData/Table_LRS_CDL_2008.xlsx"
 table2012 <- "RawData/Table_LRS_CDL_2012.xlsx"
@@ -87,6 +87,21 @@ percent_corn_in_cbw <- percent_corn_lrs[percent_corn_lrs$REGION == "Chesapeake B
 percent_corn_in_cbw <- percent_corn_in_cbw[,-c(4)]
 percent_corn_in_cbw[is.na(percent_corn_in_cbw)] <- 0
 percent_corn_in_cbw2007 <- percent_corn_in_cbw
+
+### Corn + Alfalfa Allocation ###
+dummy_corn_alfalfa <- cdl_cropland_aggregated
+dummy_corn_alfalfa$CORN_ALFALFA <- lrs_cdl_2007[,"Corn"] + lrs_cdl_2007[,22]  # Corn + Alfalfa
+
+cdl_corn_alfalfa_aggregated_fips <- dummy_corn_alfalfa %>% group_by(FIPS) %>% summarize(CORN_ALFALFA = sum(CORN_ALFALFA))
+
+dummy_corn_alfalfa <- merge(dummy_corn_alfalfa, cdl_corn_alfalfa_aggregated_fips, by="FIPS")
+
+dummy_corn_alfalfa <- cbind(dummy_corn_alfalfa, "percentage.corn_alfalfa2007" = dummy_corn_alfalfa$CORN_ALFALFA.x/dummy_corn_alfalfa$CORN_ALFALFA.y)
+percent_corn_alfalfa_lrs <- dummy_corn_alfalfa[,c("OBJECTID","LNDRVRSEG","FIPS","REGION","percentage.corn_alfalfa2007")]
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_lrs[percent_corn_alfalfa_lrs$REGION == "Chesapeake Bay Watershed",]
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_in_cbw[,-c(4)]
+percent_corn_alfalfa_in_cbw[is.na(percent_corn_alfalfa_in_cbw)] <- 0
+percent_corn_alfalfa_in_cbw2007 <- percent_corn_alfalfa_in_cbw
 
 ### Crop Allocation ##
 # This section corresponds to allocation of crop to the land river segments. 
@@ -199,6 +214,22 @@ percent_corn_in_cbw <- percent_corn_in_cbw[,-c(4)]
 percent_corn_in_cbw[is.na(percent_corn_in_cbw)] <- 0
 percent_corn_in_cbw2012 <- percent_corn_in_cbw
 
+### Corn + Alfalfa Allocation ###
+dummy_corn_alfalfa <- cdl_cropland_aggregated
+dummy_corn_alfalfa$CORN_ALFALFA <- lrs_cdl_2012[,"Corn"] + lrs_cdl_2012[,22]  # Corn + Alfalfa
+
+cdl_corn_alfalfa_aggregated_fips <- dummy_corn_alfalfa %>% group_by(FIPS) %>% summarize(CORN_ALFALFA = sum(CORN_ALFALFA))
+
+dummy_corn_alfalfa <- merge(dummy_corn_alfalfa, cdl_corn_alfalfa_aggregated_fips, by="FIPS")
+
+dummy_corn_alfalfa <- cbind(dummy_corn_alfalfa, "percentage.corn_alfalfa2012" = dummy_corn_alfalfa$CORN_ALFALFA.x/dummy_corn_alfalfa$CORN_ALFALFA.y)
+percent_corn_alfalfa_lrs <- dummy_corn_alfalfa[,c("OBJECTID","LNDRVRSEG","FIPS","REGION","percentage.corn_alfalfa2012")]
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_lrs[percent_corn_alfalfa_lrs$REGION == "Chesapeake Bay Watershed",]
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_in_cbw[,-c(4)]
+percent_corn_alfalfa_in_cbw[is.na(percent_corn_alfalfa_in_cbw)] <- 0
+percent_corn_alfalfa_in_cbw2012 <- percent_corn_alfalfa_in_cbw
+
+
 ### Crop Allocation ##
 # This section corresponds to allocation of crop to the land river segments. 
 Corn_pixels <- rowSums(lrs_cdl_2012[,grep("Corn",names(lrs_cdl_2012))])
@@ -310,6 +341,21 @@ percent_corn_in_cbw <- percent_corn_lrs[percent_corn_lrs$REGION == "Chesapeake B
 percent_corn_in_cbw <- percent_corn_in_cbw[,-c(4)]
 percent_corn_in_cbw[is.na(percent_corn_in_cbw)] <- 0
 percent_corn_in_cbw2017 <- percent_corn_in_cbw
+
+### Corn + Alfalfa Allocation ###
+dummy_corn_alfalfa <- cdl_cropland_aggregated
+dummy_corn_alfalfa$CORN_ALFALFA <- lrs_cdl_2017[,3] + lrs_cdl_2017[,21]  # Corn + Alfalfa
+
+cdl_corn_alfalfa_aggregated_fips <- dummy_corn_alfalfa %>% group_by(FIPS) %>% summarize(CORN_ALFALFA = sum(CORN_ALFALFA))
+
+dummy_corn_alfalfa <- merge(dummy_corn_alfalfa, cdl_corn_alfalfa_aggregated_fips, by="FIPS")
+
+dummy_corn_alfalfa <- cbind(dummy_corn_alfalfa, "percentage.corn_alfalfa2017" = dummy_corn_alfalfa$CORN_ALFALFA.x/dummy_corn_alfalfa$CORN_ALFALFA.y)
+percent_corn_alfalfa_lrs <- dummy_corn_alfalfa[,c("OBJECTID","LNDRVRSEG","FIPS","REGION","percentage.corn_alfalfa2017")]
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_lrs[percent_corn_alfalfa_lrs$REGION == "Chesapeake Bay Watershed",]
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_in_cbw[,-c(4)]
+percent_corn_alfalfa_in_cbw[is.na(percent_corn_alfalfa_in_cbw)] <- 0
+percent_corn_alfalfa_in_cbw2017 <- percent_corn_alfalfa_in_cbw
 
 ### Crop Allocation ##
 # This section corresponds to allocation of crop to the land river segments. 
@@ -424,6 +470,21 @@ percent_corn_in_cbw <- percent_corn_in_cbw[,-c(4)]
 percent_corn_in_cbw[is.na(percent_corn_in_cbw)] <- 0
 percent_corn_in_cbw2022 <- percent_corn_in_cbw
 
+### Corn + Alfalfa Allocation ###
+dummy_corn_alfalfa <- cdl_cropland_aggregated
+dummy_corn_alfalfa$CORN_ALFALFA <- lrs_cdl_2022[,3] + lrs_cdl_2022[,21]  # Corn + Alfalfa
+
+cdl_corn_alfalfa_aggregated_fips <- dummy_corn_alfalfa %>% group_by(FIPS) %>% summarize(CORN_ALFALFA = sum(CORN_ALFALFA))
+
+dummy_corn_alfalfa <- merge(dummy_corn_alfalfa, cdl_corn_alfalfa_aggregated_fips, by="FIPS")
+
+dummy_corn_alfalfa <- cbind(dummy_corn_alfalfa, "percentage.corn_alfalfa2022" = dummy_corn_alfalfa$CORN_ALFALFA.x/dummy_corn_alfalfa$CORN_ALFALFA.y)
+percent_corn_alfalfa_lrs <- dummy_corn_alfalfa[,c("OBJECTID","LNDRVRSEG","FIPS","REGION","percentage.corn_alfalfa2022")]
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_lrs[percent_corn_alfalfa_lrs$REGION == "Chesapeake Bay Watershed",]
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_in_cbw[,-c(4)]
+percent_corn_alfalfa_in_cbw[is.na(percent_corn_alfalfa_in_cbw)] <- 0
+percent_corn_alfalfa_in_cbw2022 <- percent_corn_alfalfa_in_cbw
+
 ### Crop Allocation ##
 # This section corresponds to allocation of crop to the land river segments. 
 Corn_pixels <- rowSums(lrs_cdl_2022[,grep("Corn",names(lrs_cdl_2022))])
@@ -500,7 +561,7 @@ percent_crop_in_cbw <- data.frame("FIPS"=percent_crop_in_cbw$FIPS.x,
                                   "percentage2007"=percent_crop_in_cbw$percentage2007,
                                   "percentage2012"=percent_crop_in_cbw$percentage2012,
                                   "percentage2017"=percent_crop_in_cbw$percentage2017,
-                                  "percentage2017"=percent_crop_in_cbw$percentage2022)
+                                  "percentage2022"=percent_crop_in_cbw$percentage2022)
 
 percent_crop_in_cbw <- percent_crop_in_cbw %>% arrange(FIPS,LNDRVRSEG) # To keep the order of FIPS and LRS the same as original variables
 
@@ -516,6 +577,23 @@ percent_corn_in_cbw <- data.frame("FIPS"=percent_corn_in_cbw$FIPS.x,
                                   "percentage2022c"=percent_corn_in_cbw$percentage.corn2022)
 
 percent_corn_in_cbw <- percent_corn_in_cbw %>% arrange(FIPS,LNDRVRSEG) # To keep the order of FIPS and LRS the same as original variables
+
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_in_cbw2007 %>% 
+  left_join(percent_corn_alfalfa_in_cbw2012, by="LNDRVRSEG") %>% 
+  left_join(percent_corn_alfalfa_in_cbw2017, by="LNDRVRSEG") %>% 
+  left_join(percent_corn_alfalfa_in_cbw2022, by="LNDRVRSEG")
+
+percent_corn_alfalfa_in_cbw <- data.frame("FIPS"=percent_corn_alfalfa_in_cbw$FIPS.x,
+                                          "OBJECTID"=percent_corn_alfalfa_in_cbw$OBJECTID.x,
+                                          "LNDRVRSEG"=percent_corn_alfalfa_in_cbw$LNDRVRSEG,
+                                          "percentage1997ca"=percent_corn_alfalfa_in_cbw$percentage.corn_alfalfa2007,
+                                          "percentage2002ca"=percent_corn_alfalfa_in_cbw$percentage.corn_alfalfa2007,
+                                          "percentage2007ca"=percent_corn_alfalfa_in_cbw$percentage.corn_alfalfa2007,
+                                          "percentage2012ca"=percent_corn_alfalfa_in_cbw$percentage.corn_alfalfa2012,
+                                          "percentage2017ca"=percent_corn_alfalfa_in_cbw$percentage.corn_alfalfa2017,
+                                          "percentage2022ca"=percent_corn_alfalfa_in_cbw$percentage.corn_alfalfa2022)
+
+percent_corn_alfalfa_in_cbw <- percent_corn_alfalfa_in_cbw %>% arrange(FIPS, LNDRVRSEG) # To keep the order of FIPS and LRS the same as original variables
 
 # Crop allocation
 lrs_cdl_percents <- array(0, c(2058,16,n_years))

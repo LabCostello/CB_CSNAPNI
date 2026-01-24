@@ -10,6 +10,7 @@ data <- aggregate(data$Area, by=list(data$FIPS),FUN = sum)
 areakm2_cnty = as.numeric(data[1:n_cnty,2]) # 197 counties within CBW
 names(areakm2_cnty) <- data[1:n_cnty,1] # FIPS
 
+# Area of all counties that are part of the CBW, but considering their part outside the CBW (The FIPS below don't match with the previous one because it has 206 counties not 197)
 areakm2_cnty_orig <- data.frame(FIPS=lrs_shp$FIPS, Area = lrs_shp$Acres*0.0040468564224)
 areakm2_cnty_orig <- aggregate(areakm2_cnty_orig$Area, by=list(areakm2_cnty_orig$FIPS),FUN = sum)
 areakm2_cnty_orig2 <- areakm2_cnty_orig[areakm2_cnty_orig$Group.1 %in% FIPS,]

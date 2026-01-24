@@ -33,6 +33,9 @@ feedpermeat = array(0,c(n_meats,n_crops,nyrs)) # kg crop per kg of edible animal
 # omitted from this study, though animal-related values are still
 # calculated for these animals, they are not to be used.
 feedN4meat = array(0,c(n_meats,n_crops,nyrs))
+byprodNpermeat=byprodN4meat = array(0,c(n_meats,9,nyrs))
+byprodN4animtot = array(0,c(19,9,nyrs))
+for (n in 1:6){for (i in 1:19) {byprodN4animtot[i,,n] = unlist(diet_crops_alternative[i,])*sum(animpopcnty[,i,n])}}
 feedP4meat = array(0,c(n_meats,n_crops,nyrs))
 animNreqmeat = array(0,c(n_meats,nyrs))
 animPreqmeat = array(0,c(n_meats,nyrs)) 
@@ -100,8 +103,7 @@ feedNpermeatdom <- array(0,c(n_meats,n_crops,nyrs))
 feedNpermeatimp <- array(0,c(n_meats,n_crops,nyrs))
 feedpermeatdom <- array(0,c(n_meats,n_crops,nyrs)) # kg crop per kg of edible animal product, before ADJUSTMENT (if the adjustment is done)
 feedpermeatimp <- array(0,c(n_meats,n_crops,nyrs)) # kg crop per kg of edible animal product, before ADJUSTMENT (if the adjustment is done)
-unitfertNCnational <- as.matrix(read.csv("RawData/unitfertNCnational.csv"))
-unitfertNCnational <- cbind(unitfertNCnational,unitfertNCnational[,5])
+unitfertNCnational <- as.matrix(read.csv("RawData/unitfertNCnational2.csv"))
 
 # impact re-allocation to account for dairy industry beef production (not yet used for anything)
 dairycont = 0.2 # proportion of beef that comes from the dairy industry in the US
@@ -176,6 +178,16 @@ for(n in 1:nyrs){
   feedP4meat[8,,n] = feedP4anim[6,,n] + feedP4anim[9,,n]
   feedP4meat[9,,n] = feedP4anim[19,,n] #goats, feedP4anim[19,,n]
   
+  byprodN4meat[1,,n] <- byprodN4animtot[1,,n] + byprodN4animtot[10,,n] + byprodN4animtot[11,,n] + byprodN4animtot[13,,n] + byprodN4animtot[15,,n]
+  byprodN4meat[2,,n] <- byprodN4animtot[2,,n] + byprodN4animtot[12,,n] + byprodN4animtot[14,,n] + byprodN4animtot[16,,n]
+  byprodN4meat[3,,n] <- byprodN4animtot[3,,n] + byprodN4animtot[4,,n]
+  byprodN4meat[4,,n] <- byprodN4animtot[17,,n] #sheep
+  byprodN4meat[5,,n] <- byprodN4animtot[18,,n] #horses...maybe make 0 also?
+  byprodN4meat[6,,n] <- byprodN4animtot[5,,n]
+  byprodN4meat[7,,n] <- byprodN4animtot[7,,n] + byprodN4animtot[8,,n]
+  byprodN4meat[8,,n] <- byprodN4animtot[6,,n] + byprodN4animtot[9,,n]
+  byprodN4meat[9,,n] <- byprodN4animtot[19,,n] #goats
+  
   Psupp4meat[1,n] = (((Psupp4anim[1,n] + Psupp4anim[10,n]) + Psupp4anim[11,n]) + Psupp4anim[13,n]) + Psupp4anim[15,n]
   Psupp4meat[2,n] = ((Psupp4anim[2,n] + Psupp4anim[12,n]) + Psupp4anim[14,n]) + Psupp4anim[16,n]
   Psupp4meat[3,n] = Psupp4anim[3,n] + Psupp4anim[4,n]
@@ -212,6 +224,7 @@ for(n in 1:nyrs){
   for(i in 1:n_meats){
     if(totmeat[n,i]>0){
       feedNpermeat[i,,n] = feedN4meat[i,,n] / totmeat[n,i] # normalized by meat production
+      byprodNpermeat[i,,n] = byprodN4meat[i,,n] / totmeat[n,i] # normalized by meat production
       animNreqpermeat[i,n] = animNreqmeat[i,n] / totmeat[n,i] # kg anim req / kg meat
       feedNpermeatdom[i,,n] <- feedN4meatdom[i,,n] / totmeat[n,i] # normalized by meat production
       feedNpermeatimp[i,,n] <- feedN4meatimp[i,,n] / totmeat[n,i] # normalized by meat production
@@ -324,14 +337,14 @@ for(n in 1:nyrs){
   NH3perMkcal[5,n] = 0 #horses
   NH3perMprot[5,n] = 0 #horses
   
-  manureNmeat[,1,n] = (((kgmanureN[,1,n] + kgmanureN[,10,n]) + kgmanureN[,11,n]) + kgmanureN[,13,n]) + kgmanureN[,15,n] - rowSums(kgmanureNrec450[,c(1,10,11,13,15),n]) 
-  manureNmeat[,2,n] = ((kgmanureN[,2,n] + kgmanureN[,12,n]) + kgmanureN[,14,n]) + kgmanureN[,16,n] - rowSums(kgmanureNrec450[,c(2,12,14,16),n])
-  manureNmeat[,3,n] = kgmanureN[,3,n] + kgmanureN[,4,n] - rowSums(kgmanureNrec450[,c(3,4),n])
+  manureNmeat[,1,n] = (((kgmanureN[,1,n] + kgmanureN[,10,n]) + kgmanureN[,11,n]) + kgmanureN[,13,n]) + kgmanureN[,15,n] - rowSums(kgmanureNrec450[,c(1,10,11,13,15),n]) + rowSums(remaining_manure_by_animal[,c(1,10,11,13,15),n]+remaining_manure_nonplant_by_animal[,c(1,10,11,13,15),n])
+  manureNmeat[,2,n] = ((kgmanureN[,2,n] + kgmanureN[,12,n]) + kgmanureN[,14,n]) + kgmanureN[,16,n] - rowSums(kgmanureNrec450[,c(2,12,14,16),n]) + rowSums(remaining_manure_by_animal[,c(2,12,14,16),n]+remaining_manure_nonplant_by_animal[,c(2,12,14,16),n])
+  manureNmeat[,3,n] = kgmanureN[,3,n] + kgmanureN[,4,n] - rowSums(kgmanureNrec450[,c(3,4),n]) + rowSums(remaining_manure_by_animal[,c(3,4),n]+remaining_manure_nonplant_by_animal[,c(3,4),n])
   manureNmeat[,4,n] = 0
   manureNmeat[,5,n] = 0
-  manureNmeat[,6,n] = kgmanureN[,5,n] - kgmanureNrec450[,5,n]
-  manureNmeat[,7,n] = kgmanureN[,7,n] + kgmanureN[,8,n] - rowSums(kgmanureNrec450[,c(7,8),n])
-  manureNmeat[,8,n] = kgmanureN[,6,n] + kgmanureN[,9,n] - rowSums(kgmanureNrec450[,c(6,9),n])
+  manureNmeat[,6,n] = kgmanureN[,5,n] - kgmanureNrec450[,5,n] + (remaining_manure_by_animal[,5,n]+remaining_manure_nonplant_by_animal[,5,n])
+  manureNmeat[,7,n] = kgmanureN[,7,n] + kgmanureN[,8,n] - rowSums(kgmanureNrec450[,c(7,8),n]) + rowSums(remaining_manure_by_animal[,c(7,8),n]+remaining_manure_nonplant_by_animal[,c(7,8),n])
+  manureNmeat[,8,n] = kgmanureN[,6,n] + kgmanureN[,9,n] - rowSums(kgmanureNrec450[,c(6,9),n]) + rowSums(remaining_manure_by_animal[,c(6,9),n]+remaining_manure_nonplant_by_animal[,c(6,9),n])
   manureNmeat[,9,n] = 0
   manureNmeattot[n,] = colSums(manureNmeat[,,n])
   
@@ -384,3 +397,6 @@ for(n in 1:nyrs){
   manurePperprot[5,n] = 0 #horses
 }
 
+
+
+  

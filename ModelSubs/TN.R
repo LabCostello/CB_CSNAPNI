@@ -29,7 +29,7 @@ colnames(TNcmdt) <- c("1997", "2002", "2007", "2012", "2017", "2022")
 TNcmdt <- as.data.frame(TNcmdt)
 
 #breaks=c(0, 500, 500000, 1000000, 1500000, Inf)
-breaks=c(0, 500, 50000, 100000, 150000, Inf)
+breaks=c(0, 5e+03, 5e+04, 5e+05, 5.0e+06, Inf)
 
 TNcmdt$discrete1997 <- cut(TNcmdt[,1], breaks=breaks, include.lowest = TRUE)
 TNcmdt$discrete2002 <- cut(TNcmdt[,2], breaks=breaks, include.lowest = TRUE)
@@ -45,11 +45,105 @@ for(n in 1:nyrs){
 
 cbind(cbw_shp,TNcmdt)
 
-ggplot() +
-  geom_sf(data = cbind(cbw_shp,TNcmdt), aes(fill = discrete2017))+
-  geom_sf(data = ctiescbw_shp, linewidth = 0.9, fill=NA, color = "black")+
-  scale_fill_manual(values = cols, labels = c("< 5.0e+02", "5.0e+02 - 5.0e+05", "5.0e+05 - 1.0e+06", "1.0e+06 - 1.5e+06",  "1.5e+06 - 9.8e+06"))+
-  labs(fill= "Anthropogenic Nitrogen (kg N)")+
-  theme(legend.title = element_text(color = "black", size = 16, face = "bold"),  # Adjust title appearance
-        legend.text = element_text(color = "black", size = 14),
-        axis.text = element_text(size = 14) )  # Adjust number appearance
+consistent_colors <- c(
+  "Very Low\n(0 - 5K)" = "#FFF7EC",    
+  "Low\n(5K - 50K)" = "#FEE8C8",     
+  "Medium\n(50K - 500K)" = "#FDD49E", 
+  "High\n(500K - 5M)" = "#FD8D3C",  
+  "Very High\n(5M - 10M)" = "#D94701"
+)
+library(patchwork)
+
+# First, create all plots without legends (except one to extract the legend from)
+# a <- ggplot() +
+#   geom_sf(data = cbind(cbw_shp,TNcmdt), aes(fill = discrete2002))+
+#   geom_sf(data = ctiescbw_shp,  fill=NA, color = "black")+
+#   scale_fill_manual(values = c("#FFF7EC", "#FEE8C8", "#FDD49E", "#FD8D3C", "#D94701"), 
+#                     labels = c("0 - 5e+03", 
+#                                "5e+03 - 5e+04", 
+#                                "5e+04 - 5e+05", 
+#                                "5e+05 - 5e+06",
+#                                "5e+06 - 1e+07"))+
+#   labs(fill= "Anthropogenic Nitrogen (kg N)", title = "2002")+
+#   theme(legend.title = element_text(color = "black", size = 16, face = "bold"),
+#         legend.text = element_text(color = "black", size = 14),
+#         axis.text = element_text(size = 14)) +
+#   guides(fill = "none")  # Remove legend
+# 
+# b <- ggplot() +
+#   geom_sf(data = cbind(cbw_shp,TNcmdt), aes(fill = discrete2017))+
+#   geom_sf(data = ctiescbw_shp,  fill=NA, color = "black")+
+#   scale_fill_manual(values = c("#FFF7EC", "#FEE8C8", "#FDD49E", "#FD8D3C", "#D94701"), 
+#                     labels = c("0 - 5e+03", 
+#                                "5e+03 - 5e+04", 
+#                                "5e+04 - 5e+05", 
+#                                "5e+05 - 5e+06",
+#                                "5e+06 - 1e+07"))+
+#   labs(fill= "Anthropogenic Nitrogen (kg N)", title = "2017")+
+#   theme(legend.title = element_text(color = "black", size = 16, face = "bold"),
+#         legend.text = element_text(color = "black", size = 14),
+#         axis.text = element_text(size = 14)) +
+#   guides(fill = "none")  # Remove legend
+# 
+# c <- ggplot() +
+#   geom_sf(data = cbind(cbw_shp,TNcmdt), aes(fill = discrete2007))+
+#   geom_sf(data = ctiescbw_shp,  fill=NA, color = "black")+
+#   scale_fill_manual(values = c("#FFF7EC", "#FEE8C8", "#FDD49E", "#FD8D3C", "#D94701"), 
+#                     labels = c("0 - 5e+03", 
+#                                "5e+03 - 5e+04", 
+#                                "5e+04 - 5e+05", 
+#                                "5e+05 - 5e+06",
+#                                "5e+06 - 1e+07"))+
+#   labs(fill= "Anthropogenic Nitrogen (kg N)", title = "2007")+
+#   theme(legend.title = element_text(color = "black", size = 16, face = "bold"),
+#         legend.text = element_text(color = "black", size = 14),
+#         axis.text = element_text(size = 14)) +
+#   guides(fill = "none")  # Remove legend
+# 
+# d <- ggplot() +
+#   geom_sf(data = cbind(cbw_shp,TNcmdt), aes(fill = discrete2012))+
+#   geom_sf(data = ctiescbw_shp,  fill=NA, color = "black")+
+#   scale_fill_manual(values = c("#FFF7EC", "#FEE8C8", "#FDD49E", "#FD8D3C", "#D94701"), 
+#                     labels = c("0 - 5e+03", 
+#                                "5e+03 - 5e+04", 
+#                                "5e+04 - 5e+05", 
+#                                "5e+05 - 5e+06",
+#                                "5e+06 - 1e+07"))+
+#   labs(fill= "Anthropogenic Nitrogen (kg N)", title = "2012")+
+#   theme(legend.title = element_text(color = "black", size = 16, face = "bold"),
+#         legend.text = element_text(color = "black", size = 14),
+#         axis.text = element_text(size = 14)) +
+#   guides(fill = "none")  # Remove legend
+# 
+# e <- ggplot() +
+#   geom_sf(data = cbind(cbw_shp,TNcmdt), aes(fill = discrete2022))+
+#   geom_sf(data = ctiescbw_shp,  fill=NA, color = "black")+
+#   scale_fill_manual(values = c("#FFF7EC", "#FEE8C8", "#FDD49E", "#FD8D3C", "#D94701"), 
+#                     labels = c("0 - 5e+03", 
+#                                "5e+03 - 5e+04", 
+#                                "5e+04 - 5e+05", 
+#                                "5e+05 - 5e+06",
+#                                "5e+06 - 1e+07"))+
+#   labs(fill= "Anthropogenic Nitrogen (kg N)", title = "2022")+
+#   theme(legend.title = element_text(color = "black", size = 16, face = "bold"),
+#         legend.text = element_text(color = "black", size = 14),
+#         axis.text = element_text(size = 14)) +
+#   guides(fill = "none")  # Remove legend for now
+
+# Combine the plots with equal sizing and common legend
+
+# combined_plot <- wrap_plots(a, b, c, d, e, ncol = 2, nrow = 3) + 
+#   plot_layout(guides = "collect") &
+#   theme(legend.position = "bottom",
+#         legend.title.position = "top",  # This puts the title above the legend
+#         legend.title = element_text(hjust = 0.5))  # Center the title
+# 
+# combined_plot
+# 
+# ggsave("combined_plot.png", 
+#        plot = combined_plot,
+#        width = 12,      # Increased width for better proportion
+#        height = 14,     # Increased height
+#        units = "in",
+#        dpi = 600,        # High resolution for publication
+#        bg = "white")     # White background

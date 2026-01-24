@@ -1,0 +1,379 @@
+year,Nsource,crop,values
+1997,Synthetic Fertilizer,corn for grain,72829854.90794334
+1997,Synthetic Fertilizer,corn for silage,37246389.38626931
+1997,Synthetic Fertilizer,wheat,11734249.229824442
+1997,Synthetic Fertilizer,oats,2241521.5681113154
+1997,Synthetic Fertilizer,barley,3389373.511713093
+1997,Synthetic Fertilizer,sorghum for grain,423852.81465725205
+1997,Synthetic Fertilizer,sorghum for silage,431764.4900647134
+1997,Synthetic Fertilizer,potatoes,1187563.9701177964
+1997,Synthetic Fertilizer,rye,187320.45027086997
+1997,Synthetic Fertilizer,alfalfa hay,0
+1997,Synthetic Fertilizer,other hay,11924388.690990165
+1997,Synthetic Fertilizer,soybeans,0
+1997,Synthetic Fertilizer,cropland pasture,0
+1997,Synthetic Fertilizer,noncropland pasture,0
+1997,Synthetic Fertilizer,rice,0
+1997,Synthetic Fertilizer,peanuts,707121.2038539492
+1997,Synthetic Fertilizer,grass,0
+1997,Synthetic Fertilizer,winter rye,0
+1997,Synthetic Fertilizer,CGF,568078.4450685013
+1997,Synthetic Fertilizer,CGM,103286.99001245487
+1997,Synthetic Fertilizer,DGS,0
+2002,Synthetic Fertilizer,corn for grain,64100631.10246467
+2002,Synthetic Fertilizer,corn for silage,36781317.50795008
+2002,Synthetic Fertilizer,wheat,9543665.171294026
+2002,Synthetic Fertilizer,oats,1661393.9283460514
+2002,Synthetic Fertilizer,barley,2732573.1544923815
+2002,Synthetic Fertilizer,sorghum for grain,124274.8074918442
+2002,Synthetic Fertilizer,sorghum for silage,467135.9362724295
+2002,Synthetic Fertilizer,potatoes,1087850.6759152499
+2002,Synthetic Fertilizer,rye,351934.795565002
+2002,Synthetic Fertilizer,alfalfa hay,0
+2002,Synthetic Fertilizer,other hay,11372729.682310903
+2002,Synthetic Fertilizer,soybeans,0
+2002,Synthetic Fertilizer,cropland pasture,0
+2002,Synthetic Fertilizer,noncropland pasture,0
+2002,Synthetic Fertilizer,rice,0
+2002,Synthetic Fertilizer,peanuts,565042.5350392762
+2002,Synthetic Fertilizer,grass,0
+2002,Synthetic Fertilizer,winter rye,0
+2002,Synthetic Fertilizer,CGF,556398.5731317071
+2002,Synthetic Fertilizer,CGM,101163.37693303735
+2002,Synthetic Fertilizer,DGS,0
+2007,Synthetic Fertilizer,corn for grain,77950238.97936516
+2007,Synthetic Fertilizer,corn for silage,30676850.432496037
+2007,Synthetic Fertilizer,wheat,9742653.120050052
+2007,Synthetic Fertilizer,oats,1108073.4370474776
+2007,Synthetic Fertilizer,barley,2119268.196730681
+2007,Synthetic Fertilizer,sorghum for grain,161073.83032647372
+2007,Synthetic Fertilizer,sorghum for silage,404424.4482808568
+2007,Synthetic Fertilizer,potatoes,954614.04416365
+2007,Synthetic Fertilizer,rye,244365.34401264178
+2007,Synthetic Fertilizer,alfalfa hay,0
+2007,Synthetic Fertilizer,other hay,10796951.813259222
+2007,Synthetic Fertilizer,soybeans,0
+2007,Synthetic Fertilizer,cropland pasture,0
+2007,Synthetic Fertilizer,noncropland pasture,0
+2007,Synthetic Fertilizer,rice,0
+2007,Synthetic Fertilizer,peanuts,154092.49286559093
+2007,Synthetic Fertilizer,grass,0
+2007,Synthetic Fertilizer,winter rye,0
+2007,Synthetic Fertilizer,CGF,292562.3955873635
+2007,Synthetic Fertilizer,CGM,53193.16283406601
+2007,Synthetic Fertilizer,DGS,0
+2012,Synthetic Fertilizer,corn for grain,76435323.75351702
+2012,Synthetic Fertilizer,corn for silage,26951063.70628475
+2012,Synthetic Fertilizer,wheat,9961099.209063746
+2012,Synthetic Fertilizer,oats,1011843.5952325312
+2012,Synthetic Fertilizer,barley,2619128.745680121
+2012,Synthetic Fertilizer,sorghum for grain,385048.92481961934
+2012,Synthetic Fertilizer,sorghum for silage,813837.2879269227
+2012,Synthetic Fertilizer,potatoes,849665.7286381241
+2012,Synthetic Fertilizer,rye,225126.73861711414
+2012,Synthetic Fertilizer,alfalfa hay,0
+2012,Synthetic Fertilizer,other hay,10313046.181178669
+2012,Synthetic Fertilizer,soybeans,0
+2012,Synthetic Fertilizer,cropland pasture,0
+2012,Synthetic Fertilizer,noncropland pasture,0
+2012,Synthetic Fertilizer,rice,0
+2012,Synthetic Fertilizer,peanuts,182090.82897729665
+2012,Synthetic Fertilizer,grass,0
+2012,Synthetic Fertilizer,winter rye,0
+2012,Synthetic Fertilizer,CGF,234948.07694352235
+2012,Synthetic Fertilizer,CGM,42717.832171549584
+2012,Synthetic Fertilizer,DGS,0
+2017,Synthetic Fertilizer,corn for grain,72350402.41594674
+2017,Synthetic Fertilizer,corn for silage,21894206.95140765
+2017,Synthetic Fertilizer,wheat,8248895.858821701
+2017,Synthetic Fertilizer,oats,739482.7199552187
+2017,Synthetic Fertilizer,barley,1579751.2500355868
+2017,Synthetic Fertilizer,sorghum for grain,377366.5275011078
+2017,Synthetic Fertilizer,sorghum for silage,405472.8959341636
+2017,Synthetic Fertilizer,potatoes,742331.1529500252
+2017,Synthetic Fertilizer,rye,313753.66960274306
+2017,Synthetic Fertilizer,alfalfa hay,0
+2017,Synthetic Fertilizer,other hay,8836803.324271463
+2017,Synthetic Fertilizer,soybeans,0
+2017,Synthetic Fertilizer,cropland pasture,0
+2017,Synthetic Fertilizer,noncropland pasture,0
+2017,Synthetic Fertilizer,rice,0
+2017,Synthetic Fertilizer,peanuts,285003.9157589461
+2017,Synthetic Fertilizer,grass,0
+2017,Synthetic Fertilizer,winter rye,0
+2017,Synthetic Fertilizer,CGF,182225.8530951155
+2017,Synthetic Fertilizer,CGM,33131.97329002099
+2017,Synthetic Fertilizer,DGS,0
+2022,Synthetic Fertilizer,corn for grain,73366149.0663663
+2022,Synthetic Fertilizer,corn for silage,16823729.12483511
+2022,Synthetic Fertilizer,wheat,8568493.115016067
+2022,Synthetic Fertilizer,oats,843424.301343114
+2022,Synthetic Fertilizer,barley,1058925.7338121196
+2022,Synthetic Fertilizer,sorghum for grain,285250.4400688984
+2022,Synthetic Fertilizer,sorghum for silage,219423.00896735815
+2022,Synthetic Fertilizer,potatoes,722306.3861375492
+2022,Synthetic Fertilizer,rye,438556.3247355631
+2022,Synthetic Fertilizer,alfalfa hay,0
+2022,Synthetic Fertilizer,other hay,8008335.755019413
+2022,Synthetic Fertilizer,soybeans,0
+2022,Synthetic Fertilizer,cropland pasture,0
+2022,Synthetic Fertilizer,noncropland pasture,0
+2022,Synthetic Fertilizer,rice,0
+2022,Synthetic Fertilizer,peanuts,298787.7514117876
+2022,Synthetic Fertilizer,grass,0
+2022,Synthetic Fertilizer,winter rye,0
+2022,Synthetic Fertilizer,CGF,184784.1705850053
+2022,Synthetic Fertilizer,CGM,33597.12192454635
+2022,Synthetic Fertilizer,DGS,0
+1997,Manure,corn for grain,43798401.19028738
+1997,Manure,corn for silage,25081064.39255009
+1997,Manure,wheat,5450714.518054877
+1997,Manure,oats,848754.7045447326
+1997,Manure,barley,1994830.4471269154
+1997,Manure,sorghum for grain,451507.79440704855
+1997,Manure,sorghum for silage,272165.18746854796
+1997,Manure,potatoes,552006.7869946903
+1997,Manure,rye,158122.48572273963
+1997,Manure,alfalfa hay,0
+1997,Manure,other hay,9560220.58278641
+1997,Manure,soybeans,0
+1997,Manure,cropland pasture,0
+1997,Manure,noncropland pasture,0
+1997,Manure,rice,0
+1997,Manure,peanuts,85811.55925967304
+1997,Manure,grass,0
+1997,Manure,winter rye,0
+1997,Manure,CGF,341630.8830508363
+1997,Manure,CGM,62114.706009242705
+1997,Manure,DGS,0
+2002,Manure,corn for grain,43072261.17016132
+2002,Manure,corn for silage,29610961.03930692
+2002,Manure,wheat,4629264.734858876
+2002,Manure,oats,718867.5945019149
+2002,Manure,barley,1848734.6944313948
+2002,Manure,sorghum for grain,112029.50441206644
+2002,Manure,sorghum for silage,399790.5691541546
+2002,Manure,potatoes,499111.50912761834
+2002,Manure,rye,325672.0741914055
+2002,Manure,alfalfa hay,0
+2002,Manure,other hay,10332927.660447322
+2002,Manure,soybeans,0
+2002,Manure,cropland pasture,0
+2002,Manure,noncropland pasture,0
+2002,Manure,rice,0
+2002,Manure,peanuts,90504.71748663203
+2002,Manure,grass,0
+2002,Manure,winter rye,0
+2002,Manure,CGF,373870.6506387666
+2002,Manure,CGM,67976.48193432119
+2002,Manure,DGS,0
+2007,Manure,corn for grain,53165302.113839515
+2007,Manure,corn for silage,24667963.967054866
+2007,Manure,wheat,4644182.832252916
+2007,Manure,oats,479492.1793596022
+2007,Manure,barley,1572312.0212833225
+2007,Manure,sorghum for grain,146409.752980406
+2007,Manure,sorghum for silage,297186.2403027615
+2007,Manure,potatoes,578379.3946461274
+2007,Manure,rye,203914.46707766908
+2007,Manure,alfalfa hay,0
+2007,Manure,other hay,10246757.47044259
+2007,Manure,soybeans,0
+2007,Manure,cropland pasture,0
+2007,Manure,noncropland pasture,0
+2007,Manure,rice,0
+2007,Manure,peanuts,27003.3837699942
+2007,Manure,grass,0
+2007,Manure,winter rye,0
+2007,Manure,CGF,199539.71087462897
+2007,Manure,CGM,36279.94743175076
+2007,Manure,DGS,0
+2012,Manure,corn for grain,56472880.74457547
+2012,Manure,corn for silage,24206545.066616967
+2012,Manure,wheat,6173922.868775655
+2012,Manure,oats,481111.40559622034
+2012,Manure,barley,2184376.992722879
+2012,Manure,sorghum for grain,278696.37954136083
+2012,Manure,sorghum for silage,714178.7041833468
+2012,Manure,potatoes,594984.6683396755
+2012,Manure,rye,238661.69271008542
+2012,Manure,alfalfa hay,0
+2012,Manure,other hay,10376066.00625425
+2012,Manure,soybeans,0
+2012,Manure,cropland pasture,0
+2012,Manure,noncropland pasture,0
+2012,Manure,rice,0
+2012,Manure,peanuts,50211.17591867491
+2012,Manure,grass,0
+2012,Manure,winter rye,0
+2012,Manure,CGF,173587.21176069233
+2012,Manure,CGM,31561.31122921679
+2012,Manure,DGS,0
+2017,Manure,corn for grain,67497967.73531511
+2017,Manure,corn for silage,24350751.495475993
+2017,Manure,wheat,5871909.2898860015
+2017,Manure,oats,402792.7607921678
+2017,Manure,barley,1555743.2777649958
+2017,Manure,sorghum for grain,333178.1349064732
+2017,Manure,sorghum for silage,370044.8122221631
+2017,Manure,potatoes,560807.2752674473
+2017,Manure,rye,458730.42207627645
+2017,Manure,alfalfa hay,0
+2017,Manure,other hay,10222668.058090556
+2017,Manure,soybeans,0
+2017,Manure,cropland pasture,0
+2017,Manure,noncropland pasture,0
+2017,Manure,rice,0
+2017,Manure,peanuts,77902.06473893876
+2017,Manure,grass,0
+2017,Manure,winter rye,0
+2017,Manure,CGF,170004.23414429184
+2017,Manure,CGM,30909.860753507648
+2017,Manure,DGS,0
+2022,Manure,corn for grain,69835068.69444603
+2022,Manure,corn for silage,18496672.62691785
+2022,Manure,wheat,7132205.523972702
+2022,Manure,oats,426426.6115890483
+2022,Manure,barley,1205439.040210971
+2022,Manure,sorghum for grain,478052.22653010994
+2022,Manure,sorghum for silage,309687.4153213968
+2022,Manure,potatoes,555723.793974686
+2022,Manure,rye,590809.5417234278
+2022,Manure,alfalfa hay,0
+2022,Manure,other hay,9123796.932340791
+2022,Manure,soybeans,0
+2022,Manure,cropland pasture,0
+2022,Manure,noncropland pasture,0
+2022,Manure,rice,0
+2022,Manure,peanuts,67840.09127463003
+2022,Manure,grass,0
+2022,Manure,winter rye,0
+2022,Manure,CGF,175890.5900155243
+2022,Manure,CGM,31980.107275549828
+2022,Manure,DGS,0
+1997,N Fixation,corn for grain,0
+1997,N Fixation,corn for silage,0
+1997,N Fixation,wheat,0
+1997,N Fixation,oats,0
+1997,N Fixation,barley,0
+1997,N Fixation,sorghum for grain,0
+1997,N Fixation,sorghum for silage,0
+1997,N Fixation,potatoes,0
+1997,N Fixation,rye,0
+1997,N Fixation,alfalfa hay,50676550.35962162
+1997,N Fixation,other hay,11034821.80591777
+1997,N Fixation,soybeans,61707824.533726595
+1997,N Fixation,cropland pasture,9595925.22752399
+1997,N Fixation,noncropland pasture,0
+1997,N Fixation,rice,0
+1997,N Fixation,peanuts,648722.5194215658
+1997,N Fixation,grass,0
+1997,N Fixation,winter rye,0
+1997,N Fixation,CGF,0
+1997,N Fixation,CGM,0
+1997,N Fixation,DGS,0
+2002,N Fixation,corn for grain,0
+2002,N Fixation,corn for silage,0
+2002,N Fixation,wheat,0
+2002,N Fixation,oats,0
+2002,N Fixation,barley,0
+2002,N Fixation,sorghum for grain,0
+2002,N Fixation,sorghum for silage,0
+2002,N Fixation,potatoes,0
+2002,N Fixation,rye,0
+2002,N Fixation,alfalfa hay,48572375.97993892
+2002,N Fixation,other hay,9338673.163021756
+2002,N Fixation,soybeans,45673342.319824494
+2002,N Fixation,cropland pasture,7409685.171494408
+2002,N Fixation,noncropland pasture,0
+2002,N Fixation,rice,0
+2002,N Fixation,peanuts,456301.4379786472
+2002,N Fixation,grass,0
+2002,N Fixation,winter rye,0
+2002,N Fixation,CGF,0
+2002,N Fixation,CGM,0
+2002,N Fixation,DGS,0
+2007,N Fixation,corn for grain,0
+2007,N Fixation,corn for silage,0
+2007,N Fixation,wheat,0
+2007,N Fixation,oats,0
+2007,N Fixation,barley,0
+2007,N Fixation,sorghum for grain,0
+2007,N Fixation,sorghum for silage,0
+2007,N Fixation,potatoes,0
+2007,N Fixation,rye,0
+2007,N Fixation,alfalfa hay,38191889.484181665
+2007,N Fixation,other hay,9985397.95308261
+2007,N Fixation,soybeans,54157467.875485756
+2007,N Fixation,cropland pasture,3596518.442309163
+2007,N Fixation,noncropland pasture,0
+2007,N Fixation,rice,0
+2007,N Fixation,peanuts,168273.6795157947
+2007,N Fixation,grass,0
+2007,N Fixation,winter rye,0
+2007,N Fixation,CGF,0
+2007,N Fixation,CGM,0
+2007,N Fixation,DGS,0
+2012,N Fixation,corn for grain,0
+2012,N Fixation,corn for silage,0
+2012,N Fixation,wheat,0
+2012,N Fixation,oats,0
+2012,N Fixation,barley,0
+2012,N Fixation,sorghum for grain,0
+2012,N Fixation,sorghum for silage,0
+2012,N Fixation,potatoes,0
+2012,N Fixation,rye,0
+2012,N Fixation,alfalfa hay,32732501.04053412
+2012,N Fixation,other hay,10811912.696820421
+2012,N Fixation,soybeans,96239583.86197966
+2012,N Fixation,cropland pasture,1197536.2598826191
+2012,N Fixation,noncropland pasture,0
+2012,N Fixation,rice,0
+2012,N Fixation,peanuts,268970.17011082196
+2012,N Fixation,grass,0
+2012,N Fixation,winter rye,0
+2012,N Fixation,CGF,0
+2012,N Fixation,CGM,0
+2012,N Fixation,DGS,0
+2017,N Fixation,corn for grain,0
+2017,N Fixation,corn for silage,0
+2017,N Fixation,wheat,0
+2017,N Fixation,oats,0
+2017,N Fixation,barley,0
+2017,N Fixation,sorghum for grain,0
+2017,N Fixation,sorghum for silage,0
+2017,N Fixation,potatoes,0
+2017,N Fixation,rye,0
+2017,N Fixation,alfalfa hay,31340228.832260717
+2017,N Fixation,other hay,10047966.085594898
+2017,N Fixation,soybeans,119345361.30603871
+2017,N Fixation,cropland pasture,1446314.6127791835
+2017,N Fixation,noncropland pasture,0
+2017,N Fixation,rice,0
+2017,N Fixation,peanuts,484125.88117798726
+2017,N Fixation,grass,0
+2017,N Fixation,winter rye,0
+2017,N Fixation,CGF,0
+2017,N Fixation,CGM,0
+2017,N Fixation,DGS,0
+2022,N Fixation,corn for grain,0
+2022,N Fixation,corn for silage,0
+2022,N Fixation,wheat,0
+2022,N Fixation,oats,0
+2022,N Fixation,barley,0
+2022,N Fixation,sorghum for grain,0
+2022,N Fixation,sorghum for silage,0
+2022,N Fixation,potatoes,0
+2022,N Fixation,rye,0
+2022,N Fixation,alfalfa hay,22697143.49558928
+2022,N Fixation,other hay,8316518.855839131
+2022,N Fixation,soybeans,114378228.31323242
+2022,N Fixation,cropland pasture,1246232.7939590837
+2022,N Fixation,noncropland pasture,0
+2022,N Fixation,rice,0
+2022,N Fixation,peanuts,462987.73979494453
+2022,N Fixation,grass,0
+2022,N Fixation,winter rye,0
+2022,N Fixation,CGF,0
+2022,N Fixation,CGM,0
+2022,N Fixation,DGS,0

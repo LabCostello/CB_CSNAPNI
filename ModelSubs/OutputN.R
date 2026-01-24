@@ -1,4 +1,4 @@
-output_lrs_coefficients <- read_excel("C:/Users/lds5498/OneDrive - The Pennsylvania State University/Desktop/Code/SourceData.xlsx", sheet = "DeliveryFactors")
+output_lrs_coefficients <- read_excel("RawData/SourceData.xlsx", sheet = "DeliveryFactors")
 
 #Filter the ones that is just in CBW
 output_lrs_coefficients <- output_lrs_coefficients[output_lrs_coefficients$LandRiverSegment %in% CBW_lrs_shp$LndRvrSeg,]
@@ -17,65 +17,144 @@ out_lrs_N$CombinedColumn <- paste(out_lrs_N$LandRiverSegment,out_lrs_N$LandToWat
 
 not_duplicated_rows <- out_lrs_N[!duplicated(out_lrs_N$CombinedColumn), ] # There are some LRS that has 2 coefficients and others that just one for all land uses
 
+# Changing name of Load Source
+not_duplicated_rows$LoadSource[not_duplicated_rows$LoadSource=="Full Season Soybeans"] <- "Grains&Silage"
+not_duplicated_rows$LoadSource[not_duplicated_rows$LoadSource=="Leguminous Hay"] <- "Hay&Pasture"
+
 Nout_lrs <- not_duplicated_rows %>% group_by(LandRiverSegment) %>% summarize(mean(LandToWater_TN_Factor))
 
 Nout_lrs <- Nout_lrs[order(match(Nout_lrs$LandRiverSegment,CBW_lrs_shp$LndRvrSeg)),]
 
-RvrNexport <- NANIBtotsum[,5]*Nout_lrs$`mean(LandToWater_TN_Factor)`
-RvrNexport2 <- (TNsum[,5]-rowSums(CNprod[,,5]))*Nout_lrs$`mean(LandToWater_TN_Factor)`
+RvrNexport <- NANIBtotsum[,6]*Nout_lrs$`mean(LandToWater_TN_Factor)`
+RvrNexport2 <- (TNsum[,6]-rowSums(CNprod[,,6]))*Nout_lrs$`mean(LandToWater_TN_Factor)`
 
 RvrNexportarea <- RvrNexport/area[,1]
 RvrNexportarea <- RvrNexportarea[RvrNexportarea>0]
 
-a <- NANIBtotsum[,5]
+# Commodity portion ####
+#Synthetic fertilizer
+(CfertNinorgtotlrs)
 
-b <- testabb$`2017 Progress_NLoadEOT`*0.453592 #transforming lbs to kg and then dividing by km2
+# Manure fertilizer
+kgNmanuretoeachcrop+kgmanurenotavailabletoeachcrop
 
-testabb2 <- read_excel("C:/Users/lds5498/Downloads/bb2.xlsx",sheet = 3)
+((CfertNinorgtotlrs+kgNmanuretoeachcrop+kgmanurenotavailabletoeachcrop)[,,6])
 
-testabb2 <- testabb2[testabb2$LNDRVS %in% CBW_lrs_shp$LndRvrSeg,]
-testabb2 <- testabb2[match(CBW_lrs_shp$LndRvrSeg,testabb2$LNDRVS),]
+CfertNtotlrs[,,6]
+# Calculate how much is uptaken by plant, do the subtraction of the total N applied to the plant - uptake
+NInputs_crops_lrs <- (((CfertNinorgtotlrs+kgNmanuretoeachcrop+kgmanurenotavailabletoeachcrop)[,,6])-CfertNtotlrs[,,6])
+#NInputs_crops_lrs[,c(10,11,13,16)] <- CfixNwswE[,c(10,11,13,16),6]-CNprod[,c(10,11,13,16),6] # For the N fixing crops
+DF <- not_duplicated_rows
 
-p <- list()
+class_crop_df <- c(rep("Grains&Silage",9),rep("Hay&Pasture",2),"Grains&Silage",rep("Hay&Pasture",2),rep("Grains&Silage",7))
 
-c <- aggregate(CBW_lrs_shp$Acres,by=list(CBW_lrs_shp$MinBas),FUN=sum)
-c <- c$x*0.0040468564224 #Transforming Acres to km2
+# Making a for loop on each line for each column of NLoads and based on class_crop_df define if it will yse DF$Grains&Silage or DF$Hay&Pasture
+LRS_vector <- unique(DF$LandRiverSegment)
+LRS_vector <- LRS_vector[order(match(LRS_vector,CBW_lrs_shp$LndRvrSeg))]
 
-for (i in 1:6) {
-  RvrNexport <- NANIBtotsum[,i]
-  
-  a <- data.frame(CBW_lrs_shp$MinBas, RvrNexport)
-  b <- data.frame(CBW_lrs_shp$MinBas,testabb2[,30+i]*0.453592)
-  #b <- data.frame(CBW_lrs_shp$MinBas,(TNsum[,i]-rowSums(CNprod[,,i]))*Nout_lrs$`mean(LandToWater_TN_Factor)`)
-  
-  a <- aggregate(a$RvrNexport,by=list(a$CBW_lrs_shp.MinBas),FUN=sum)
-  b <- aggregate(b[,2], by=list(b$CBW_lrs_shp.MinBas),FUN=sum)
-  
-  a <- a$x/c
-  b <- b$x/c
-  
-  df <- data.frame(x=a,y=b)
-  
-  model <- lm(y ~ x, data=df)
-  summary(model)
-  
-  # Extract the coefficients
-  intercept <- coef(model)[1]
-  slope <- coef(model)[2]
-  
-  # Create the regression equation as a string
-  equation <- paste("y = ", round(intercept, 2), " + ", round(slope, 2), "x", "\n", " (R2 = ", round(summary(model)$r.squared, 3), ")", sep = "")
-  
-  
-  # Create the plot
-  
-  p[[i]] <- ggplot(df, aes(x = x, y = y)) +
-    geom_point() + # Scatter plot of the data
-    geom_smooth(method = "lm", se = FALSE, col = "blue") + # Regression line
-    annotate("text", x = Inf, y = Inf, label = equation, hjust = 1.1, vjust = 7, size = 5, colour = "red") + # Add the equation
-    theme_minimal() +
-    labs(title = paste("Scatter Plot with Regression Line", year[i]), x = "NANI (kg N/km2 yr-1)", y = "Riverine TN Flux (kg N/km2 yr-1)")
+NLoads_lrs <- matrix(NA,nrow = nrow(NInputs_crops_lrs),ncol = ncol(NInputs_crops_lrs))
+
+# for(i in 1:nrow(NInputs_crops_lrs)){
+#   for(j in 1:ncol(NInputs_crops_lrs)){
+#     if(class_crop_df[j]=="Grains&Silage"){
+#       NLoads_lrs[i,j] <- NInputs_crops_lrs[i,j]*DF$LandToWater_TN_Factor[DF$LandRiverSegment==LRS_vector[i] & DF$LoadSource=="Grains&Silage"]
+#     } else if(class_crop_df[j]=="Hay&Pasture"){
+#       # Try to get the Hay&Pasture factor
+#       hay_factor <- DF$LandToWater_TN_Factor[DF$LandRiverSegment==LRS_vector[i] & DF$LoadSource=="Hay&Pasture"]
+#       
+#       # If no matching row found for Hay&Pasture, use Grains&Silage factor
+#       if(length(hay_factor) == 0) {
+#         hay_factor <- DF$LandToWater_TN_Factor[DF$LandRiverSegment==LRS_vector[i] & DF$LoadSource=="Grains&Silage"]
+#       }
+#       
+#       NLoads_lrs[i,j] <- NInputs_crops_lrs[i,j] * hay_factor
+#     }
+#   }
+# }
+
+# Modified loop with BMP factors
+for(i in 1:nrow(NInputs_crops_lrs)){
+  for(j in 1:ncol(NInputs_crops_lrs)){
+    
+    # Calculate base N load
+    base_load <- 0
+    
+    if(class_crop_df[j]=="Grains&Silage"){
+      base_load <- NInputs_crops_lrs[i,j] * DF$LandToWater_TN_Factor[DF$LandRiverSegment==LRS_vector[i] & DF$LoadSource=="Grains&Silage"]
+    } else if(class_crop_df[j]=="Hay&Pasture"){
+      # Try to get the Hay&Pasture factor
+      hay_factor <- DF$LandToWater_TN_Factor[DF$LandRiverSegment==LRS_vector[i] & DF$LoadSource=="Hay&Pasture"]
+      
+      # If no matching row found for Hay&Pasture, use Grains&Silage factor
+      if(length(hay_factor) == 0) {
+        hay_factor <- DF$LandToWater_TN_Factor[DF$LandRiverSegment==LRS_vector[i] & DF$LoadSource=="Grains&Silage"]
+      }
+      
+      base_load <- NInputs_crops_lrs[i,j] * hay_factor
+    }
+    
+    # Apply BMP factors only for corn (j=1) and only if grass or winter rye scenarios are active
+    if(j %in% c(1,2)) {  # Corn is the first crop (j=1)
+      # Apply only grass BMP factor
+      NLoads_lrs[i,j] <- 0.6*base_load + (0.4*base_load * grass_bmp_factor)
+      # Apply only wr BMP factor
+      NLoads_lrs[i,j] <- NLoads_lrs[i,j] * 0.3 * wr_bmp_factor
+    }
+    else {
+      # For other crops, no BMP factor applied
+      NLoads_lrs[i,j] <- base_load
+    }
+  }
 }
-# Print all plots in one image
-library(gridExtra)
-grid.arrange(grobs = p, ncol = 3)
+
+# Sum all the N lost to streams over the region
+NLoads_lrs_sum <- colSums(NLoads_lrs)
+# Do the division of the amount of crop N output by the amount of crop produced in the region kg N output/kg crop produced
+NLoads_lrs_sum_kg <- NLoads_lrs_sum/colSums(CkgwE)[,6]
+NLoads_lrs_sum_kg[is.na(NLoads_lrs_sum_kg)] <- 0
+NLoads_lrs_sum_g <- NLoads_lrs_sum_kg*1000 # in g N output/kg crop produced
+
+# Based on the diet of the animal calculate the N output
+NLoads_anim_kgdom <- NLoads_anim_kgimp <- matrix(0,nrow = nrow(feedpermeatdom),ncol = ncol(feedpermeatdom))
+
+for(i in 1:9){
+  NLoads_anim_kgdom[i,] <- feedpermeatdom[i,,6]*NLoads_lrs_sum_kg
+  NLoads_anim_kgimp[i,] <-  (feedpermeatimp[i,,6]*unitfertNCnational[,6]*0.25)
+}
+# Sum the N output from domestic and imported feed
+rowSums(NLoads_anim_kgdom+NLoads_anim_kgimp)
+
+# Calculate the N output from the manure management portion (Considering all this manure would volatilize would volatilize)
+NInputs_mannrcv_kg <- data.frame(LRS=CBW_lrs_shp$LndRvrSeg,ST=CBW_lrs_shp$ST,Nonrecoveman=kgmanureNlrs[,,6]-kgmanureNrec450[,,6])
+NInputs_mannrcv_kg <- NInputs_mannrcv_kg %>%
+  mutate(Emitted_to_tidal = case_when(
+    ST == "DE" ~ 0.0527,
+    ST == "MD" ~ 0.1117,
+    ST == "NY" ~ 0.0243,
+    ST == "PA" ~ 0.067,
+    ST == "VA" ~ 0.0893,
+    ST == "WV" ~ 0.0496,
+    ST == "DC" ~ 0,  # Add value for DC
+    TRUE ~ NA_real_  # Default for any unmatched states
+  ))
+
+nonrecoveman_cols <- grep("^Nonrecoveman", names(NInputs_mannrcv_kg), value = TRUE)
+NLoads_mannrcv_kg<- NInputs_mannrcv_kg[nonrecoveman_cols] * NInputs_mannrcv_kg$Emitted_to_tidal
+tot_NLoads_mannrcv_kg <- data.frame(beef=sum(colSums(NLoads_mannrcv_kg)[c(1,10,11,13,15)]),
+                                    dairy=sum(colSums(NLoads_mannrcv_kg)[c(2,12,14,16)]),
+                                    pork=sum(colSums(NLoads_mannrcv_kg)[c(3,4)]),
+                                    sheep=0,
+                                    horse=0,
+                                    layers=colSums(NLoads_mannrcv_kg)[5],
+                                    broilers=sum(colSums(NLoads_mannrcv_kg)[c(7,8)]),
+                                    turkeys=sum(colSums(NLoads_mannrcv_kg)[c(6,9)]),
+                                    goats=0)
+
+NLoads_mannrcv_kgpermeat <- tot_NLoads_mannrcv_kg/totmeat[6,]
+NLoads_mannrcv_kgpermeat[is.na(NLoads_mannrcv_kgpermeat)] <- 0
+
+# Sum the portion of N
+Nloads_anim_kgpermeatcbw <- (rowSums(NLoads_anim_kgdom+NLoads_anim_kgimp)+NLoads_mannrcv_kgpermeat)
+
+Nloads_anim_kgperprotcbw <- (rowSums(NLoads_anim_kgdom+NLoads_anim_kgimp)+NLoads_mannrcv_kgpermeat)/ (meatdata[,z] / 1000)
+Nloads_anim_kgperprotcbw[is.na(Nloads_anim_kgperprotcbw)] <- 0

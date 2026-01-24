@@ -16,9 +16,9 @@ read_sheet1 = 'Fert_P_App'
 read_sheet2 = 'Food_Feed_P'
 read_sheet3 = 'Non_Food_Crops'
 
-data1 = as.matrix(read_excel(read_file, sheet = read_sheet1))
-data2 = as.matrix(read_excel(read_file, sheet = read_sheet2))
-data3 = as.matrix(read_excel(read_file, sheet = read_sheet3))
+data1 = as.matrix(read_excel(read_file, sheet = read_sheet1, .name_repair = "unique_quiet"))
+data2 = as.matrix(read_excel(read_file, sheet = read_sheet2, .name_repair = "unique_quiet"))
+data3 = as.matrix(read_excel(read_file, sheet = read_sheet3, .name_repair = "unique_quiet"))
 
 data_range1 = data1[3:3114,2:19] #exclude some cells
 data_range2 = data2[3:3114,2:7] #exclude some cells

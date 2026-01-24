@@ -10,8 +10,8 @@ import_yrs6 = c("1997","2002","2007","2012","2017") #this file contains data fro
 read_sheet1 = 'Nfert'
 read_sheet2 = 'Pfert'
 
-data1 = as.matrix(read_excel(read_file, sheet = read_sheet1)) #nfert
-data2 = as.matrix(read_excel(read_file, sheet = read_sheet2)) #pfert
+data1 = as.matrix(read_excel(read_file, sheet = read_sheet1, .name_repair = "unique_quiet")) #nfert
+data2 = as.matrix(read_excel(read_file, sheet = read_sheet2, .name_repair = "unique_quiet")) #pfert
 
 data_range1 = data1[2:17,4:8] #exclude some cells
 data_range2 = data2[2:17,4:8] #exclude some cells
@@ -218,7 +218,7 @@ if(grass_fert_scenario==1){
 }
 
 # Winter Rye scenario
-if(wr_use==2 & wr_scenario){
+if(wr_use==2 & wr_scenario==1){ # Create another if inside this if that parse out wr_use for 2 and 1 where cover crop receives fertilizer and double crop too and corn receives different values for each scenario
   Nfert_lbsperacre <- rbind(Nfert_lbsperacre, c(0,0,0,0,0,0))
   Nfert <- rbind(Nfert, c(0,0,0,0,0,0))
   Pfert_lbsperacre <- rbind(Pfert_lbsperacre, c(0,0,0,0,0,0))

@@ -330,16 +330,21 @@ NASS_anim_sums = data.frame(anim_sums_array)
 
 #full county level animal average inventories for all years
 anim_avg_inv_array = array(0,c(length(NASS_County[,1]),19,length(year)))
+anim_sales_inv_array = array(0,c(length(NASS_County[,1]),6,length(year)))
+
 for(n in 1:(length(year))){
   anim_avg_inv = c(fattened_cattle[,n],milk_cows[,n],hogs_for_breeding[,n],hogs_for_slaughter[,n],layers[,n],
                    breeding_turkeys[,n],pullets[,n],broilers[,n],slaughter_turkeys[,n],beef_breeding_herd[,n],
                    beef_calves[,n],dairy_calves[,n],beef_heifers_avg[,n],dairy_heifers_avg[,n],
                    beef_stockers_avg[,n],dairy_stockers_avg[,n],sheep[,n],horses[,n],goats[,n])
   anim_avg_inv_array[,,n]=array(anim_avg_inv,c(length(NASS_County[,1]),19))
-
+  anim_sales_inv_array[,,n]=array(c(fattened_cattle_sold[,n],milk_cows[,n],hogs_for_slaughter_sales[,n],layers[,n],broilers_sales[,n],turkeys_sold[,n]),c(length(NASS_County[,1]),6))
+  
   #write data files
   write_name = paste("InputFiles_CBW/NASSanim",year[n],".txt",sep = "")
   write.table(anim_avg_inv_array[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
+  write_name = paste("InputFiles_CBW/NASSanimsold",year[n],".txt",sep = "")
+  write.table(anim_sales_inv_array[,,n], file = write_name, sep = " ", row.names = FALSE, col.names = FALSE)
 }
 
 #write keys

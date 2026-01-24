@@ -6,7 +6,7 @@ if(print_tags == 1){
 
 read_file = 'RawData/biogas.xlsx' #these areas are planted areas 
 
-biogasdata = read_excel(read_file)
+biogasdata = read_excel(read_file, .name_repair = "unique_quiet")
 
 biogasinfo = as.matrix(biogasdata[2:27,2:11])
 

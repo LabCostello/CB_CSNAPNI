@@ -19,13 +19,52 @@ CBW_lrs_shp <- lrs_shp[lrs_shp$Region=="Chesapeake Bay Watershed",] # Filtering 
 CBW_lrs_shp <- CBW_lrs_shp[order(CBW_lrs_shp$FIPS),] # Ascending order for FIPS
 CBW_lrs_shp <- CBW_lrs_shp %>% arrange(FIPS,LndRvrSeg)
 
+#STATE DATA
+#state FIPS code for each county in animal data
+FIPS <-  unique(CBW_lrs_shp$FIPS)
+FIPSws <- CBW_lrs_shp$FIPS
+FPs <-  array(0,c(n_cnty))
+for (i in 1:197) {FPs[i] <- (as.numeric(substr(as.character(unique(FIPS)[i]), 1, 2)))}
+
+
 dim_cropnames <- list(
-  rows = CBW_lrs_shp$LndRvrSeg,
-  columns = crop_labels,
-  slices = year_labels
+  rows = paste0("[",seq(1,1925),",] ",CBW_lrs_shp$LndRvrSeg),
+  columns = paste0("[,",seq(1,21),"] ", crop_labels),
+  slices = paste0("[,,",seq(1,6),"] ", year_labels)
+)
+
+dim_cropnames_cty <- list(
+  rows = paste0("[",seq(1,197),",] ",FIPS),
+  columns = paste0("[,",seq(1,21),"] ", crop_labels),
+  slices = paste0("[,,",seq(1,6),"] ", year_labels)
+)
+
+dim_animalnames <- list(
+  rows = paste0("[",seq(1,1925),",] ",CBW_lrs_shp$LndRvrSeg),
+  columns = paste0("[,",seq(1,19),"] ", animalnames),
+  slices = paste0("[,,",seq(1,6),"] ", year_labels)
+)
+
+dim_animalcrops <- list(
+  rows = paste0("[",seq(1,19),",] ", animalnames),
+  columns = paste0("[,",seq(1,21),"] ", crop_labels),
+  slices = paste0("[,,",seq(1,6),"] ", year_labels)
+)
+
+dim_meatcrops <- list(
+  rows = paste0("[",seq(1,9),",] ", meat_labels),
+  columns = paste0("[,",seq(1,21),"] ", crop_labels),
+  slices = paste0("[,,",seq(1,6),"] ", year_labels)
+)
+
+dim_animalnames_cty <- list(
+  rows = paste0("[",seq(1,197),",] ",FIPS),
+  columns = paste0("[,",seq(1,19),"] ", animalnames),
+  slices = paste0("[,,",seq(1,6),"] ", year_labels)
 )
 
 area <- as.matrix(unlist(CBW_lrs_shp$Acres*0.0040468564224, use.names = FALSE)) # Convert from acres to km2
+rownames(area) <- CBW_lrs_shp$LndRvrSeg # Assign the names of the LRS to the area matrix
 
 #wsNum = t(array(scan('InputFiles_CBW/wsNum.txt'), c(2,n_ws_tbx))) #key for 450 watersheds-->NEEA watersheds, region codes also included
 wsNum = t(array(1:n_ws_tbx, c(1,n_ws_tbx)))
@@ -39,7 +78,11 @@ cornuse = t(array(scan("InputFiles_CBW/cornuse.txt"), c(nyrs,11)))
 #human population densities (people/km2) in watersheds (450 set)
 #key is in population_key.txt
 population = t(array(scan("InputFiles_CBW/population.txt"), c(nyrs,n_ws_tbx)))
+rownames(population) <- paste0("[",seq(1,1925),",] ",CBW_lrs_shp$LndRvrSeg)
+colnames(population) <- paste0("[,",seq(1,6),"] ", year_labels)
 population_cnty = t(array(scan("InputFiles_CBW/population_cnty.txt"), c(nyrs,n_cnty)))
+rownames(population_cnty) <- paste0("[",seq(1,197),",] ",FIPS)
+colnames(population_cnty) <- paste0("[,",seq(1,6),"] ", year_labels)
 
 #CROP PRODUCTION
 #crop production densities (kg/km2) in watersheds (450 set)
@@ -54,11 +97,7 @@ for(n in 1:length(run_yrs)){
 }
 
 dimnames(cropprod) <- dim_cropnames
-dimnames(cropprodcnty) <- list(
-  rows = FIPS,
-  columns = crop_labels,
-  slices = year_labels
-)
+dimnames(cropprodcnty) <- dim_cropnames_cty
 
 
 #key is in cornprodnoetoh_key.txt
@@ -74,6 +113,7 @@ for(n in 1:nyrs){
   file_name = paste("InputFiles_CBW/noanimdyn",run_yrs[n],".txt",sep = "")
   noanimdyn[,,n]=t(array(scan(file_name), c(n_anims,n_ws_tbx)))
 }
+
 #animal populations in counties
 #key is in noanimdyncty_key.txt
 noanimdyncty=array(0,c(n_cnty,n_anims,nyrs))
@@ -91,6 +131,8 @@ exports = t(array(scan("InputFiles_CBW/exports.txt"), c(nyrs,n_crops)))
 #crop and ethanol feed coproduct data
 #key is in cropdata_key.txt
 cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,n_crops)))
+rownames(cropdata) <- read.table("InputFileKeys/cropdata_key.txt", skip = 1, sep = "\t",header = FALSE,stringsAsFactors = FALSE, fill = TRUE)[,1]
+colnames(cropdata) <- c("[1] prop_dm","[2] N/dm", "[3] P/dm", "[4] prop_human", "[5] prop_anim", "[6] prop_human_loss", "[7] prop_anim_loss", "[8] kcal/kg crop", "[9] g prot/kg crop", "[10] grain?", "[11] waste_1", "[12] waste_2", "[13] waste_3",	"[14] N20 CO2eq/kg crop, 100yrGWP",	"[15] CH4 CO2eq/kg crop, 100yrGWP",	"[16] N20 CO2eq/kg crop, 20yrGWP",	"[17] CH4 CO2eq/kg crop, 20yrGWP", "[18] m2 planted/kg")
 
 #N-BASED CROP ALLOCATION TO ANIMALS
 #kg N from each crop per animal in each livestock category
@@ -100,6 +142,7 @@ for(n in 1:nyrs){
   file_name = paste("InputFiles_CBW/cropNtoanim",run_yrs[n],".txt",sep = "")
   cropNtoanim[,,n]=t(array(scan(file_name), c(n_crops,n_anims)))
 }
+dimnames(cropNtoanim) <- dim_animalcrops
 #kg P from each crop per animal in each livestock category, using N-requirement-based allocation
 #key is croptoanim_key.txt
 cropPtoanim=array(0,c(n_anims,n_crops,nyrs))
@@ -125,6 +168,12 @@ for(n in 1:nyrs){
   NANIdata[,,n]=t(array(scan(file_name), c(15,n_ws_tbx)))
 }
 
+dimnames(NANIdata) <- list(
+  rows = paste0("[",seq(1,1925),",] ",CBW_lrs_shp$LndRvrSeg),
+  columns = paste0("[,",seq(1,15),"] ", read.table("InputFileKeys/NANIdata_key.txt")[1,-1]),
+  slices = paste0("[,,",seq(1,6),"] ", year_labels)
+)
+
 #NAPI TOTALS FROM VB MODEL
 #Fert_P_App in kgP/km2/yr (columns 1, 2, 3)
 #Food_Feed_P in kgP/km2/yr (column 4)
@@ -146,11 +195,7 @@ for(n in 1:length(run_yrs)){
   cropareacnty[,,n]=t(array(scan(file_name), c(n_crops,n_cnty)))
 }
 
-dimnames(cropareacnty) <- list(
-  rows = FIPS,
-  columns = crop_labels,
-  slices = year_labels
-)
+dimnames(cropareacnty) <- dim_cropnames_cty
 
 #ethanol's virtual land use in each year
 etoh_landuse = t(array(scan("InputFiles_CBW/etoh_landuse_harvestedarea.txt")))
@@ -170,24 +215,21 @@ cropdata = t(array(scan("InputFiles_CBW/cropdata.txt"), c(18,n_crops)))
 Nfert = t(array(scan('InputFiles_CBW/Nfert.txt'),c(nyrs,n_crops-3)))
 Pfert = t(array(scan('InputFiles_CBW/Pfert.txt'),c(nyrs,n_crops-3)))
 
-#STATE DATA
-#state FIPS code for each county in animal data
-FIPS <-  unique(CBW_lrs_shp$FIPS)
-FIPSws <- CBW_lrs_shp$FIPS
-FPs <-  array(0,c(n_cnty))
-for (i in 1:197) {FPs[i] <- (as.numeric(substr(as.character(unique(FIPS)[i]), 1, 2)))}
-
 #percent of manure from confinement and recovery by state
 manurefactor = t(array(scan("InputFiles_CBW/manurefactor.txt"),c(n_anims,50))) #data from 2002 only
+colnames(manurefactor) <- animalnames
+rownames(manurefactor) <- state.name
 
 #MEAT DATA
 #Meat production estimations. See meat_data.r for details.
 #Key in meatprod_key.txt
-meatprod = t(array(scan("InputFiles_CBW/meatprod.txt"),c(nyrs,n_meats))) #Meat emissions estimations for 2002 and 2007 only
+meatprod = t(array(scan("InputFiles_CBW/meatprod.txt"),c(nyrs,n_meats))) 
 #Key in meatemissions_key.txt
-meatemissions = t(array(scan("InputFiles_CBW/meatemissions.txt"),c(8,n_meats)))
+meatemissions = t(array(scan("InputFiles_CBW/meatemissions.txt"),c(8,n_meats))) #Meat emissions estimations for 2002 and 2007 only
 # key is in meatdata_key.txt
 meatdata = t(array(scan("InputFiles_CBW/meatdata.txt"), c(9,9)))
+colnames(meatdata) <- c("Proportion Loss in Human Consumption",	"Product Weight (kg/animal)",	"Edible Portion (kg edible/kg animal)",	"N in Edible Portion (kg N/kg edible)",	"P in Edible Portion (kg P/kg edible)",	"P in Edible Portion de Vries (kg P/kg edible)",	"kcal/kg edible portion",	"g protein/kg edible portion",	"g protein/kg edible portion de Vries")	
+rownames(meatdata) <- c("beef","dairy","swine","sheep","horse","layers","broilers","turkey","goats") #row headings
 Mtrade = t(array(scan("InputFiles_CBW/Mtrade.txt"),c(12,9)))  
 # first 2 columns: net percent of domestic production that is traded. negative 
 # values indicate that exports are larger than imports

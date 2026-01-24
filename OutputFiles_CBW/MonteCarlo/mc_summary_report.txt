@@ -1,0 +1,11 @@
+================================================================================
+  MONTE CARLO UNCERTAINTY ANALYSIS - SUMMARY REPORT
+================================================================================
+
+Number of iterations: 10
+Random seed: 123
+Runtime: 1.7 minutes
+Variables tracked: 0
+
+Summary Statistics (first 20 variables):
+------------------------------------------------------------------------------

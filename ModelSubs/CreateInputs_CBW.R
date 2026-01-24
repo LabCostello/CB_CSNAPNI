@@ -39,6 +39,7 @@ source("CreateInputsSubs_CBW/cropprod_data.r")
 source("CreateInputsSubs_CBW/animpop_data.r") 
 
 if (grass_scenario ==1){source("CreateInputsSubs_CBW/grass_scenario.r")}
+if (grass_scenario ==2){source("CreateInputsSubs_CBW/grass_scenario_unprofitable.r")}
 #source("CreateInputsSubs_CBW/cropscape_cnty_da.r") # Check why there is a tiny difference between cropareacty[,17,5] and cropareaws[,17,5]
 
 #####################################################################################

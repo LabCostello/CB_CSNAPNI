@@ -1452,7 +1452,7 @@ links <- data.frame(
   target = c(1:7, 1:7, 1:7, rep(10:16, each = 6), 10:16, rep(17, 7), rep(18, 7), rep(17,7),c(10,14,11,12,15),19),
   value = c(
     as.integer(CfertNtot[majorgrains, 5]),
-    sum(as.integer(CfertNtot[othercrops, 5])),
+    sum(as.integer(CfertNtot[othercrops, 5])),,
     colSums(CfixNwswE[, , 5])[majorgrains],
     sum(CfixNwswE[, othercrops, 5]),
     cropsimported[majorgrains],

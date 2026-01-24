@@ -73,27 +73,27 @@ CfertNinorgtotlrs <- array(0,c(1925,21,6))
 CfertNinorgtot <- array(0,c(21,6))
 unitfertmanNC <- array(0,c(21,6))
 unitfertinNC <- array(0,c(n_crops,nyrs))
+remaining_manure_pool <- array(0, c(1925, nyrs))  # Plant available N not applied
+remaining_manure_nonplant_pool <- array(0, c(1925, nyrs))  # Non-plant available N not applied
+remaining_manure_by_animal <- array(0, c(1925, 19, nyrs))  # Plant available N not used
+remaining_manure_nonplant_by_animal <- array(0, c(1925, 19, nyrs))  # Non-plant available N not used
 
 
 #fertilizer per crop
 for(n in 1:nyrs){
-  CfertNtot[1:(n_crops-3),n] = Nfert[,n] * croparea[1:(n_crops-3),n] # total fertilizer applied per crop based on an average fert app rate
-  # Food in NANI
-  # model_CURRENT.xlsx
-  # harvested or planted acreage based on setting, this value is for NANI crops only
-  CfertPtot[1:(n_crops-3),n] = Pfert[,n] * croparea[1:(n_crops-3),n] # total fertilizer applied per crop based on an average fert app rate
-  # Food in NAPI
-  # harvested or planted acreage based on setting, this value is for NAPI crops only
-  #for etoh coproducts, use corn fert
-  #the areas for these are the proportion of corn production area for
-  #corn etoh
+  
+  # CfertNtot: Use Nfert_avg (average across all counties)
+  CfertNtot[1:(n_crops-3),n] = Nfert[,n] * croparea[1:(n_crops-3),n]
+  CfertPtot[1:(n_crops-3),n] = Pfert[,n] * croparea[1:(n_crops-3),n]
+  
+  # Crops 19-21 (CGF, CGM, DGS): Use corn fertilizer rate
   for(i in (n_crops-2):n_crops){
-    CfertNtot[i,n]=Nfert[1,n] * croparea[i,n]
-    CfertPtot[i,n]=Pfert[1,n] * croparea[i,n]
+    CfertNtot[i,n] = Nfert[1,n] * croparea[i,n]
+    CfertPtot[i,n] = Pfert[1,n] * croparea[i,n]
   }
   
-  etohfertNtot[n] = Nfert[1,n] * etoh_landuse[n] #kg N fert allocated to etoh based on corn
-  etohfertPtot[n] = Pfert[1,n] * etoh_landuse[n] #kg P fert allocated to etoh based on corn
+  etohfertNtot[n] = Nfert[1,n] * etoh_landuse[n]
+  etohfertPtot[n] = Pfert[1,n] * etoh_landuse[n]
   
   for(i in 1:n_crops){
     if(CfertNtot[i,n] > 0){
@@ -117,16 +117,120 @@ for(n in 1:nyrs){
   # Calculate needed crop
   for (i in 1:1925) {
     CfertNtotlrs[i,1:(n_crops-3),n] <- cropareaws[i,1:(n_crops-3),n]*Nfert[,n]
+    #CfertNtotlrs[i,1:(n_crops-3),n] <- cropareaws[i,1:(n_crops-3),n] * Nfert_lrs[i,,n]
     
     for (j in (n_crops-2):n_crops) {
       CfertNtotlrs[i,j,n] <- cropareaws[i,j,n]*Nfert[1,n]
+      #CfertNtotlrs[i,j,n] <- cropareaws[i,j,n] * Nfert_lrs[i,1,n]
     }
-    ifelse(sum(CfertNtotlrs[i,,n]) > 0, CfertNtotlrsratio[i,,n] <- CfertNtotlrs[i,,n]/sum(CfertNtotlrs[i,,n]), CfertNtotlrsratio[i,,n] <- 0)
-    kgNmanuretoeachcrop[i,,n] <- CfertNtotlrsratio[i,,n]*kgmanureNlrsavailableplantavailable[i,n] #allocate manure to the crops based on the allocation matrix
-    kgmanurenotavailabletoeachcrop[i,,n] <- CfertNtotlrsratio[i,,n]*kgmanureNlrsrecovnonavailableplant[i,n] #allocate manure non available N to the crops based on the allocation matrix
+    
+    if (nass_survey_fert==0) {    
+      # Available manure N for this LRS
+      available_manure <- kgmanureNlrsavailableplantavailable[i,n]
+      available_manure_nonplant <- kgmanureNlrsrecovnonavailableplant[i,n]
+      
+      # Initialize allocation arrays
+      kgNmanuretoeachcrop[i,,n] <- 0
+      kgmanurenotavailabletoeachcrop[i,,n] <- 0
+      
+      # Only proceed if there are crops with N needs and available manure
+      if (sum(CfertNtotlrs[i,,n]) > 0 && available_manure > 0) {
+        
+        # Step 1: Initial proportional allocation
+        crop_needs <- CfertNtotlrs[i,,n]
+        remaining_manure <- available_manure
+        remaining_manure_nonplant <- available_manure_nonplant
+        
+        # Calculate initial allocation ratios
+        total_needs <- sum(crop_needs)
+        if (total_needs > 0) {
+          allocation_ratios <- crop_needs / total_needs
+        } else {
+          allocation_ratios <- rep(0, length(crop_needs))
+        }
+        
+        # Iterative redistribution process
+        max_iterations <- 10  # Prevent infinite loops
+        iteration <- 0
+        
+        while (remaining_manure > 1e-6 && iteration < max_iterations) {
+          iteration <- iteration + 1
+          
+          # Calculate how much each crop would get with current ratios
+          proposed_allocation <- allocation_ratios * remaining_manure
+          proposed_allocation_nonplant <- allocation_ratios * remaining_manure_nonplant
+          
+          # Cap allocation at crop needs and identify excess
+          actual_allocation <- pmin(proposed_allocation, crop_needs)
+          percentage_allocation <- sum(actual_allocation) / sum(proposed_allocation)
+          actual_allocation_nonplant <- proposed_allocation_nonplant*percentage_allocation
+          
+          # Calculate excess manure from over-allocated crops
+          excess_manure <- sum(proposed_allocation - actual_allocation)
+          excess_manure_nonplant <- sum(proposed_allocation_nonplant - actual_allocation_nonplant)
+          
+          # Add actual allocation to cumulative allocation
+          kgNmanuretoeachcrop[i,,n] <- kgNmanuretoeachcrop[i,,n] + actual_allocation
+          kgmanurenotavailabletoeachcrop[i,,n] <- kgmanurenotavailabletoeachcrop[i,,n] + actual_allocation_nonplant
+          
+          # Update remaining needs and manure
+          crop_needs <- crop_needs - actual_allocation
+          remaining_manure <- excess_manure
+          remaining_manure_nonplant <- excess_manure_nonplant
+          
+          # Recalculate allocation ratios for crops that still have needs
+          total_remaining_needs <- sum(crop_needs)
+          if (total_remaining_needs > 1e-6) {
+            allocation_ratios <- crop_needs / total_remaining_needs
+          } else {
+            break  # All needs satisfied
+          }
+          
+          # If no excess to redistribute, break
+          if (excess_manure < 1e-6) {
+            break
+          }
+        }
+        # SAVE REMAINING MANURE TO POOL
+        remaining_manure_pool[i, n] <- remaining_manure
+        remaining_manure_nonplant_pool[i, n] <- remaining_manure_nonplant
+        
+      } else {
+        # If no crops need fertilizer or no manure available, all manure goes to pool
+        remaining_manure_pool[i, n] <- available_manure
+        remaining_manure_nonplant_pool[i, n] <- available_manure_nonplant
+      }
+      # Get total remaining manure for this LRS and year
+      total_remaining_plant <- remaining_manure_pool[i, n]
+      total_remaining_nonplant <- remaining_manure_nonplant_pool[i, n]
+      
+      # Only proceed if there's remaining manure to distribute
+      if (total_remaining_plant > 0 || total_remaining_nonplant > 0) {
+        
+        # Calculate total manure production by all animals in this LRS
+        total_manure_production <- sum(kgmanureNrec450[i, animal_manure, n])
+        
+        # Calculate proportion contributed by each animal
+        if (total_manure_production > 0) {
+          animal_proportions <- array(0, 19)
+          animal_proportions[animal_manure] <- kgmanureNrec450[i, animal_manure, n] / total_manure_production
+          
+          # Distribute remaining manure back to animals based on their proportions
+          remaining_manure_by_animal[i, , n] <- animal_proportions * total_remaining_plant
+          remaining_manure_nonplant_by_animal[i, , n] <- animal_proportions * total_remaining_nonplant
+          
+        } else {
+          # If no manure production, no distribution (should be rare/impossible)
+          remaining_manure_by_animal[i, , n] <- 0
+          remaining_manure_nonplant_by_animal[i, , n] <- 0
+        }
+      }
+    }
+    
+    # Calculate inorganic N needed (fertilizer needs minus manure provided)
+    CfertNinorgtotlrs[,,n] <- pmax(0, CfertNtotlrs[,,n] - kgNmanuretoeachcrop[,,n])
   }
   
-  CfertNinorgtotlrs[,,n] <- pmax(0,CfertNtotlrs[,,n]-kgNmanuretoeachcrop[,,n]) # inorganic N in manure
   CfertNinorgtot[,n] <- colSums(CfertNinorgtotlrs[,,n])
   Cfertmantot[,n] <- colSums(kgNmanuretoeachcrop[,,n])+colSums(kgmanurenotavailabletoeachcrop[,,n]) # total manure N (available and not available)
   
@@ -148,13 +252,13 @@ for(n in 1:nyrs){
   # check # N in:N in crop
   # total fertilizer per crop per watershed
   for(i in 1:n_crops){
-    CfertNwswE[,i,n] = CkgwswE_orig[,i,n] * unitfertNC[i,n] # 4.23.13, pre-loss production values
+    CfertNwswE[,i,n] = CkgwswE_orig[,i,n] * (unitfertinNC[i,n]+unitfertmanNC[i,n]) # 4.23.13, pre-loss production values
     CfertNwswEsynth[,i,n] = CkgwswE_orig[,i,n] * unitfertinNC[i,n] # 4.23.13, pre-loss production values
     CfertPwswE[,i,n] = CkgwswE_orig[,i,n] * unitfertPC[i,n]
-    CfertNwE[,i,n] = CkgwE[,i,n] * unitfertNC[i,n] # for tile drainage calcs, 450 watersheds instead of n_ws_NEEA to convert to county level
+    CfertNwE[,i,n] = CkgwE[,i,n] *(unitfertinNC[i,n]+unitfertmanNC[i,n]) # for tile drainage calcs, 450 watersheds instead of n_ws_NEEA to convert to county level
     CfertPwE[,i,n] = CkgwE[,i,n] * unitfertPC[i,n]
     CfixNwswE[,i,n] = CkgwswE_orig[,i,n] * unitfixNC[i,n]
-    CfertNexp[,i,n] = Cexpkg[,i,n] * unitfertNC[i,n]
+    CfertNexp[,i,n] = Cexpkg[,i,n] * (unitfertinNC[i,n]+unitfertmanNC[i,n])
     CfertPexp[,i,n] = Cexpkg[,i,n] * unitfertPC[i,n]
     CfixNwE[,i,n] = CkgwE[,i,n] * unitfixNC[i,n]
     CfixNexp[,i,n] = Cexpkg[,i,n] * unitfixNC[i,n]
@@ -170,7 +274,7 @@ for(n in 1:nyrs){
   }
   
   # N in grain / N in fert + fix
-  NinputtoC[,n] = t(colSums(CfertNwE[,,n])) + t(colSums(CfixNwswE[,,n]))
+  NinputtoC[,n] = t(colSums(CfertNwswEsynth[,,n])) + t(colSums(CfertNwE[,,n]-CfertNwswEsynth[,,n])) + t(colSums(CfixNwswE[,,n]))
   PinputtoC[,n] = t(colSums(CfertNwE[,,n])) + t(colSums(CfixNwswE[,,n]))
   CNkgwE[,n] = sumCkgwE[,n] * NperC #no adjustments to crop production are made here b/c even if this grain is lost it was produced.
   CPkgwE[,n] = sumCkgwE[,n] * PperC
